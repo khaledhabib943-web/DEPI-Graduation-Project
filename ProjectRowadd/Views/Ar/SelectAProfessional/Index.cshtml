@@ -1,0 +1,217 @@
+@{
+    ViewData["Title"] = "اختيار مقدم خدمة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: rtl; font-family: 'Cairo', sans-serif; }
+
+body {
+            font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+        }
+</style>
+
+<div dir="rtl">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-4 md:px-40">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+<span class="material-symbols-outlined">build</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-[-0.015em]">صلاحلي</h2>
+</div>
+<div class="flex gap-4">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-4 py-8 md:px-40">
+<div class="max-w-[960px] mx-auto flex flex-col gap-8">
+<!-- Progress Indicator Section -->
+<div class="flex flex-col gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm">
+<div class="flex justify-between items-center">
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold">الخطوة 3 من 4</p>
+<p class="text-primary text-sm font-bold">75%</p>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 75%;"></div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm">اختيار الفني المناسب للمهمة</p>
+</div>
+<!-- Page Title and Search -->
+<div class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-slate-100 text-3xl font-bold tracking-tight">اختر الفني المناسب</h1>
+<p class="text-slate-500 dark:text-slate-400">فنيون متاحون الآن بالقرب منك في القاهرة</p>
+</div>
+<!-- Filter Tabs -->
+<div class="flex border-b border-slate-200 dark:border-slate-800 gap-8 overflow-x-auto no-scrollbar">
+<button class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 px-2 whitespace-nowrap font-bold">
+                            الأعلى تقييماً
+                        </button>
+<button class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 px-2 whitespace-nowrap hover:text-primary">
+                            الأقل سعراً
+                        </button>
+<button class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 px-2 whitespace-nowrap hover:text-primary">
+                            الأقرب إليك
+                        </button>
+<button class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 px-2 whitespace-nowrap hover:text-primary">
+                            المتاحين فوراً
+                        </button>
+</div>
+<!-- Worker List -->
+<div class="flex flex-col gap-4">
+<!-- Worker Card 1 -->
+<div class="flex flex-col md:flex-row gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-colors shadow-sm">
+<div class="relative size-24 shrink-0">
+<img class="size-24 rounded-lg object-cover" data-alt="Professional technician portrait smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAY9xhoBp-Rb3Pqzsx0eGHd3P0ezmX7PTruWUB-SWE0QnMSvjOvx2xamPcz9TyNhQdXqJbPWQLscnKAPskGyHAnpttRydvBp7gedW1V0-26xTWruyKSRf_VQIJMDqhX5hxaj9tSBcXT746Z3__Ia18YTXmX3cA9-uTiVEp84Cgj6FHkCtIIUsxen_qx0Tcnh6S2RBszPxLcq2LeRlXnuQA7lAHGTUHd1U4TJrpkAlTyIeGTkjbPncVf4i30Y0rvnT1I7DtqdQLLL4"/>
+<div class="absolute -bottom-1 -right-1 bg-green-500 size-4 rounded-full border-2 border-white dark:border-slate-900"></div>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-slate-900 dark:text-slate-100 font-bold text-lg">أحمد محمود</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">plumbing</span>
+                                            سباك معتمد
+                                        </p>
+</div>
+<div class="text-left">
+<p class="text-primary font-bold text-lg">150 ج.م</p>
+<p class="text-slate-400 dark:text-slate-500 text-xs">لكل ساعة</p>
+</div>
+</div>
+<div class="flex items-center gap-3 mt-2">
+<div class="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded text-yellow-700 dark:text-yellow-500 text-sm font-bold">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+                                        4.9
+                                    </div>
+<span class="text-slate-400 text-sm">(120 تقييم)</span>
+<span class="text-slate-300">|</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        2.5 كم
+                                    </span>
+</div>
+<p class="text-slate-600 dark:text-slate-300 text-sm mt-2 line-clamp-1">خبرة أكثر من 10 سنوات في جميع أعمال السباكة والصيانة المنزلية الحديثة.</p>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-all">اختيار الفني</button>
+<button class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">الملف الشخصي</button>
+</div>
+</div>
+</div>
+<!-- Worker Card 2 -->
+<div class="flex flex-col md:flex-row gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-colors shadow-sm opacity-90">
+<div class="relative size-24 shrink-0">
+<img class="size-24 rounded-lg object-cover" data-alt="Electrician smiling professional portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJv12w5gPDYQ6sFN4vVuVlkrPTfW9FIDAeXT4BgcXLE7qPBveFdu4Ou26qm_8uxtRecaW0x_CHsEd_v4nTHhZxIN45T8msAiQXJOU_xzp91kSWK_VMbLxSSxJYNNRGEb6FLaX_j6dGDlXQWGOMJRZhEisKMntZLL4VIilItypK-8kSzRI7eT2ZqC_xronxgJjIK2kRrhXqI4jn27t5JhX_WJxoQ5dxCO76hvK6wtHi4GtggZu3_mzuwikSvq7ObKacnoz9iSB1i5M"/>
+<div class="absolute -bottom-1 -right-1 bg-green-500 size-4 rounded-full border-2 border-white dark:border-slate-900"></div>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-slate-900 dark:text-slate-100 font-bold text-lg">محمد علي</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">electrical_services</span>
+                                            كهربائي
+                                        </p>
+</div>
+<div class="text-left">
+<p class="text-primary font-bold text-lg">120 ج.م</p>
+<p class="text-slate-400 dark:text-slate-500 text-xs">لكل ساعة</p>
+</div>
+</div>
+<div class="flex items-center gap-3 mt-2">
+<div class="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded text-yellow-700 dark:text-yellow-500 text-sm font-bold">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+                                        4.7
+                                    </div>
+<span class="text-slate-400 text-sm">(85 تقييم)</span>
+<span class="text-slate-300">|</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        4.1 كم
+                                    </span>
+</div>
+<p class="text-slate-600 dark:text-slate-300 text-sm mt-2 line-clamp-1">متخصص في تأسيس وصيانة شبكات الكهرباء المنزلية والدوائر الذكية.</p>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-all">اختيار الفني</button>
+<button class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">الملف الشخصي</button>
+</div>
+</div>
+</div>
+<!-- Worker Card 3 -->
+<div class="flex flex-col md:flex-row gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-colors shadow-sm">
+<div class="relative size-24 shrink-0">
+<img class="size-24 rounded-lg object-cover" data-alt="Carpenter profile photo work clothes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR3G1VDmsUu0RjXGdTY0P5VfWanLPzKv4dPxGIflv7OfexmQmpxVvcJNrVUPu_GGv-gt7M8bf4KiIISgtpEev-Ch0P2-YOI9f34r9MZLWcr3AyP5cyYFryJnIMsLhabcAKJQvKbdo-jQfaKYsMCvpNL023ARGqUn4aShztivd2AHgfJpXCiPkdIf1WfjLbyNSc90NUxpV8e0cIgAu3je4GJp2YNedgNtdFqGYKH1zOuSjTHHsDGmG9DN4uK4OfuWi_LCKT0j_pL5c"/>
+<div class="absolute -bottom-1 -right-1 bg-slate-300 size-4 rounded-full border-2 border-white dark:border-slate-900"></div>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-slate-900 dark:text-slate-100 font-bold text-lg">خالد يوسف</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">carpenter</span>
+                                            نجار موبيليا
+                                        </p>
+</div>
+<div class="text-left">
+<p class="text-primary font-bold text-lg">180 ج.م</p>
+<p class="text-slate-400 dark:text-slate-500 text-xs">لكل ساعة</p>
+</div>
+</div>
+<div class="flex items-center gap-3 mt-2">
+<div class="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded text-yellow-700 dark:text-yellow-500 text-sm font-bold">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+                                        5.0
+                                    </div>
+<span class="text-slate-400 text-sm">(42 تقييم)</span>
+<span class="text-slate-300">|</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        1.8 كم
+                                    </span>
+</div>
+<p class="text-slate-600 dark:text-slate-300 text-sm mt-2 line-clamp-1">إصلاح وتجميع كافة أنواع الأثاث المنزلي والمكتبي بمهارة واحترافية.</p>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-all">اختيار الفني</button>
+<button class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">الملف الشخصي</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination or Show More -->
+<div class="flex justify-center py-6">
+<button class="text-primary font-bold flex items-center gap-2 hover:underline">
+                            عرض المزيد من الفنيين
+                            <span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Menu for Mobile -->
+<nav class="flex md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 fixed bottom-0 w-full justify-between items-center">
+<div class="flex flex-col items-center text-primary">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">الرئيسية</span>
+</div>
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] font-medium">طلباتي</span>
+</div>
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-[10px] font-medium">المحفظة</span>
+</div>
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">حسابي</span>
+</div>
+</nav>
+</div>
+</div>
+</div>

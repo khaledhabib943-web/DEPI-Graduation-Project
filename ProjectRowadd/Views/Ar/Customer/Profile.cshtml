@@ -1,0 +1,133 @@
+@{
+    ViewData["Title"] = "الملف الشخصي";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: rtl; font-family: 'Cairo', sans-serif; }
+
+
+</style>
+
+<div dir="rtl">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-4 md:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="text-primary">
+<span class="material-symbols-outlined text-4xl">handyman</span>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-tight">صلاحلي</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary" data-alt="صورة الملف الشخصي للمستخدم المصري" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAfPiQIeN7vG8LOPZ1_R3wFXmVkX-CM0pQzL9_6gSRwIxvGFJjl7EfeKJVU84JThyE4WFMDaWlvs7I3UmvCYR2F5UD3c8l-ibJRmcfI3NzcS2sXzUDZwqkOwLDJomMFR5EJiciOkZXZJ26KE9WA2fBcNmgShQ3dBEmJVQZlTMwQOONwYvUxWOS6NkQ5s0YQQkrORY2XVNLYoHDPeAFCHNUgjKz0vLBbGvtDeCXhfI1rCw66HWxnObOCyJQxeV97QpJp-2Eme8-m8M0");'></div>
+</div>
+</header>
+<div class="layout-container flex grow flex-col md:flex-row">
+<!-- Sidebar Navigation -->
+<aside class="w-full md:w-64 border-l border-slate-200 dark:border-slate-800 p-4 flex flex-col gap-2">
+<div class="flex items-center gap-3 px-3 py-4 border-b border-slate-200 dark:border-slate-800 mb-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="أحمد محمد - صورة الحساب" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9bCLdLVV44DIS5V3qtR1da5X24BF_8Kv-IxB-YZS32JteXaXBCu1FLhGzk9X2v78wXmhfvlsEJT8L7o-donSB28TQzO8BF8H5d3Nkq2Lc1Ho8CtHcBvie-AuYPGDMsiq_814DbDd4qrwVozkOJ19BDBVtqKkRwskR8ugdhl3UDDd3YXS1D3kod9wKnK8MclZha_LsWCEb7SgQxqtkv2JYMwgf-y4Ns6YHZ4r5GCkuQ08d19cf9dkj6Tgwvm_ImpFNGL0Ed45WYKE");'></div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold">أحمد محمد</h1>
+<p class="text-primary text-xs font-medium">عميل مميز</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">home</span>
+<span class="text-sm font-medium">الرئيسية</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">receipt_long</span>
+<span class="text-sm font-medium">طلباتي</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">account_balance_wallet</span>
+<span class="text-sm font-medium">المحفظة</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary text-white shadow-md shadow-primary/30" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-sm font-medium">الملف الشخصي</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/5 transition-colors mt-auto text-red-500" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium">تسجيل الخروج</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 p-4 md:p-8">
+<div class="max-w-3xl mx-auto">
+<div class="flex flex-col items-center mb-10">
+<div class="relative group">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-32 border-4 border-white dark:border-slate-800 shadow-xl" data-alt="تغيير صورة الملف الشخصي" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDlFmvYvKvPsNXHubWoVSpORsBWKy1Pvk0lm6aLC1vMnHTslwbMCq5viae-DAkJ7xDkKDW77kt_vChf0BhilpfAlKxCyKElqN5zwpIcVRXzsQRLn-i6DhdQH_3Xx9UUW4wQ3IklLM4VGVUbfgWdPQwUsfFTyi2Rt7LF1i1hNLDHN8XBuSWv8OwETHdBrx0Lo49UVI4iWyFjs3tMg_yyJ-Xb-0k_RWy0zLhfqNDPrmkT-crbrwlBOxjhQNMeyg-h6ZZ3ORqDAQ6PfTA");'></div>
+<button class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg border-2 border-white dark:border-slate-800">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<h2 class="text-2xl font-bold mt-4">الملف الشخصي</h2>
+<p class="text-slate-500 dark:text-slate-400">القاهرة، مصر</p>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+<h3 class="text-lg font-bold mb-6 border-r-4 border-primary pr-3">بيانات الحساب الشخصية</h3>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">الاسم بالكامل</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">person</span>
+<input class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary h-12" type="text" value="أحمد محمد"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">البريد الإلكتروني</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">mail</span>
+<input class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary h-12" type="email" value="ahmed.m@email.com"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">رقم الهاتف</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">call</span>
+<input class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary h-12" dir="ltr" type="tel" value="01234567890"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">العمر</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">calendar_today</span>
+<input class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary h-12" type="number" value="28"/>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">العنوان بالتفصيل</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-3 top-4 text-slate-400">location_on</span>
+<textarea class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary min-h-[100px] py-3">حي المعادي، شارع 9، عمارة رقم 15، القاهرة</textarea>
+</div>
+</div>
+<div class="pt-4 flex gap-4">
+<button class="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-shadow shadow-lg flex-1 shadow-primary/30" type="submit">
+                                حفظ التعديلات
+                            </button>
+<button class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-8 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" type="button">
+                                إلغاء
+                            </button>
+</div>
+</form>
+</div>
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4"><div class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group"><div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">verified</span></div><span class="text-xs text-slate-500 dark:text-slate-400">حالة الحساب</span><span class="text-sm font-semibold">موثق</span></div><div class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group"><div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">star</span></div><span class="text-xs text-slate-500 dark:text-slate-400">نقاط الولاء</span><span class="text-sm font-semibold">1,250 نقطة</span></div><div class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group"><div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">handyman</span></div><span class="text-xs text-slate-500 dark:text-slate-400">عمليات صيانة</span><span class="text-sm font-semibold">12 عملية</span></div></div>
+</div>
+</main>
+</div>
+</div>
+</div>

@@ -1,0 +1,330 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: ltr; }
+
+body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+</style>
+
+<div dir="ltr">
+<div class="flex min-h-screen">
+<!-- Side Navigation -->
+<aside class="w-64 border-primary/10 bg-white dark:bg-slate-900 flex flex-col fixed h-full border-r">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg">
+<span class="material-symbols-outlined text-white">home_repair_service</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-primary">HomeFix</h1>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-white" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-sm font-medium">Bookings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Manage Users</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">engineering</span>
+<span class="text-sm font-medium">Technicians</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Revenue</span>
+</a>
+<div class="pt-4 pb-2 px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">System</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-sm font-medium flex-1">Notifications</span>
+<span class="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">4</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-primary/10">
+<div class="flex items-center gap-3 p-2">
+<div class="w-10 h-10 rounded-full bg-primary/20 bg-cover bg-center" data-alt="Admin user profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgTFMRRVLz7EBVbw1gIj7XrC2FEllScadKXPjHXtC5mz2dgItqyftwwPdI57jwNQ9P1Sldyx5UApXMLBi752qWU69l5uycMoMQZNRBvgMEnl1JdmdCdxdxm2LItFqhDSFTU0ROVNUf-U_Dk0483MYWNMv7kOEgM8gyOTvBNxhC2KyV7kzLZl2bh6BvqNQk2KSQ6WqR5IutO3EjwZKd_Aj9U_aJlHbRQRL87IRFDIW00WnyiRvPNgDMP2wwI1EQJmXfRiZo7-muavM')"></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold">Alex Rivera</span>
+<span class="text-xs text-slate-500">General Manager</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 p-8 ml-64">
+<!-- Header -->
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h2 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Dashboard Overview</h2>
+<p class="text-slate-500 dark:text-slate-400">Real-time platform performance and management.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute top-1/2 -translate-y-1/2 text-slate-400 left-3">search</span>
+<input class="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-primary/10 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm w-64" placeholder="Search platform..." type="text"/>
+</div>
+<button class="p-2 bg-white dark:bg-slate-900 border border-primary/10 rounded-lg hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">calendar_today</span>
+</button>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors"><span class="material-symbols-outlined text-sm">download</span> Export Report</button>
+</div>
+</header>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">shopping_cart</span>
+</div>
+<span class="text-green-500 text-xs font-bold flex items-center bg-green-50 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> 12%
+                    </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Bookings</p>
+<h3 class="text-2xl font-black text-slate-900 dark:text-white">2,450</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</div>
+<span class="text-green-500 text-xs font-bold flex items-center bg-green-50 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> 8%
+                    </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Monthly Revenue</p>
+<h3 class="text-2xl font-black text-slate-900 dark:text-white">85,000 EGP</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">engineering</span>
+</div>
+<span class="text-red-500 text-xs font-bold flex items-center bg-red-50 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> 2%
+                    </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Active Technicians</p>
+<h3 class="text-2xl font-black text-slate-900 dark:text-white">320</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">pending_actions</span>
+</div>
+<span class="text-amber-500 text-xs font-bold flex items-center bg-amber-50 px-2 py-1 rounded-full">Pending</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Approvals</p>
+<h3 class="text-2xl font-black text-slate-900 dark:text-white">12</h3>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- User Management Table -->
+<div class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-primary/5 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-primary/5 flex justify-between items-center">
+<h3 class="text-lg font-bold">New Users &amp; Technicians</h3>
+<div class="flex gap-2">
+<button class="text-xs font-bold px-3 py-1.5 rounded-lg border border-primary/10 hover:bg-primary/5">View All</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-primary/5 text-slate-600 dark:text-slate-400 text-xs uppercase font-bold tracking-wider">
+<tr>
+<th class="px-6 py-4">User</th>
+<th class="px-6 py-4">Role</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4">Joined Date</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/5">
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 bg-cover bg-center" data-alt="Customer avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCtRAhszPOkTjD3GawKEsedSGL4ItCdxcXDhdT0-BlghHVik6ptW3Bk6cvmLp75403-DGHVIVZs-JS38ACXHaJYNQ-NbaUvL0slXxNOAT0kvV3iZUF7xyIyHiOmLi97JucQa5iXTAy2z8ewSepnasYNBSOAkJanc2vAY5Aj7ePPn8teeQyOOXnNOqDRWL-4fv-WqiuKywyxP7sXpRqqPbnibhvZGke9bALnvfI04weezEaRNq--OxIyWi8HDzWhpOzYd-jYKMNR4fc')"></div>
+<div class="flex flex-col"><span class="text-sm font-bold">Ahmed Mansour</span><span class="text-xs text-slate-500">2 mins ago</span></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-600 rounded-full">Customer</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+<span class="text-xs">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs text-slate-500">2 mins ago</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 bg-cover bg-center" data-alt="Worker avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDDIj5upsAmJjbtI9QVextFfQz9VYS3iRTPzyEanryD9ReziIghk8n_Cy-aZvRQ2two7SnNv6QKSMVIRxnZPSChcxWvtqAh0Uy1VhXwRfl3Bx6aDdFjB1-iTWxn1CAjn1-0Bz8vopTYGpwnYJHRe5bhjPYxj3mUD0gIBTW9oEgGFGRa5nYFTHEng4D-3usBRUHS9pJcRfOQDP8bywW_3jLzA9k3wEsyUuhkNnwGtdYsd1QxFQGL0SHw814qIW7OrNMHkZLCfY5VeAI')"></div>
+<div class="flex flex-col"><span class="text-sm font-bold">Fatima Ali</span><span class="text-xs text-slate-500">15 mins ago</span></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-medium px-2 py-1 bg-purple-100 text-purple-600 rounded-full">Technician</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+<span class="text-xs">Online</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs text-slate-500">15 mins ago</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 bg-cover bg-center" data-alt="Worker avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCQwIs4k-fIBebuQ2tWGlsZzH3YXerFAKZlJlCO2Q5pl_dHlfvXCCq9n7-_2pDf5klpV71LnGhUC12JWuSEMopG3zpCoQaz9rIRPLsvdA05X9pdutFKEsPpCppG1eoCfl99X5BbHwvL-pvE95weMKldOPCo1A9LrrDbZbtOjhmcuG4FO_I7JwkMV-bp3DfCXlbOYa3wFndJ0w3w9R5BeoSaq3gk2iPQb6MxEZ7hyDSNZXdPVM7TrW8j2s4rJRt0ccXid-ViwfQ3OHg')"></div>
+<div class="flex flex-col"><span class="text-sm font-bold">Youssef Hassan</span><span class="text-xs text-slate-500">1 hour ago</span></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-medium px-2 py-1 bg-purple-100 text-purple-600 rounded-full">Technician</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+<span class="text-xs">Pending Review</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs text-slate-500">1 hour ago</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- System Alerts / Pending Approvals -->
+<div class="space-y-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold">System Alerts</h3>
+<span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">URGENT</span>
+</div>
+<div class="space-y-4">
+<div class="flex gap-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
+<span class="material-symbols-outlined text-red-500">error</span>
+<div>
+<p class="text-sm font-bold text-red-900 dark:text-red-100">Heliopolis New Branch</p>
+<p class="text-xs text-red-700 dark:text-red-300">5 service vehicles alert</p>
+</div>
+</div>
+<div class="flex gap-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20">
+<span class="material-symbols-outlined text-amber-500">warning</span>
+<div>
+<p class="text-sm font-bold text-amber-900 dark:text-amber-100">Maadi Branch Update</p>
+<p class="text-xs text-amber-700 dark:text-amber-300">Low technician availability</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<h3 class="text-lg font-bold mb-6">Pending Approvals</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between border-b border-primary/5 pb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">verified_user</span>
+</div>
+<div>
+<p class="text-sm font-bold">New Branch Request</p>
+<p class="text-xs text-slate-500">Heliopolis • 5 Vans</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<button class="p-1.5 text-green-500 hover:bg-green-50 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between border-b border-primary/5 pb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+</div>
+<div>
+<p class="text-sm font-bold">Vehicle Registration</p>
+<p class="text-xs text-slate-500">Service Fleet • 3 Vans</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<button class="p-1.5 text-green-500 hover:bg-green-50 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</button>
+</div>
+</div>
+<button class="w-full py-2.5 bg-primary/10 text-primary text-xs font-bold rounded-lg hover:bg-primary/20 transition-colors">Review 10 More Requests</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Map & Analytics -->
+<div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<h3 class="text-lg font-bold mb-4">Live Service Map (Cairo &amp; Giza)</h3>
+<div class="h-64 rounded-lg bg-slate-100 relative overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-50" data-alt="Abstract city map topography" data-location="Cairo, Egypt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSdFPcUX9TvZsUXIgfHdU8JbOgH4zfns9ohqIg7vR-Zwll46jZ0NglWjeDXtEiKa5yeiFVe_l2_ni7LDbCgBx2qPVoddB6mr6jo_lXZ510Pt_95lcDxQqfd52jz9bW8G-clCbIKMpC6NukB9r9JQT1T2eHmd2pBVegHliiz3Uh1lDtC0UUEBb7-_3momTLy234E4lY47m9s5NOvE-wCTvzGa21lLh7ZUxfUi63vjVM-qdY67YI-XLum_CPChrzUm2L_y7Vz3JIg-Y"/>
+<div class="absolute inset-0 p-4">
+<div class="absolute top-1/4 left-1/3 w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_10px_rgba(15,44,189,0.8)]"></div>
+<div class="absolute top-1/2 left-1/2 w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_10px_rgba(15,44,189,0.8)]"></div>
+<div class="absolute bottom-1/4 right-1/4 w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_10px_rgba(15,44,189,0.8)]"></div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<h3 class="text-lg font-bold mb-4">Revenue Growth</h3>
+<div class="h-64 flex items-end gap-3 justify-between pb-2">
+<div class="w-full bg-primary/20 rounded-t-lg h-[40%]"></div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[60%]"></div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[55%]"></div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[75%]"></div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[65%]"></div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[85%]"></div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[95%]"></div>
+<div class="w-full bg-primary rounded-t-lg h-[100%]"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-400 font-bold uppercase mt-4">
+<span>Jan</span>
+<span>Feb</span>
+<span>Mar</span>
+<span>Apr</span>
+<span>May</span>
+<span>Jun</span>
+<span>Jul</span>
+<span class="text-primary">Aug</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>

@@ -1,0 +1,188 @@
+@{
+    ViewData["Title"] = "Worker Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: ltr; }
+
+
+</style>
+
+<div dir="ltr">
+<div class="relative flex min-h-screen w-full flex-col">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-6 py-4 lg:px-10">
+<div class="flex items-center gap-4">
+<div class="text-primary">
+<span class="material-symbols-outlined text-4xl">home_repair_service</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight">HomeFix Pro</h2>
+</div>
+<div class="flex flex-1 justify-end items-center gap-4">
+<div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-full px-4 py-1.5 gap-3 border border-slate-200 dark:border-slate-700">
+<span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Status:</span>
+<div class="flex items-center gap-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</span>
+<span class="text-sm font-bold text-green-600 dark:text-green-400">Online</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+</div>
+<div class="h-10 w-10 rounded-full bg-primary/10 border-2 border-primary overflow-hidden">
+<img alt="Worker profile" class="h-full w-full object-cover" data-alt="Professional headshot of a male worker" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzb3fOcdkiGOKhcobFtCNt-n645feKZ6MSXf0BTchRROETRg75RCQnbKDT_KiZ-cePJNUaQ04WWuC-Yn3Nz8K9lDUOHt_JL3vtZ0mN3ZKOKxdaWZOYDgsXhnBMXIqKA2Dd-5JtJx66vDTts5449WKVSnnv1S_kSpgxaHJGzzQ4zSOOpEpNGv4QG0UdYKhJT8uBfNZkJj-K8N8A8BNe5MfZxLoYYO5ZGcHNOD9nwf28WIERMADkZhCKXDR3M5YJ3LfMV-RiHhgVc1k"/>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col lg:flex-row gap-6 p-6 lg:p-10 max-w-[1600px] mx-auto w-full">
+<aside class="w-full lg:w-80 flex flex-col gap-6">
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex flex-col items-center text-center">
+<div class="size-24 rounded-full border-4 border-primary/20 p-1 mb-4">
+<img alt="Ahmed Mansour" class="size-full rounded-full object-cover" data-alt="Portrait of Alex Johnson professional handyman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTEuXXvKdmceqpNqMBABT9bdWu1LwvTFh9QZVMkR0KADytqTiAQ3ndT99mVwOCxFkeOHWQb9gIp55T7Y6inn8tI3fgCcZd0p0-TezgIBXfWQB48HNCQ0v1lXtb9OaqZzaFxg5o5rn_JubQevoCRJ17KgtZjcGyIrmL_WWsCO4Z6P2HugKeeZ54pEJoImJuPCWmRPqErQCOcOyh8CgCUfYgmHBjIfPrrjtt8gM_V60RQ07pmYhMHfFGcJ6FuAk6cSWn62tx073Xxys"/>
+</div>
+<h3 class="text-lg font-bold">Ahmed Mansour</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Certified Electrician</p>
+<div class="flex items-center gap-1 mb-6">
+<span class="material-symbols-outlined text-yellow-400 fill-current">star</span>
+<span class="font-bold">4.9</span>
+<span class="text-slate-400 text-sm">(128 reviews)</span>
+</div>
+<div class="grid grid-cols-2 gap-4 w-full">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg text-left">
+<p class="text-xs text-slate-500 mb-1">Total Earnings</p>
+<p class="text-lg font-bold text-primary">$4,280</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg text-left">
+<p class="text-xs text-slate-500 mb-1">Completed</p>
+<p class="text-lg font-bold text-primary">56</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<h4 class="font-bold mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">calendar_month</span> Today's Schedule</h4>
+<div class="space-y-4">
+<div class="flex gap-3 border-primary border-l-4 pl-3">
+<div class="flex flex-col min-w-[50px]">
+<span class="text-sm font-bold">09:00</span>
+<span class="text-xs text-slate-400">AM</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Kitchen Rewiring</p>
+<p class="text-xs text-slate-500">Downtown, Cairo</p>
+</div>
+</div>
+<div class="flex gap-3 border-slate-200 dark:border-slate-700 opacity-60 border-l-4 pl-3">
+<div class="flex flex-col min-w-[50px]">
+<span class="text-sm font-bold">01:30</span>
+<span class="text-xs text-slate-400">PM</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Panel Inspection</p>
+<p class="text-xs text-slate-500">Heliopolis, Cairo</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 text-sm font-semibold text-primary hover:underline flex items-center justify-center gap-2">View Full Schedule <span class="material-symbols-outlined text-sm">arrow_forward</span></button>
+</div>
+</aside>
+<section class="flex-1 flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="text-2xl font-bold tracking-tight">Available Jobs Near You</h2>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium"><span class="material-symbols-outlined text-sm">filter_list</span> Filter</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium"><span class="material-symbols-outlined text-sm">sort</span> Sort</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-4">
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-primary transition-all group">
+<div class="flex flex-col xl:flex-row justify-between gap-4">
+<div class="flex gap-4">
+<div class="size-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">bolt</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">EV Charger Installation</h3>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black rounded uppercase">Urgent</span>
+</div>
+<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span> Maadi, Cairo (2.4 km)</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> Starts: Tomorrow, 10:00 AM</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between xl:flex-col xl:items-end xl:justify-center gap-2">
+<p class="text-2xl font-black text-slate-900 dark:text-slate-100">$250.00</p>
+<button class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors">Accept Job</button>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-primary transition-all group">
+<div class="flex flex-col xl:flex-row justify-between gap-4">
+<div class="flex gap-4">
+<div class="size-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">light</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-lg font-bold mb-1 group-hover:text-primary transition-colors">Smart Lighting Setup</h3>
+<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span> Sheikh Zayed, Giza (0.8 km)</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> Flexible Schedule</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between xl:flex-col xl:items-end xl:justify-center gap-2">
+<p class="text-2xl font-black text-slate-900 dark:text-slate-100">$180.00</p>
+<button class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors">Accept Job</button>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-background-dark p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-primary transition-all group">
+<div class="flex flex-col xl:flex-row justify-between gap-4">
+<div class="flex gap-4">
+<div class="size-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">build</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-lg font-bold mb-1 group-hover:text-primary transition-colors">Circuit Breaker Repair</h3>
+<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span> New Cairo, Cairo (5.1 km)</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> Today, 04:00 PM</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between xl:flex-col xl:items-end xl:justify-center gap-2">
+<p class="text-2xl font-black text-slate-900 dark:text-slate-100">$120.00</p>
+<button class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors">Accept Job</button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-primary/5 rounded-xl p-8 border border-dashed border-primary/30 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-4xl text-primary/40 mb-2">map</span>
+<h3 class="font-bold text-slate-800 dark:text-slate-200">Map View</h3>
+<p class="text-sm text-slate-500 max-w-sm">View all available jobs on an interactive map to optimize your route.</p>
+<div class="mt-4 w-full h-32 bg-slate-200 dark:bg-slate-700 rounded-lg overflow-hidden relative">
+<img alt="Map view" class="w-full h-full object-cover opacity-50 grayscale" data-alt="Abstract street map of a city" data-location="New York City" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm3Lzz1MSoLaszMOtZMPYZzyAK6NSFeoGHMJ7zZ_qvIVCogWgcay6qE0GXFidQQtjjAI1QxDMyOSEXelfeGZF5fPK3MyHuWu3befUV_PIV0pe3oj5Twp9BZ6A43l8s2IgzDzjDAfE3Kgv5_bJWb4k6rJqGoHQ2DYE4aHljcl7kZ1GhJ-2X5-NQDnqoDWYj0Gpe2znzu-4-6YQ-cEvK_tq-LBLiH0ltjgPNHKhtbngk0GZRrwoD2_f0QJjb99-e9wUBm4GHV06BDng"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<button class="bg-white dark:bg-slate-800 shadow-xl px-4 py-2 rounded-full text-sm font-bold border border-slate-200 dark:border-slate-700">Open Map View</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 px-10 text-center text-slate-500 text-sm">
+<p>© 2024 Salahly Technologies Inc. All worker activities are monitored to ensure quality.</p>
+</footer>
+</div>
+</div>

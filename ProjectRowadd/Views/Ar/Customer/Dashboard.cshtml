@@ -1,0 +1,151 @@
+@{
+    ViewData["Title"] = "لوحة تحكم العميل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: rtl; font-family: 'Cairo', sans-serif; }
+
+
+</style>
+
+<div dir="rtl">
+<div class="relative flex min-h-screen flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-3xl font-bold">home_repair_service</span>
+<h2 class="text-xl font-bold tracking-tight">صلحلي</h2>
+</div>
+<div class="hidden md:block">
+<label class="relative flex items-center">
+<span class="material-symbols-outlined absolute text-slate-400 right-3">search</span>
+<input class="w-64 lg:w-96 rounded-lg border-none bg-slate-100 dark:bg-slate-800 py-2 pr-4 text-sm focus:ring-2 focus:ring-primary/50 transition-all pr-10" placeholder="بحث عن الخدمات..." type="text"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400"><a class="hover:text-primary transition-colors" href="#">الخدمات</a><a class="hover:text-primary transition-colors" href="#">الحجوزات</a><a class="hover:text-primary transition-colors" href="#">الدعم</a></nav>
+<div class="flex items-center gap-4">
+<button class="relative p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500"></span>
+</button>
+<div class="h-10 w-10 overflow-hidden rounded-full border-2 border-primary/20 bg-slate-200" data-alt="User profile photo showing a friendly man smiling">
+<img alt="Profile" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1VCOzsp0_wvOIp9MBrFaiBf4ompawZf5l3y5ri_wGiOn-uKPe2Dlu_5muPE5L8t7XNsu0ZiHe0P_fPXVsTUhvYF4oFhl5ZWweZGNEocxwmhjWh6GJ7KdCvJyJMpTYFXv0tDUA4ANMFnGe1BJiNbeGqQAD34_FeFnMl23ivsJWUZaAfI59V76i61KD8EaesZ23KmDFvF_QVcuSTUPd1MdCAJ3xt3QX1H1C7Bz19AUKq0LgmbAPGBBFezBxON6sctkAVR_KpHBwfWE"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="mx-auto w-full max-w-7xl grow p-4 sm:p-6 lg:p-8">
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+<!-- Main Content Area (Column 1-8) -->
+<div class="lg:col-span-8 flex flex-col gap-8">
+<!-- Welcome Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">مرحباً بعودتك، أحمد!</h1>
+<p class="mt-1 text-slate-500 dark:text-slate-400">ما هي تحسينات المنزل التي يمكننا مساعدتك بها اليوم؟</p>
+</div>
+<button class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95"><span class="material-symbols-outlined text-lg">add_circle</span> احجز خدمة</button>
+</div>
+<!-- Category Quick Links -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4"><div class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group"><div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">plumbing</span></div><span class="text-sm font-semibold">السباكة</span></div><div class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group"><div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">bolt</span></div><span class="text-sm font-semibold">الكهرباء</span></div><div class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group"><div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">cleaning_services</span></div><span class="text-sm font-semibold">التنظيف</span></div><div class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group"><div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">format_paint</span></div><span class="text-sm font-semibold">الدهانات</span></div></div>
+<!-- Recommended Section -->
+<section>
+<div class="mb-4 flex items-center justify-between">
+<h2 class="text-xl font-bold tracking-tight">موصى به لك</h2>
+<a class="text-sm font-semibold text-primary hover:underline" href="#">عرض الكل</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Card 1 -->
+<div class="group overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm transition-all hover:shadow-md">
+<div class="relative h-48 w-full overflow-hidden" data-alt="Professional deep cleaning service in progress">
+<img alt="Deep Cleaning" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Y6SIiArQBIodlE5MRDYI3BZWaO-U4Hma31NDWYcC5TeI47SzvepspY5sI7BWDMon90x4kjmAfq2J3kDzrC9r0s_8YtfUvWeOatgXoyJQZxwbkEUR_CTf3IVG1vX_-AUvxi4-8-BGCzEYSoz41nEPfAq-WLblsgxD8PeF6zokH-L8g1IqukHFzldZ2G46V_DQYivz1sR9CSOHOlLgHhN_0vZz5hjl9GSBjsFNw1EU-MrMVNkMqs1Zq3cvkRWm9TTsDAyQHeoqPRw"/>
+<div class="absolute top-3 right-3 rounded-full bg-white/90 px-2 py-1 text-xs font-bold text-primary backdrop-blur-sm">بدءاً من 1,200 ج.م</div>
+</div>
+<div class="p-4"><div class="flex items-center justify-between"><h3 class="font-bold text-slate-900 dark:text-white">تنظيف عميق للمنزل بالكامل</h3><div class="flex items-center gap-1 text-yellow-500"><span class="material-symbols-outlined text-sm">star</span><span class="text-xs font-bold text-slate-600 dark:text-slate-400">4.9</span></div></div><p class="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">تعقيم كامل وتنظيف عميق لجميع الغرف بما في ذلك المطبخ والحمامات.</p><div class="mt-4 flex items-center justify-between"><span class="text-lg font-black text-primary">450 ج.م</span><button class="rounded-lg bg-slate-100 dark:bg-slate-700 px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white hover:bg-primary hover:text-white transition-colors">احجز الآن</button></div></div>
+</div>
+<!-- Card 2 -->
+<div class="group overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm transition-all hover:shadow-md">
+<div class="relative h-48 w-full overflow-hidden" data-alt="Electrician fixing circuit breaker panel">
+<img alt="Electrical Safety" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgf51CFPivsyKpfTWSlvwdKTNWH00dV6KSa3b1QtSWPJvh6l2DoNsnSFw0CWxnTadICRLSEruZY0kBtL1Q2pY_8qge_SAbHQIcFUGv2JjOmuhp3QyfoLzWSybOkbHlHsJrgfqkLIw-VgPe6XaN5W8xUiLeT6axKJ50BxACS5QldMUNDS1fWajV0QEsvrwM9r_H7Q5CiVZNf7LsDfUsEbFEgkTfHnbhN9vEeb0_Mtw6q2M-3shXV8ndWfP0qLA92p6_y5dLPrhBvUA"/>
+</div>
+<div class="p-4"><div class="flex items-center justify-between"><h3 class="font-bold text-slate-900 dark:text-white">فحص سلامة الكهرباء</h3><div class="flex items-center gap-1 text-yellow-500"><span class="material-symbols-outlined text-sm">star</span><span class="text-xs font-bold text-slate-600 dark:text-slate-400">4.8</span></div></div><p class="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">فحص كامل للأسلاك واللوحات والمنافذ للتأكد من مطابقة منزلك لمعايير السلامة.</p><div class="mt-4 flex items-center justify-between"><span class="text-lg font-black text-primary">450 ج.م</span><button class="rounded-lg bg-slate-100 dark:bg-slate-700 px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white hover:bg-primary hover:text-white transition-colors">احجز الآن</button></div></div>
+</div>
+</div>
+</section>
+</div>
+<!-- Sidebar Content (Column 9-12) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Profile Card -->
+<div class="rounded-xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="h-16 w-16 overflow-hidden rounded-full border-2 border-primary bg-slate-100" data-alt="User profile avatar close up">
+<img alt="Alex Johnson" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7ag0RAy9a83RaAn3bmVXhLrD9xqR8PBahy6Xno4LrgXpUzyM758IGvhHnYDPvrxO2eXmJgFRiLD5nYn8uCPCpaQTmKBxYNWEZmwSEljvRQ7xvKNJVokRt2dUyEqdP6GB0T-eSagP7VVrwy3UcQoP1yxSDqQocGIxUdAwgyE_OfC1fH7EHt2NwPo7P2gGrEcJ0CwkI04UZiicwWkgHQgM3q6cerBQwKEIr9SzU39LzxfBeM9XxWsWHB_vmlOHzfEkZ2NseHfXjFrI"/>
+</div>
+<span class="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white bg-green-500 dark:border-slate-800"></span>
+</div>
+<div>
+<h3 class="font-bold text-lg leading-none">Ahmed Hassan</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm text-primary">verified</span> عضو بريميوم</p>
+</div>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-4 border-t border-slate-100 dark:border-slate-700 pt-6"><div class="text-center"><span class="block text-xl font-black text-primary">12</span><span class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">حجزاً</span></div><div class="text-center border-r border-slate-100 dark:border-slate-700"><span class="block text-xl font-black text-primary">4.9</span><span class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">التقييم</span></div></div>
+</div>
+<!-- Upcoming Bookings Section -->
+<div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="p-6 border-b border-slate-100 dark:border-slate-700">
+<h2 class="text-lg font-bold">الحجوزات القادمة</h2>
+</div>
+<div class="p-2">
+<!-- Booking Item 1 -->
+<div class="flex items-start gap-4 p-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<div class="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-primary/10 text-primary"><span class="text-xs font-bold uppercase">أكتوبر</span><span class="text-xl font-black leading-none">24</span></div>
+<div class="flex flex-col grow"><h4 class="font-bold text-sm text-slate-900 dark:text-white">إصلاح حنفية</h4><p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> 10:00 ص - 12:00 م</p><div class="mt-2 flex items-center gap-2"><div class="h-6 w-6 rounded-full bg-slate-200 overflow-hidden"><img alt="تيك" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT05BFeroxX9IX1bXeNVoRQsuqDpNmqkw1s6l7eIYgTr6P7k2gWBNgvJQe5KQZFUrhXVfGK2GVfxoJxHNBCDe0ynYGf6yEqyBxbayZylNvD1_dM71VULiNrKeXYX_YxStE1Lf7uS1ryalHeqngk-EokzMAjlQ6GsphW7ooE7AlTnKAcU0h3UzetU360NG2c0oA6-8dmuQqi084H_2iXVm5HdY3ApFUtfM1qEfF-rjxKMJ_nq2R0dDQuKv-_G3RyeAbd6sGQiw4bzY"/></div><span class="text-xs font-medium text-slate-600 dark:text-slate-300">محمد أ. (سباك)</span></div></div>
+<button class="p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</button>
+</div>
+<!-- Booking Item 2 -->
+<div class="flex items-start gap-4 p-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group border-t border-slate-50 dark:border-slate-700">
+<div class="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500"><span class="text-xs font-bold uppercase">أكتوبر</span><span class="text-xl font-black leading-none">28</span></div>
+<div class="flex flex-col grow"><h4 class="font-bold text-sm text-slate-900 dark:text-white">تركيب المنزل الذكي</h4><p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span> 02:00 م - 04:30 م</p><div class="mt-2"><span class="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">تم التأكيد</span></div></div>
+<button class="p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</button>
+</div>
+</div>
+<div class="p-4 border-t border-slate-100 dark:border-slate-700">
+<button class="w-full rounded-lg border border-slate-200 dark:border-slate-700 py-2 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">عرض التقويم الكامل</button>
+</div>
+</div>
+<!-- Promo Card -->
+<div class="relative overflow-hidden rounded-xl bg-primary p-6 text-white">
+<div class="relative z-10"><span class="text-xs font-black uppercase tracking-widest text-white/70">عرض خاص</span><h3 class="mt-2 text-xl font-black leading-tight">احصل على خصم 20% على أول خدمة تكييف</h3><button class="mt-4 rounded-lg bg-white px-4 py-2 text-xs font-black text-primary hover:bg-slate-100 transition-colors">المطالبة بالعرض</button></div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-white/10 rotate-12">ac_unit</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark py-8 px-4 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2 text-primary/50">
+<span class="material-symbols-outlined text-2xl">home_repair_service</span>
+<span class="font-bold">Salahly</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">© 2024 صلاحلي مصر. جميع الخدمات مؤمن عليها ومضمونة.</p>
+<div class="flex gap-4">
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">social_leaderboard</span></a>
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">mail</span></a>
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">help</span></a>
+</div>
+</div>
+</footer>
+</div>
+</div>

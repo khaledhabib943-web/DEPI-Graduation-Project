@@ -1,0 +1,190 @@
+@{
+    ViewData["Title"] = "مركز الإشعارات";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: rtl; font-family: 'Cairo', sans-serif; }
+
+body {
+            font-family: 'Noto Sans Arabic', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab {
+            border-bottom: 3px solid #0f2cbd;
+            color: #0f2cbd;
+        }
+</style>
+
+<div dir="rtl">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Header Section -->
+<header class="flex items-center justify-between border-b border-primary/10 bg-white dark:bg-slate-900 px-6 lg:px-40 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined text-2xl">notifications_active</span>
+</div>
+<div>
+<h2 class="text-xl font-bold leading-tight tracking-tight">التنبيهات</h2>
+<p class="text-xs text-slate-500 dark:text-slate-400">تابع تحديثات طلباتك في صلاحلي</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center rounded-full h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="flex items-center justify-center rounded-full h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<main class="flex-1 max-w-[960px] mx-auto w-full px-4 py-6">
+<!-- Navigation Tabs -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm mb-6 overflow-hidden">
+<div class="flex border-b border-slate-100 dark:border-slate-800">
+<button class="flex-1 py-4 text-sm font-bold border-b-2 border-primary text-primary bg-primary/5">
+                            الكل (5)
+                        </button>
+<button class="flex-1 py-4 text-sm font-medium text-slate-500 hover:text-primary transition-colors">
+                            غير مقروءة
+                        </button>
+<button class="flex-1 py-4 text-sm font-medium text-slate-500 hover:text-primary transition-colors">
+                            تمت قرائتها
+                        </button>
+</div>
+</div>
+<!-- Notifications List -->
+<div class="space-y-4">
+<!-- Notification Item: Order Accepted -->
+<div class="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-900 p-5 rounded-xl border-r-4 border-primary shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start gap-4 flex-1">
+<div class="flex items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0 size-14">
+<span class="material-symbols-outlined text-3xl">check_circle</span>
+</div>
+<div class="flex flex-col justify-center gap-1">
+<div class="flex items-center gap-2">
+<p class="text-base font-bold text-slate-900 dark:text-slate-100">تم قبول طلبك بنجاح</p>
+<span class="inline-block size-2 bg-primary rounded-full"></span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400">الفني "أحمد علي" في الطريق إليك الآن لمباشرة صيانة التكييف.</p>
+<div class="flex items-center gap-3 mt-1">
+<div class="flex items-center gap-1 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>منذ 5 دقائق</span>
+</div>
+<span class="text-xs text-slate-300">|</span>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">طلب #4521</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<button class="w-full sm:w-auto px-6 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-sm shadow-primary/30">
+                                متابعة الفني
+                            </button>
+</div>
+</div>
+<!-- Notification Item: New Request Available (Technician View) -->
+<div class="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-900 p-5 rounded-xl border-r-4 border-orange-500 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start gap-4 flex-1">
+<div class="flex items-center justify-center rounded-xl bg-orange-100 text-orange-600 shrink-0 size-14">
+<span class="material-symbols-outlined text-3xl">engineering</span>
+</div>
+<div class="flex flex-col justify-center gap-1">
+<p class="text-base font-bold text-slate-900 dark:text-slate-100">طلب صيانة جديد متاح في منطقتك</p>
+<p class="text-sm text-slate-600 dark:text-slate-400">يوجد عميل يحتاج صيانة سباكة طارئة في حي النرجس.</p>
+<div class="flex items-center gap-3 mt-1">
+<div class="flex items-center gap-1 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>منذ 20 دقيقة</span>
+</div>
+<span class="text-xs text-slate-300">|</span>
+<span class="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-0.5 rounded">عاجل</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<button class="w-full sm:w-auto px-6 py-2 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm font-bold rounded-lg hover:bg-primary hover:text-white transition-all">
+                                عرض التفاصيل
+                            </button>
+</div>
+</div>
+<!-- Notification Item: Service Completed -->
+<div class="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-900 p-5 rounded-xl border-r-4 border-emerald-500 shadow-sm hover:shadow-md transition-shadow opacity-90">
+<div class="flex items-start gap-4 flex-1">
+<div class="flex items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 shrink-0 size-14">
+<span class="material-symbols-outlined text-3xl">task_alt</span>
+</div>
+<div class="flex flex-col justify-center gap-1">
+<p class="text-base font-bold text-slate-900 dark:text-slate-100">اكتملت الخدمة</p>
+<p class="text-sm text-slate-600 dark:text-slate-400">لقد تم الانتهاء من طلب صيانة الكهرباء. نأمل أن تكون راضياً عن الخدمة.</p>
+<div class="flex items-center gap-3 mt-1">
+<div class="flex items-center gap-1 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>أمس، 04:30 م</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<button class="w-full sm:w-auto px-6 py-2 bg-emerald-500 text-white text-sm font-bold rounded-lg hover:bg-emerald-600 transition-colors">
+                                تقييم الخدمة
+                            </button>
+</div>
+</div>
+<!-- Notification Item: Promotion -->
+<div class="flex flex-col sm:flex-row gap-4 bg-gradient-to-l from-primary/5 to-white dark:from-primary/10 dark:to-slate-900 p-5 rounded-xl border-r-4 border-primary/40 shadow-sm">
+<div class="flex items-start gap-4 flex-1">
+<div class="flex items-center justify-center rounded-xl bg-primary text-white shrink-0 size-14 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-3xl">sell</span>
+</div>
+<div class="flex flex-col justify-center gap-1">
+<p class="text-base font-bold text-slate-900 dark:text-slate-100">عرض خاص لك!</p>
+<p class="text-sm text-slate-600 dark:text-slate-400">استخدم الكود "SALAHLY20" واحصل على خصم 20% على طلبك القادم.</p>
+<div class="flex items-center gap-3 mt-1">
+<div class="flex items-center gap-1 text-xs text-slate-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>منذ يومين</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<button class="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary text-sm font-bold rounded-lg hover:bg-primary hover:text-white transition-all">
+                                احجز الآن
+                            </button>
+</div>
+</div>
+</div>
+<!-- Load More / Empty State Spacer -->
+<div class="flex justify-center mt-10 mb-20">
+<button class="flex items-center gap-2 text-primary font-bold text-sm hover:underline">
+<span>تحميل المزيد من التنبيهات</span>
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation for Mobile -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-around items-center h-16 px-4 z-50 lg:hidden">
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px]">الرئيسية</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px]">طلباتي</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="text-[10px] font-bold">التنبيهات</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px]">حسابي</span>
+</button>
+</nav>
+</div>
+</div>
+</div>

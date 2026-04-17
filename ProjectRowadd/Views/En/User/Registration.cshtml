@@ -1,0 +1,167 @@
+@{
+    ViewData["Title"] = "User Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: ltr; }
+
+.active-tab {
+            border-bottom: 3px solid #0f2cbd;
+            color: #0f2cbd;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+</style>
+
+<div dir="ltr">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 md:px-20 py-4 bg-white dark:bg-background-dark">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary text-white rounded-lg">
+<span class="material-symbols-outlined">build</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Salahly</h2>
+</div>
+<div class="flex items-center gap-4">
+<p class="hidden md:block text-slate-500 text-sm">Already have an account?</p>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold border border-primary/20 hover:bg-primary/20 transition-all">
+                    Login
+                </button>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-10 px-4">
+<div class="layout-content-container flex flex-col max-w-[800px] flex-1 bg-white dark:bg-slate-900/50 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-10">
+<div class="mb-8 text-left">
+<h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-tight mb-2">Create Account</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base">Join Salahly to find experts or provide your services in Egypt.</p>
+</div>
+<div class="mb-8">
+<div class="flex border-b border-slate-200 dark:border-slate-800 gap-8">
+<button class="flex items-center gap-2 border-b-[3px] border-primary text-primary pb-3 px-2 font-bold transition-all">
+<span class="material-symbols-outlined text-xl">person</span>
+                            Client
+                        </button>
+<button class="flex items-center gap-2 border-b-[3px] border-transparent text-slate-400 pb-3 px-2 font-bold hover:text-slate-600 transition-all">
+<span class="material-symbols-outlined text-xl">handyman</span>
+                            Worker / Technician
+                        </button>
+</div>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Full Name</label>
+<input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 text-base" placeholder="As shown in National ID" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Age</label>
+<input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 text-base" placeholder="Minimum 18 years" type="number"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">National ID (14 digits)</label>
+<input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 text-base" placeholder="2990101XXXXXXXXX" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-3.5 text-slate-400 text-xl">mail</span>
+<input class="pl-11 w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 text-base" placeholder="name@example.com" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Phone Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-3.5 text-slate-400 text-xl">call</span>
+<input class="pl-11 w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 text-base" placeholder="01XXXXXXXXX" type="tel"/>
+</div>
+</div>
+</div>
+<div class="p-4 bg-primary/5 rounded-xl border border-primary/10 space-y-4">
+<h4 class="text-primary font-bold flex items-center gap-2">
+<span class="material-symbols-outlined">verified_user</span>
+                            Account Verification Documents for Technicians
+                        </h4>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 hover:border-primary transition-colors cursor-pointer text-center">
+<span class="material-symbols-outlined text-slate-400 text-3xl mb-1">account_circle</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-400">Personal Photo</span>
+<input class="hidden" type="file"/>
+</div>
+<div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 hover:border-primary transition-colors cursor-pointer text-center">
+<span class="material-symbols-outlined text-slate-400 text-3xl mb-1">badge</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-400">ID Front Side</span>
+<input class="hidden" type="file"/>
+</div>
+<div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 hover:border-primary transition-colors cursor-pointer text-center">
+<span class="material-symbols-outlined text-slate-400 text-3xl mb-1">credit_card</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-400">ID Back Side</span>
+<input class="hidden" type="file"/>
+</div>
+</div>
+<div class="flex flex-col gap-2 pt-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Portfolio / Work Links (Optional)</label>
+<input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 text-base" placeholder="Behance, LinkedIn or Drive link" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Username</label>
+<input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 text-base" placeholder="unique_username" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-slate-400 text-xl cursor-pointer">visibility</span>
+<input class="w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 text-base pr-11" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<div class="space-y-4 pt-4">
+<label class="flex items-start gap-3 cursor-pointer">
+<input class="mt-1 rounded text-primary focus:ring-primary h-5 w-5 border-slate-300" type="checkbox"/>
+<span class="text-sm text-slate-500 dark:text-slate-400 leading-normal">
+                                I agree to the <a class="text-primary hover:underline font-semibold" href="#">Terms of Service</a> and <a class="text-primary hover:underline font-semibold" href="#">Privacy Policy</a> of Salahly Egypt.
+                            </span>
+</label>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2" type="submit">
+                            Create Account
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</form>
+<div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
+<p class="text-slate-400 text-sm">Need help? <a class="text-primary font-medium hover:underline" href="#">Contact Support</a></p>
+</div>
+</div>
+</main>
+<section class="max-w-[800px] mx-auto w-full pb-12 px-4">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<div class="flex flex-col items-center gap-1 text-center">
+<span class="material-symbols-outlined text-3xl">verified</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-500">Verified Pros</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-center">
+<span class="material-symbols-outlined text-3xl">payments</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-500">Secure Payment</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-center">
+<span class="material-symbols-outlined text-3xl">support_agent</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-500">24/7 Support</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-center">
+<span class="material-symbols-outlined text-3xl">shield</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-500">Guaranteed</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>

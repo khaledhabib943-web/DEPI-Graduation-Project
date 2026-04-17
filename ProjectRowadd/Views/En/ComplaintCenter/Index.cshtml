@@ -1,0 +1,212 @@
+@{
+    ViewData["Title"] = "Complaint Center";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: ltr; }
+
+
+</style>
+
+<div dir="ltr">
+<div class="relative flex min-h-screen w-full flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 lg:px-40">
+<div class="flex items-center gap-4">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">handyman</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">Salahly</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 lg:gap-8 items-center">
+<label class="hidden md:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-slate-500 flex border-none bg-slate-100 dark:bg-slate-800 items-center justify-center pr-4 rounded-r-lg" data-icon="search">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-slate-100 dark:bg-slate-800 h-full placeholder:text-slate-500 px-4 rounded-r-none pr-2 text-base font-normal" placeholder="Search complaints..." value=""/>
+</div>
+</label>
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">JD</div>
+</div>
+</header>
+<main class="flex flex-col lg:flex-row flex-1 px-4 lg:px-40 py-8 gap-8">
+<!-- Sidebar Navigation -->
+<aside class="w-full lg:w-64 flex flex-col gap-6">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-white text-lg font-bold">Complaint Center</h1>
+<p class="text-slate-500 text-sm">Manage and track service issues</p>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span>Submit a Complaint</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>My Reports</span>
+</a>
+<div class="border-t border-slate-200 dark:border-slate-800 my-2"></div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col gap-8">
+<!-- Section 1: Submit Complaint Form -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary">edit_document</span>
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">Submit a New Complaint</h2>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Service Order ID</label>
+<input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:border-primary focus:ring-primary w-full p-3" placeholder="e.g. #SR-98231" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Subject</label>
+<input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:border-primary focus:ring-primary w-full p-3" placeholder="Brief summary of the issue" type="text"/>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Description</label>
+<textarea class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:border-primary focus:ring-primary w-full p-3" placeholder="Describe the problem in detail..." rows="4"></textarea>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Attachments</label>
+<div class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 flex flex-col items-center justify-center text-slate-500 hover:border-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-4xl mb-2">cloud_upload</span>
+<p class="text-sm">Drag and drop files here or click to browse</p>
+<p class="text-xs mt-1">Maximum file size 5MB (JPG, PNG, PDF)</p>
+</div>
+</div>
+<div class="md:col-span-2 flex justify-end gap-3 mt-2">
+<button class="px-6 py-2.5 rounded-lg font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" type="button">Cancel</button>
+<button class="px-8 py-2.5 rounded-lg font-semibold bg-primary text-white hover:bg-primary/90 transition-colors shadow-md" type="submit">Submit Complaint</button>
+</div>
+</form>
+</section>
+<!-- Section 2: Admin Dashboard View -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">Recent Complaints</h2>
+<p class="text-slate-500 text-sm">Admin Management View</p>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-medium border border-slate-200 dark:border-slate-700"><span class="material-symbols-outlined text-sm">filter_list</span>Filter</button>
+<button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-medium border border-slate-200 dark:border-slate-700"><span class="material-symbols-outlined text-sm">download</span>Export</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50">
+<th class="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">ID</th>
+<th class="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Customer</th>
+<th class="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Subject</th>
+<th class="p-4 text-xs font-bold uppercase tracking-wider text-slate-500">Status</th>
+<th class="p-4 text-xs font-bold uppercase tracking-wider text-slate-500 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1: New -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="p-4 font-medium text-slate-900 dark:text-white">#SR-1209</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Customer avatar photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASAbAqtp0gILWTyjiB5NjIgnIHM6ZkGzjj7GGyunY8vNyLL_-_V6vIvHFaeJCHP_AGRONiKkKROEVXHT5vgaJv1HaFWKUTVpbWSEwk0ztg46D-CkHhkFQ3whOi1IEcM8xrQD9psrPASa4u4PfblMqUM2mfxFBB3qrWdEHBYSF9xAM-G2DOMk6vB2Li7NbuZDSQpit18OZMD5BHEAim_0ZEgl89XabIczDiFkZqmOFUMyd7iRVHOk2IcmYQ2Oq2awZNiM_B75w_4NE"/>
+</div>
+<span class="text-sm font-medium">Ahmed Hassan</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400 max-w-[200px] truncate">Delay in AC installation service</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">New</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 text-xs font-bold rounded bg-primary text-white hover:bg-primary/90">Reply</button>
+<button class="px-3 py-1.5 text-xs font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Act</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Under Review -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="p-4 font-medium text-slate-900 dark:text-white">#SR-1185</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Customer avatar photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4OSCnVQ4nZYo84nd4TO-cRqT0-YQmnqDZj0oFNZbSIr6i3U_5jZgtBHh_oJMFkKSydo5ALHyeR_8K6MtqeYP_HWTNu8Zpx3V9KBj2Clljd6lWLBp0NLzbzHdGu9lXDahSpZkMXiBBRkHygCuwom3T-F8CnwN_A2xJPTXqDXRBQ8Vrs8s8Q1U6ejF8L6Pe0cpigx9IisyO8iyAaAfYzMqrCtO2ScjsPdYFQld72WFAis-nzD8UfSWbSgJGPmbHkc0Ixn5rslCjZ0c"/>
+</div>
+<span class="text-sm font-medium">Sara Mohamed</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400 max-w-[200px] truncate">Broken tiles after plumbing repair</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">Under Review</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 text-xs font-bold rounded bg-primary text-white hover:bg-primary/90">Reply</button>
+<button class="px-3 py-1.5 text-xs font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Act</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Resolved -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="p-4 font-medium text-slate-900 dark:text-white">#SR-1150</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Customer avatar photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGxMapiGOYlrVz4IrTSMyCGk84tDFLpT7NVh7tOP3UyUbaRlU75yGZgkVKjRvE1j3FwL13qbkwbO9DeNnbVP4z683dWZpoM7tmoyUrFF_5eK3GtFZ5cORyLToJ4vVGuFV1soZuLDXZ7oJGEyMx2AF55jVQAcW54D7hYhc6R9GvksKkkk47eckMeM4egK7KoZiQjHNiMfNEHaL87VIYgKqGstKnPMtIu7R7qYIgYwlo6Aq4JHZKhKRApghon-7nW5vxBDNeYzBwqps"/>
+</div>
+<span class="text-sm font-medium">John Carter</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400 max-w-[200px] truncate">Wrong pricing charged on invoice</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">Resolved</span>
+</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 text-xs font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed" disabled="">Reply</button>
+<button class="px-3 py-1.5 text-xs font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Details</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-sm text-slate-500">
+<span>Showing 3 of 42 complaints</span>
+<div class="flex gap-2">
+<button class="flex items-center gap-1 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800"><span class="material-symbols-outlined text-sm">chevron_left</span>Previous</button>
+<button class="flex items-center gap-1 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800">Next<span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="px-4 lg:px-40 py-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 mt-auto">
+<p class="text-slate-500 text-sm">© 2024 Salahly Services. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-sm text-slate-500 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-sm text-slate-500 hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-sm text-slate-500 hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</footer>
+</div>
+</div>

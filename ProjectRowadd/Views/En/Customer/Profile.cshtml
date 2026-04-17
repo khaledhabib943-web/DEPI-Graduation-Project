@@ -1,0 +1,200 @@
+@{
+    ViewData["Title"] = "Customer Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: ltr; }
+
+body {
+      background-color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar-active {
+      background-color: #1d4ed8;
+      color: white;
+    }
+    .profile-avatar-container {
+      position: relative;
+      width: 140px;
+      height: 140px;
+    }
+    .edit-avatar-btn {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background-color: #1d4ed8;
+      border: 3px solid white;
+    }
+</style>
+
+<div dir="ltr">
+<!-- BEGIN: Navigation Sidebar -->
+<aside class="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full" data-purpose="sidebar-navigation">
+<div class="p-6 flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<div class="bg-blue-700 p-2 rounded-lg text-white">
+<i class="fas fa-tools text-xl"></i>
+</div>
+<span class="text-2xl font-bold text-gray-800">Salahly</span>
+</div>
+</div>
+<div class="px-6 py-4 flex items-center space-x-4 border-b border-gray-100 mb-4">
+<div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT21jAWJO1ItTCc8JkeZdGCFKg5Oy-uOKz46oXX54GVqk0HbnOzgtWEwTDONgbdnXdnyOPvr9i3gJCSTnwrzx6IMl1he3TiiiLH4sAJGkznaE7zlLcNf8qojkh0aucowQOJrrRdR32kDjFSPmISJR-rPfGen3AWiq7y0yR5Pd_AcEvS49aZsBX_l0piIgpiMnq-pvKjurRkdALrmQGcwNk5azIxjCfPtb90hqnD0uEPwJyrAqGBCTEoewxay4u_EJz18OErF8BPIk"/>
+</div>
+<div>
+<p class="font-bold text-gray-800">Ahmed Mohamed</p>
+<p class="text-xs text-blue-600">Premium Customer</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center justify-between p-3 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors" href="#">
+<span class="font-medium">Home</span>
+<i class="fas fa-home"></i>
+</a>
+<a class="flex items-center justify-between p-3 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors" href="#">
+<span class="font-medium">Bookings</span>
+<i class="fas fa-calendar-check"></i>
+</a>
+<a class="flex items-center justify-between p-3 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors" href="#">
+<span class="font-medium">Wallet</span>
+<i class="fas fa-wallet"></i>
+</a>
+<a class="sidebar-active flex items-center justify-between p-3 rounded-xl transition-colors" href="#">
+<span class="font-medium">Profile</span>
+<i class="fas fa-user"></i>
+</a>
+</nav>
+<div class="p-6">
+<a class="flex items-center justify-between p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors" href="#">
+<span class="font-medium">Logout</span>
+<i class="fas fa-sign-out-alt"></i>
+</a>
+</div>
+</aside>
+<!-- END: Navigation Sidebar -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 ml-64 p-8">
+<!-- BEGIN: Top Header -->
+<header class="flex justify-between items-center mb-10" data-purpose="main-header">
+<div class="flex items-center space-x-4">
+<div class="bg-blue-100 p-2 rounded-full text-blue-600 cursor-pointer">
+<i class="fas fa-bell"></i>
+</div>
+<div class="bg-blue-100 p-2 rounded-full text-blue-600 cursor-pointer">
+<i class="fas fa-cog"></i>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-blue-600 p-0.5">
+<img alt="Profile" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnqrWg77N4sL-YH3px_ZifvXkcAuKhExssdQHo_i7BusF4oS4O8HTQXBvp2FFnkfB4VQCF-LANkf8j-8VkUhVVhcbqqsoWSG-N93QqFEPYVkhII4hme81AiXRKHz08w_jvhvJUKtcJaGB4Rg2-bMZJJd83QQ3JzM3QIhET40os0jx5P3nGyzWFVngT5f1wXnoZshszldgy6VhzXRpiTPMYuQ77LxBsXEgL1ju7a5JoejTOd7aHWWrO-e9W-HqcOQdaLVKQonRmn1Y"/>
+</div>
+</div>
+<h1 class="text-xl font-bold text-gray-800">Profile Management</h1>
+</header>
+<!-- END: Top Header -->
+<!-- BEGIN: Profile Header Card -->
+<section class="flex flex-col items-center mb-12" data-purpose="profile-avatar-section">
+<div class="profile-avatar-container mb-4">
+<img alt="Ahmed Mohamed" class="rounded-full border-4 border-white shadow-lg w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXC3hLkb8cWqP7G4UGPgS13AMt42HJVSxHcCPZRT8UCtRf8U6J827MAtBmKdYyzhaVtKkdcHrGelbtsVTdk6JVR6P2-MzG07B2qzVO2Sf1-JRWW-hTHs_lINO4hw_kiyNTbBk_taPI5rxluLbGDrp03XgKaI8muYCVI24pXNRy15qvLsvg_aPg7xa2E5d946Ql4dwx21mwJPjHMNlo8KLDqtoTypYpKpugxJTd0CrT2LbM0ag4TN9k3tsYRt0JPzNAF4EuyWw6W0g"/>
+<button aria-label="Edit Profile Picture" class="edit-avatar-btn w-10 h-10 rounded-full flex items-center justify-center text-white">
+<i class="fas fa-pencil-alt text-sm"></i>
+</button>
+</div>
+<h2 class="text-2xl font-bold text-gray-800">Personal Profile</h2>
+<p class="text-gray-500 flex items-center mt-1">
+        Cairo, Egypt
+      </p>
+</section>
+<!-- END: Profile Header Card -->
+<!-- BEGIN: Profile Form Section -->
+<section class="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 p-10 mb-8" data-purpose="profile-form-container">
+<div class="flex items-center justify-end mb-8 space-x-2">
+<span class="text-lg font-bold text-gray-800">Personal Information</span>
+<div class="w-1 h-6 bg-blue-700 rounded-full"></div>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Full Name Field -->
+<div class="space-y-2">
+<label class="block text-sm font-medium text-gray-600 text-right">Full Name</label>
+<div class="relative">
+<input class="w-full bg-slate-50 border-gray-100 rounded-xl py-3 px-4 focus:ring-blue-500 focus:border-blue-500" placeholder="Full Name" type="text" value="Ahmed Mohamed"/>
+<i class="fas fa-user absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+</div>
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="block text-sm font-medium text-gray-600 text-right">Email Address</label>
+<div class="relative">
+<input class="w-full bg-slate-50 border-gray-100 rounded-xl py-3 px-4 focus:ring-blue-500 focus:border-blue-500" placeholder="Email Address" type="email" value="ahmed.m@email.com"/>
+<i class="fas fa-envelope absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+</div>
+<!-- Phone Number Field -->
+<div class="space-y-2">
+<label class="block text-sm font-medium text-gray-600 text-right">Phone Number</label>
+<div class="relative">
+<input class="w-full bg-slate-50 border-gray-100 rounded-xl py-3 px-4 focus:ring-blue-500 focus:border-blue-500" placeholder="Phone Number" type="tel" value="01234567890"/>
+<i class="fas fa-phone absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+</div>
+<!-- Age Field -->
+<div class="space-y-2">
+<label class="block text-sm font-medium text-gray-600 text-right">Age</label>
+<div class="relative">
+<input class="w-full bg-slate-50 border-gray-100 rounded-xl py-3 px-4 focus:ring-blue-500 focus:border-blue-500" placeholder="Age" type="number" value="28"/>
+<i class="fas fa-calendar-alt absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+</div>
+</div>
+<!-- Address Field -->
+<div class="space-y-2">
+<label class="block text-sm font-medium text-gray-600 text-right">Detailed Address</label>
+<div class="relative">
+<textarea class="w-full bg-slate-50 border-gray-100 rounded-xl py-3 px-4 focus:ring-blue-500 focus:border-blue-500 resize-none" placeholder="Enter your full address" rows="3">Maadi Neighborhood, Street 9, Building 15, Cairo</textarea>
+<i class="fas fa-map-marker-alt absolute right-4 top-5 text-gray-400"></i>
+</div>
+</div>
+<!-- Form Actions -->
+<div class="flex items-center space-x-4 pt-4">
+<button class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all" type="submit">
+            Save Changes
+          </button>
+<button class="px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-xl transition-all" type="button">
+            Cancel
+          </button>
+</div>
+</form>
+</section>
+<!-- END: Profile Form Section -->
+<!-- BEGIN: Dashboard Stats Section -->
+<section class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6" data-purpose="stats-grid">
+<!-- Maintenance Jobs -->
+<div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
+<div class="bg-blue-100 w-12 h-12 rounded-xl flex items-center justify-center text-blue-600 mb-4">
+<i class="fas fa-tools text-xl"></i>
+</div>
+<p class="text-sm text-gray-500">Completed Jobs</p>
+<p class="text-xl font-bold text-gray-800">12 Jobs</p>
+</div>
+<!-- Loyalty Points -->
+<div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
+<div class="bg-yellow-100 w-12 h-12 rounded-xl flex items-center justify-center text-yellow-600 mb-4">
+<i class="fas fa-star text-xl"></i>
+</div>
+<p class="text-sm text-gray-500">Loyalty Points</p>
+<p class="text-xl font-bold text-gray-800">1,250 Points</p>
+</div>
+<!-- Verification Status -->
+<div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
+<div class="bg-green-100 w-12 h-12 rounded-xl flex items-center justify-center text-green-600 mb-4">
+<i class="fas fa-check-circle text-xl"></i>
+</div>
+<p class="text-sm text-gray-500">Account Status</p>
+<p class="text-xl font-bold text-gray-800">Verified</p>
+</div>
+</section>
+<!-- END: Dashboard Stats Section -->
+</main>
+<!-- END: Main Content Area -->
+</div>

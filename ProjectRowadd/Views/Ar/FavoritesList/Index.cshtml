@@ -1,0 +1,254 @@
+@{
+    ViewData["Title"] = "المفضلة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body { direction: rtl; font-family: 'Cairo', sans-serif; }
+
+body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+</style>
+
+<div dir="rtl">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Header/TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-10 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6">
+<span class="material-symbols-outlined text-3xl font-bold">handyman</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-[-0.015em]">Salahly</h2>
+</div>
+<div class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal" href="#">الرئيسية</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal" href="#">الخدمات</a>
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary" href="#">المفضلة</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal" href="#">الطلبات</a>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<label class="hidden lg:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-slate-400 flex border-none bg-slate-100 dark:bg-slate-800 items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-slate-100 dark:bg-slate-800 focus:ring-0 h-full placeholder:text-slate-400 px-4 rounded-r-lg pl-2 text-base font-normal" placeholder="ابحث عن محترفين" value=""/>
+</div>
+</label>
+<div class="flex gap-4 items-center">
+<button class="text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile avatar photo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwv8C0WlCD5nNKHDy7j1RWGi0axIPXQzV2jUltCzZUZ7KAXDUZqmAMuMGVfRxC_XpIL5GQNEzMTJAI503dK85e66tqiSNSqcWAFmNL9gP4_6x65vsJbLzrKH1WSy2qMMSa-__d_CC7YXwFkGqvDPMnbPTF65O5me44F9dv1tnSlTsh_VkQ9Epp4O70SEh9O5uRCv4bzrcQom7YSo6sewGN0IwbjvfFK7TLnmzbOr0sxr0uZxSiSP0LIebYoMg5mGtbBQkWhqwFN5I");'></div>
+</div>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- Sidebar -->
+<aside class="hidden md:flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+<div class="flex flex-col gap-6">
+<div class="flex gap-3 items-center px-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar thumbnail" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBPrmqpth8zmmL01uq7wRTWWyMdzvYbV_NB_uqopSMPyV00RpPFb_RytygYXZzxBzYYFy3fFX2qDj2aYiL1BqmBwhREF4G0nB6YZm8gFP79OGNpae8FEqYfistYF4AaAFZ0h6lr-HnG6UZMDBQq3AUiVah-u9NmzNiocSeJD3aD3j1uEzGkILI1Nhx7FHF-yxaBNLKNFch07fYsF4XJGFhSdK5LrqRYZfEt5DvUwseZJ_VTigx3fqjGd_uJSpQGJ5nGcmBcwFrqXN4");'></div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-slate-100 text-sm font-bold">أليكس جونسون</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs">حساب العميل</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<p class="text-sm font-semibold">لوحة التحكم</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<p class="text-sm font-semibold">حجوزاتي</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined material-symbols-fill">favorite</span>
+<p class="text-sm font-bold">المفضلة</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<p class="text-sm font-semibold">الرسائل</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-semibold">المحفظة</p>
+</a>
+<div class="my-4 border-t border-slate-100 dark:border-slate-800"></div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-semibold">الإعدادات</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-semibold">تسجيل الخروج</p>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col p-6 lg:p-10 max-w-6xl mx-auto w-full">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div>
+<h2 class="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">مفضلتي</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-1">إدارة وحجز المتخصصين المفضلين لديك.</p>
+</div>
+<div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+<button class="px-4 py-2 rounded-full bg-primary text-white text-sm font-bold whitespace-nowrap">كل الفئات</button>
+<button class="px-4 py-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium hover:border-primary whitespace-nowrap">السباكة</button>
+<button class="px-4 py-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium hover:border-primary whitespace-nowrap">الكهرباء</button>
+<button class="px-4 py-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium hover:border-primary whitespace-nowrap">التنظيف</button>
+</div>
+</div>
+<!-- Favorites Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Professional Card 1 -->
+<div class="group relative flex flex-col rounded-xl bg-white dark:bg-slate-900 shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300">
+<button class="absolute top-4 right-4 z-10 size-9 flex items-center justify-center rounded-full bg-white/90 dark:bg-slate-800/90 text-primary shadow-sm hover:bg-white dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined material-symbols-fill text-xl">favorite</span>
+</button>
+<div class="aspect-video w-full bg-center bg-cover" data-alt="Electrician working on electrical panel" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB31sXVRMYpXTdh5SZB9vd8MkkaVit_6ZpkxAzKF5hKMxPiporJQd0b25LB6IgMypyBWOmkEATJ3Fs-KR0xf82G3Pgznl9auQlPseg10toJuM2piMUBMOsISS6noC1h_ABSGzVZ6KqlG7LfMen20VamNvLg5RYU23LxdNFLdLIQD00PQsPkhat7IhfmQF8GMnZ8NJN6E8BTKwsFh_dq86HRaNBeIQ_KO6JT_G5rt7T76Or0wTFGNP9mndJ-pYoACz_HjeIzR9aSMdo");'></div>
+<div class="p-5 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-1 mb-1">
+<span class="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">(128 تقييم)</span>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">أحمد محمود</h3>
+<div class="flex items-center gap-1 mt-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm text-yellow-500 material-symbols-fill">star</span>
+<span class="text-sm font-bold text-slate-700 dark:text-slate-300">4.9</span>
+<span class="text-xs">(128 تقييم)</span>
+</div>
+</div>
+<div class="size-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm bg-center bg-cover" data-alt="Ahmed Mahmoud portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNRZmOcd8OzAG650u0Ke8caXLqOBpYC0KQkqfksOJ1_HH7vzR2ctP4RazNG1Kpbw8YGy4QJL4NekPs3Gmlkd_CjvJ3YIz0mTG75dRBw7cqhI3T47vrvRJ-RQo3IR3Ifnzwr2RSPbRHDTd3F8TbOEhfcC0jYCxya0dcgkjJ_sBCn_5jgY-z_DGahgehakbOjO6eRSbORwQvm6nbn2gehMlsfpkZSXgzrPB5PdeQLlcQsnnjP_xTH12Rxguj5_wdWyP7MGl80OeQy_0");'></div>
+</div>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-base">location_on</span>
+<span>القاهرة الجديدة، مصر</span>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"><span class="material-symbols-outlined text-lg">event_available</span> احجز الآن</button>
+<button class="px-4 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">الملف الشخصي</button>
+</div>
+</div>
+</div>
+<!-- Professional Card 2 -->
+<div class="group relative flex flex-col rounded-xl bg-white dark:bg-slate-900 shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300">
+<button class="absolute top-4 right-4 z-10 size-9 flex items-center justify-center rounded-full bg-white/90 dark:bg-slate-800/90 text-primary shadow-sm">
+<span class="material-symbols-outlined material-symbols-fill text-xl">favorite</span>
+</button>
+<div class="aspect-video w-full bg-center bg-cover" data-alt="Plumber fixing a kitchen sink pipe" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAbPNzz15Oy2nw4h1vInGcXZX1R6Z1KKRhy6dwdejwcEw21TE_0k24j3EypUWdo_wlrHtHVI6Mdek1KlMnEY8-vjQGrkbF9DvoQFS1QVXuFQgSItWEm1lz2hso4duakKc1XYwti9Por9Pgm8bFFnhfrEdC7pIaH8lgYrxG-A4bUKKTB0AjDCt2BkLqeKVuPQLttvVFpCJyJmPGYIhcv0_MFgpe-NOzIryxQQJHyS0RTgzn74ur2aq0PmgOoEHNA3vZVb3JkH_40X_k");'></div>
+<div class="p-5 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-1 mb-1">
+<span class="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">(84 تقييم)</span>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">محمد حسن</h3>
+<div class="flex items-center gap-1 mt-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm text-yellow-500 material-symbols-fill">star</span>
+<span class="text-sm font-bold text-slate-700 dark:text-slate-300">4.8</span>
+<span class="text-xs">(84 تقييم)</span>
+</div>
+</div>
+<div class="size-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm bg-center bg-cover" data-alt="Mohamed Hassan portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJey0bECO4IXNkWpmd5l47mxR0yckUIahUQC6unyEhJJ0Peu15VrImQ28uRw-CU1eURdk2sKU8toMeLdM2Be-cGBZsnw46_z3u42-j89h37bvD1dnyeBlHHHTkqTKlO4nz6J2-ube-99oTiIacRoLKrXb1afanDkX-mo136zlvFdupijGdQyK_pXx-rNoby_Bg3lDIMlRZTJxkQzbIEYpTz-UZdGuTnoPLc3PShF8ZoD2QFoaanKOxeKLAqVINPIyw8DJ7hQQXQq4");'></div>
+</div>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-base">location_on</span>
+<span>المعادي، القاهرة</span>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"><span class="material-symbols-outlined text-lg">event_available</span> احجز الآن</button>
+<button class="px-4 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">الملف الشخصي</button>
+</div>
+</div>
+</div>
+<!-- Professional Card 3 -->
+<div class="group relative flex flex-col rounded-xl bg-white dark:bg-slate-900 shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300">
+<button class="absolute top-4 right-4 z-10 size-9 flex items-center justify-center rounded-full bg-white/90 dark:bg-slate-800/90 text-primary shadow-sm">
+<span class="material-symbols-outlined material-symbols-fill text-xl">favorite</span>
+</button>
+<div class="aspect-video w-full bg-center bg-cover" data-alt="Cleaner dusting a bookshelf" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4avd32fDNU1l65Zb6neEG-f3Am19LW4AUHDdhFka_A9lf86NHSGMExF2-midZGMlktr5Uh71NQ4tKhnM7IRkO03dZ0op6ykjW8W_psXVfjV9P1zExAAFA97LmOYXe7SIv8RvQB4MzSUIM5SjRHy4os-UiyGKGvwakCC8rFNJN44cBqOBimshlRjmJXu992VRAY7ISaA_J26_TwJP8mAH25DwHYntkFgVQR_m2D1fgfPSRceAStJHn7ip6YzbBY4-LdV-pGYFfRuo");'></div>
+<div class="p-5 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-1 mb-1">
+<span class="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">(210 تقييم)</span>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">سارة علي</h3>
+<div class="flex items-center gap-1 mt-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm text-yellow-500 material-symbols-fill">star</span>
+<span class="text-sm font-bold text-slate-700 dark:text-slate-300">5.0</span>
+<span class="text-xs">(210 تقييم)</span>
+</div>
+</div>
+<div class="size-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm bg-center bg-cover" data-alt="Sara Aly portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD5uBmlDfka0-7MqxiUskdDFHa-iyRHoD-bHZb5Ybh0330us5L6GTUhmd28pm-mFAkyvUd6d2J9r52BjHTIDwHcQMTnaDajEdN7ttu0yOXrU_Ef8b_R8lf1Yygaf4enf3IqjGwxycEw8YCpbQhptOiYdx4uFweFnntPX82zYqp0ffbkuDmcB_LIXx0a_GT4f7s5quVVELi5CYoKMa4NY93jLRJkQ8QBBKvGy1ZEP5bGbJS3avBUNukg0TqlmWK6zM6gL7l-qbqD65Q");'></div>
+</div>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-base">location_on</span>
+<span>الشيخ زايد، الجيزة</span>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"><span class="material-symbols-outlined text-lg">event_available</span> احجز الآن</button>
+<button class="px-4 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">الملف الشخصي</button>
+</div>
+</div>
+</div>
+<!-- Professional Card 4 (Empty placeholder style for "Browse More") -->
+<div class="flex flex-col rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 items-center justify-center p-10 text-center gap-4 hover:border-primary transition-colors cursor-pointer group">
+<div class="size-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-all">
+<span class="material-symbols-outlined text-4xl">person_add</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">ابحث عن المزيد من المحترفين</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">اكتشف أفضل العمال في منطقتك.</p>
+</div>
+<button class="text-primary text-sm font-bold flex items-center gap-1 group-hover:underline">تصفح الفئات <span class="material-symbols-outlined text-lg">arrow_forward</span></button>
+</div>
+</div>
+<!-- Recently Viewed Section -->
+<div class="mt-16 mb-10">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold text-slate-900 dark:text-slate-100">شوهد مؤخراً</h3>
+<a class="text-primary text-sm font-bold hover:underline" href="#">عرض الكل</a>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+<div class="flex-shrink-0 w-64 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+<div class="size-14 rounded-lg bg-center bg-cover" data-alt="Handyman portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8n4smMhdaJi87TGaqt6uac2_cQAzcqYjUQAPSwLNinWiacFfVbtHCX1GxAmQ6o_Rw5fBAXILA_DvcWohAIMcNowPbkOaHRTghlYlkF5prmhRiVHO8FoIy3fErzi_A07pvhLaYpYCF0b1Jv4HfvHKEC0iD2GAcDQLSwF7H0TdWDtN3XPgT0n9HIGlzX0lHiaXDGoEIjDL8ZrARCBM04TnIH5j_lJBQ_XmCzp-QWlT5tkc33jjRjeSXMyzrPnM9umKSYzwgnr2kexE");'></div>
+<div class="flex flex-col">
+<h4 class="text-sm font-bold">إبراهيم كمال</h4>
+<p class="text-xs text-slate-500">نجارة</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px] text-yellow-500 material-symbols-fill">star</span>
+<span class="text-xs font-bold">4.7</span>
+</div>
+</div>
+</div>
+<div class="flex-shrink-0 w-64 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+<div class="size-14 rounded-lg bg-center bg-cover" data-alt="Painter portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDlUTW0_8ZjEom3SKIY595fMNAFyFqfihCp4WFZa0GI6GY0-GP57c8z4RGHLYrDJqlntqlEMA2uwwbJgoGMy95kKw7vepVWP11Uemw3NuTICxEppHwWps6OVz1Y4GbcY5l4NZuTOPRFBqn0M9mI4-EP6AWe5tHBFIFonvP1JoPQgx4hko3sZrzaINvlaE0oZ4ISTMoEviYAowE4LjDUYm0oCigDurY2QsqojElpZMUFSDklfkZEWanL-zuznrGA0TpCYQEZVQ6wTXg");'></div>
+<div class="flex flex-col">
+<h4 class="text-sm font-bold">ياسين رفعت</h4>
+<p class="text-xs text-slate-500">نقاشة</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px] text-yellow-500 material-symbols-fill">star</span>
+<span class="text-xs font-bold">4.6</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
