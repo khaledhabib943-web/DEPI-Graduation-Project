@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain_layer.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,8 @@ namespace Domain_layer.Entities
         public string Content { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-   
-        public bool IsResolved { get; set; } = false;
+
+        public ComplaintStatus Status { get; set; } = ComplaintStatus.Pending;
 
         public int CustomerId { get; set; }
         public virtual Customer Customer { get; set; } = null!;

@@ -8,6 +8,8 @@ namespace Domain_layer.Enums
 {
     public enum UserRole
     {
-
+        Customer = 0, // Customer role
+        Worker = 1, // Worker role
+        Admin = 2 // Admin role
     }
 }

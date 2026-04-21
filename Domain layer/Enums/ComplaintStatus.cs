@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Domain_layer.Enums
 {
-    internal class ComplaintStatus
+    public enum ComplaintStatus
     {
+        Pending = 0,
+        UnderReview = 1,
+        Resolved = 2,
+        Dismissed = 3
     }
 }
