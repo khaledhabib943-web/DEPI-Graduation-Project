@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain_layer.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,9 @@ namespace Domain_layer.Entities
         // ─── العلاقات ─────────────────────────────────────
         public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
         public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
-        
+        // The state starts at 0 (PendingApproval) automatically
+        public AvailabilityStatus Availability { get; set; } = AvailabilityStatus.PendingApproval;
+        // For the automatic "Offline" logic 
+        public DateTime LastSeen { get; set; } = DateTime.UtcNow;
     }
 }

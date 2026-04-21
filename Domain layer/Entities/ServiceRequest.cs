@@ -27,7 +27,7 @@ namespace Domain_layer.Entities
         public int? WorkerId { get; set; } 
         public virtual Worker? Worker { get; set; }
 
-     
+
         public virtual Review? Review { get; set; }
     }
 }
