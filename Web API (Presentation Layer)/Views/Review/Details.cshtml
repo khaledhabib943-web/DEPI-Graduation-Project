@@ -1,0 +1,12 @@
+﻿@model ReviewViewModel
+
+<h2>تفاصيل التقييم</h2>
+<div>
+    <p><strong>رقم الطلب الأصلي:</strong> @Model.ServiceRequestId</p>
+    <p><strong>بواسطة العميل:</strong> @Model.CustomerName</p>
+    <p><strong>موجه للفني:</strong> @Model.WorkerName</p>
+    <p><strong>التقييم الرقمي:</strong> @Model.Rating من 5</p>
+    <p><strong>نص التعليق:</strong> @Model.Comment</p>
+    <p><strong>تاريخ الكتابة:</strong> @Model.CreatedAt</p>
+</div>
+<a href="/Review">رجوع للكل</a>

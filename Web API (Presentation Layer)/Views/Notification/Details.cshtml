@@ -1,0 +1,15 @@
+﻿@model NotificationViewModel
+
+<h2>@Model.Title</h2>
+<div>
+    <p><strong>موجه إلى:</strong> @Model.UserName</p>
+    <p><strong>نص الرسالة:</strong> @Model.Message</p>
+    <p><strong>نوع التنبيه:</strong> @Model.Type</p>
+    <p><strong>التاريخ:</strong> @Model.CreatedAt</p>
+
+    @if (Model.RelatedRequestId != null)
+    {
+        <p><a href="/ServiceRequest/Details/@Model.RelatedRequestId">الانتقال للطلب المرتبط (رقم @Model.RelatedRequestId)</a></p>
+    }
+</div>
+<a href="/Notification">رجوع للتنبيهات</a>

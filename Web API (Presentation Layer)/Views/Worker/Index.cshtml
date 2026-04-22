@@ -1,0 +1,26 @@
+﻿@model IEnumerable<WorkerViewModel>
+
+<h2>Workers</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Rate</th>
+            <th>Status</th>
+            <th>Verified</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var w in Model)
+        {
+            <tr>
+                <td>@w.FullName</td>
+                <td>@w.HourlyRate $</td>
+                <td>@w.Availability</td>
+                <td>@(w.IsVerified ? "✅" : "❌")</td>
+                <td><a href="/Worker/Details/@w.Id">View</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,12 @@
+﻿@model ServiceRequestViewModel
+
+<h2>تفاصيل الطلب رقم @Model.Id</h2>
+<ul>
+    <li><strong>وصف المشكلة:</strong> @Model.Description</li>
+    <li><strong>العنوان:</strong> @Model.Address</li>
+    <li><strong>حالة الطلب:</strong> @Model.Status</li>
+    <li><strong>تاريخ الموعد:</strong> @Model.ScheduledDate</li>
+    <li><strong>اسم العميل:</strong> @Model.CustomerName</li>
+    <li><strong>اسم الفني القائم بالخدمة:</strong> @Model.WorkerName</li>
+</ul>
+<a href="/ServiceRequest">رجوع للقائمة</a>

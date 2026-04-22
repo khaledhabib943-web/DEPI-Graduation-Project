@@ -1,0 +1,20 @@
+﻿@model ComplaintViewModel
+
+<h2>تفاصيل الشكوى</h2>
+<div>
+    <p><strong>العنوان:</strong> @Model.Title</p>
+    <p><strong>المحتوى:</strong> @Model.Content</p>
+    <p><strong>بواسطة العميل:</strong> @Model.CustomerName</p>
+    <p><strong>الحالة الحالية:</strong> @Model.Status</p>
+    <p><strong>تاريخ التقديم:</strong> @Model.CreatedAt</p>
+
+    @if (Model.ServiceRequestId != null)
+    {
+        <p><strong>مرتبطة بالطلب رقم:</strong> @Model.ServiceRequestId</p>
+    }
+    else
+    {
+        <p><em>شكوى عامة غير مرتبطة بطلب معين</em></p>
+    }
+</div>
+<a href="/Complaint">رجوع للقائمة</a>
