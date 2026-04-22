@@ -1,0 +1,24 @@
+﻿@model List<NotificationViewModel>
+
+<h2>التنبيهات</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>الحالة</th>
+            <th>العنوان</th>
+            <th>التاريخ</th>
+            <th>الإجراء</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model)
+        {
+            <tr style="@(n.IsRead ? "" : "font-weight:bold; background-color:#f9f9f9;")">
+                <td>@(n.IsRead ? "مقروء" : "جديد 🔵")</td>
+                <td>@n.Title</td>
+                <td>@n.CreatedAt</td>
+                <td><a href="/Notification/Details/@n.Id">فتح</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

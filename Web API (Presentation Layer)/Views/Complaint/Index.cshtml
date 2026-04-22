@@ -1,0 +1,26 @@
+﻿@model List<ComplaintViewModel>
+
+<h2>قائمة الشكاوى</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>العنوان</th>
+            <th>العميل</th>
+            <th>الحالة</th>
+            <th>التاريخ</th>
+            <th>الإجراء</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.CustomerName</td>
+                <td>@item.Status</td>
+                <td>@item.CreatedAt</td>
+                <td><a href="/Complaint/Details/@item.Id">عرض التفاصيل</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

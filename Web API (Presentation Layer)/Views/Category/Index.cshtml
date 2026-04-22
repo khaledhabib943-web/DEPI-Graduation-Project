@@ -1,0 +1,24 @@
+﻿@model List<CategoryViewModel>
+
+<h2>الأقسام المتاحة</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>الأيقونة</th>
+            <th>الاسم</th>
+            <th>الوصف</th>
+            <th>الإجراء</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td><img src="@c.IconUrl" width="50" alt="icon" /></td>
+                <td>@c.Name</td>
+                <td>@c.Description</td>
+                <td><a href="/Category/Details/@c.Id">عرض الفنيين</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

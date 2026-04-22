@@ -1,0 +1,28 @@
+﻿@model List<ServiceRequestViewModel>
+
+<h2>قائمة طلبات الخدمة</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>رقم الطلب</th>
+            <th>العميل</th>
+            <th>الوصف</th>
+            <th>الحالة</th>
+            <th>التاريخ</th>
+            <th>التفاصيل</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.CustomerName</td>
+                <td>@item.Description</td>
+                <td>@item.Status</td>
+                <td>@item.ScheduledDate</td>
+                <td><a href="/ServiceRequest/Details/@item.Id">عرض</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

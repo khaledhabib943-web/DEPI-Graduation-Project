@@ -1,0 +1,12 @@
+﻿@model AdminViewModel
+
+<h2>Admin Details</h2>
+<ul>
+    <li><strong>ID:</strong> @Model.Id</li>
+    <li><strong>Name:</strong> @Model.FullName</li>
+    <li><strong>Email:</strong> @Model.Email</li>
+    <li><strong>Phone:</strong> @Model.PhoneNumber</li>
+    <li><strong>Role:</strong> @Model.Role</li>
+    <li><strong>Status:</strong> @(Model.IsActive ? "Active User" : "Suspended")</li>
+</ul>
+<a href="/Admin">Back to List</a>

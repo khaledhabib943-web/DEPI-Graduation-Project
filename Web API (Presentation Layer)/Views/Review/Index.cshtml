@@ -1,0 +1,28 @@
+﻿@model List<ReviewViewModel>
+
+<h2>كل التقييمات</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>العميل</th>
+            <th>الفني</th>
+            <th>التقييم</th>
+            <th>التعليق</th>
+            <th>التاريخ</th>
+            <th>التفاصيل</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.CustomerName</td>
+                <td>@r.WorkerName</td>
+                <td>@r.Rating / 5 ⭐</td>
+                <td>@r.Comment</td>
+                <td>@r.CreatedAt</td>
+                <td><a href="/Review/Details/@r.Id">عرض</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,11 @@
+﻿@model WorkerViewModel
+
+<h2>Worker Profile</h2>
+<div>
+    <p><strong>Name:</strong> @Model.FullName</p>
+    <p><strong>Bio:</strong> @Model.Bio</p>
+    <p><strong>Hourly Rate:</strong> @Model.HourlyRate</p>
+    <p><strong>Status:</strong> @Model.Availability</p>
+    <p><strong>Verification:</strong> @(Model.IsVerified ? "Verified User" : "Under Review")</p>
+</div>
+<a href="/Worker">Back to List</a>
