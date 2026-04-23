@@ -1,40 +1,45 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
+using Application.Interfaces;
+using Domain_layer.Enums;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
+namespace Salahly.Presentation.Controllers
+{
     public class ServiceRequestController : Controller
     {
-        private List<ServiceRequestViewModel> requests = new List<ServiceRequestViewModel>
-        {
-            new ServiceRequestViewModel
-            {
-                Id = 101,
-                Description = "تصليح حنفية المطبخ",
-                Address = "القاهرة - مدينة نصر",
-                Status = "Pending",
-                ScheduledDate = "2026-05-20",
-                CustomerName = "أحمد علي",
-                WorkerName = "لم يتم التحديد بعد"
-            },
-            new ServiceRequestViewModel
-            {
-                Id = 102,
-                Description = "صيانة لوحة الكهرباء",
-                Address = "الجيزة - الدقي",
-                Status = "Accepted",
-                ScheduledDate = "2026-05-22",
-                CustomerName = "سارة محمد",
-                WorkerName = "إبراهيم الكهربائي"
-            }
-        };
+        private readonly IServiceRequestService _requestService;
+        private readonly INotificationService _notificationService;
 
-        public IActionResult Index()
+        public ServiceRequestController(IServiceRequestService requestService, INotificationService notificationService)
         {
-            return View(requests);
+            _requestService = requestService;
+            _notificationService = notificationService;
         }
 
-        public IActionResult Details(int id)
+        [HttpGet]
+        public async Task<IActionResult> Index(int customerId = 101, int pageNumber = 1) // Using 101 as mock logged-in customer
         {
-            var request = requests.FirstOrDefault(r => r.Id == id);
-            if (request == null) return NotFound();
-            return View(request);
+            var pagedRequests = await _requestService.GetCustomerRequestsAsync(customerId, pageNumber);
+            return View(pagedRequests);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateServiceRequestDto dto)
+        {
+            var result = await _requestService.CreateRequestAsync(dto);
+            // Notify worker
+            if(dto.WorkerId > 0)
+                await _notificationService.CreateNotificationAsync(dto.WorkerId, $"You have a new service request from Customer #{dto.CustomerId}");
+
+            return RedirectToAction(nameof(Index), new { customerId = dto.CustomerId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int requestId, RequestStatus status)
+        {
+            await _requestService.UpdateRequestStatusAsync(requestId, status);
+            return RedirectToAction(nameof(Index)); // Needs customerId in a real app
         }
     }
+}

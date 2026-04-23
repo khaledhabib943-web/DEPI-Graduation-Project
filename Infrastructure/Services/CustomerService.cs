@@ -12,30 +12,9 @@ namespace Infrastructure.Services
 {
     public class CustomerService : ICustomerService
     {
-        private static readonly List<Worker> _workers = new List<Worker>
-        {
-            new Worker { Id = 1, FullName = "Ahmed Ali", Bio = "Expert plumber", HourlyRate = 150, CategoryId = 1, Category = new Category { Id = 1, Name = "Plumbing" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 4 }, new Review { Rating = 5 } } },
-            new Worker { Id = 2, FullName = "Mohamed Salah", Bio = "Professional electrician", HourlyRate = 200, CategoryId = 2, Category = new Category { Id = 2, Name = "Electrical" }, Availability = AvailabilityStatus.Busy, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 5 } } },
-            new Worker { Id = 3, FullName = "Omar Hassan", Bio = "Experienced carpenter", HourlyRate = 120, CategoryId = 3, Category = new Category { Id = 3, Name = "Carpentry" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 4 } } },
-            new Worker { Id = 4, FullName = "Khaled Youssef", Bio = "HVAC specialist", HourlyRate = 250, CategoryId = 4, Category = new Category { Id = 4, Name = "HVAC" }, Availability = AvailabilityStatus.Offline, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 5 }, new Review { Rating = 4 } } },
-            new Worker { Id = 5, FullName = "Hassan Mostafa", Bio = "Painter with 10 years experience", HourlyRate = 100, CategoryId = 5, Category = new Category { Id = 5, Name = "Painting" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 4 }, new Review { Rating = 3 } } },
-            new Worker { Id = 6, FullName = "Mahmoud Ezzat", Bio = "Quick plumbing fixes", HourlyRate = 130, CategoryId = 1, Category = new Category { Id = 1, Name = "Plumbing" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 3 }, new Review { Rating = 4 } } },
-            new Worker { Id = 7, FullName = "Ibrahim Nabil", Bio = "Smart home installations", HourlyRate = 300, CategoryId = 2, Category = new Category { Id = 2, Name = "Electrical" }, Availability = AvailabilityStatus.Busy, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 5 }, new Review { Rating = 5 } } },
-            new Worker { Id = 8, FullName = "Tariq Ziad", Bio = "Furniture assembly expert", HourlyRate = 110, CategoryId = 3, Category = new Category { Id = 3, Name = "Carpentry" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 4 } } },
-            new Worker { Id = 9, FullName = "Amr Diab", Bio = "AC cleaning and repair", HourlyRate = 180, CategoryId = 4, Category = new Category { Id = 4, Name = "HVAC" }, Availability = AvailabilityStatus.Offline, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 5 }, new Review { Rating = 4 } } },
-            new Worker { Id = 10, FullName = "Sayed Makkawy", Bio = "Decorative painting", HourlyRate = 160, CategoryId = 5, Category = new Category { Id = 5, Name = "Painting" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 5 } } },
-            new Worker { Id = 11, FullName = "Adel Imam", Bio = "Pipe leak detection", HourlyRate = 140, CategoryId = 1, Category = new Category { Id = 1, Name = "Plumbing" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 4 } } },
-            new Worker { Id = 12, FullName = "Yasser Galal", Bio = "Rewiring and electrical safety", HourlyRate = 220, CategoryId = 2, Category = new Category { Id = 2, Name = "Electrical" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 5 }, new Review { Rating = 4 } } },
-            new Worker { Id = 13, FullName = "Wael Gomaa", Bio = "Custom wooden doors", HourlyRate = 200, CategoryId = 3, Category = new Category { Id = 3, Name = "Carpentry" }, Availability = AvailabilityStatus.Busy, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 4 }, new Review { Rating = 5 } } },
-            new Worker { Id = 14, FullName = "Nour El Sherif", Bio = "Split AC maintenance", HourlyRate = 210, CategoryId = 4, Category = new Category { Id = 4, Name = "HVAC" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 4 } } },
-            new Worker { Id = 15, FullName = "Ayman Zidan", Bio = "Exterior house painting", HourlyRate = 120, CategoryId = 5, Category = new Category { Id = 5, Name = "Painting" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 4 } } },
-            new Worker { Id = 16, FullName = "Tamer Hosny", Bio = "Emergency plumbing 24/7", HourlyRate = 350, CategoryId = 1, Category = new Category { Id = 1, Name = "Plumbing" }, Availability = AvailabilityStatus.Available, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 5 } } },
-            new Worker { Id = 17, FullName = "Maged El Kedwany", Bio = "Industrial electrical panels", HourlyRate = 400, CategoryId = 2, Category = new Category { Id = 2, Name = "Electrical" }, Availability = AvailabilityStatus.Offline, IsVerified = true, Reviews = new List<Review> { new Review { Rating = 5 } } }
-        };
-
         public Task<PagedResult<WorkerDto>> GetFilteredWorkersAsync(WorkerSearchDto searchDto)
         {
-            var query = _workers.AsQueryable();
+            var query = Infrastructure.Persistence.MockDatabase.Workers.AsQueryable();
 
             // Filtering
             if (searchDto.CategoryId.HasValue)
