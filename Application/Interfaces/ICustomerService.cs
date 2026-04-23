@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Application.DTOs;
+using Application.Wrappers;
 using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
-    internal class ICustomerService
+    public interface ICustomerService
     {
+        Task<PagedResult<WorkerDto>> GetFilteredWorkersAsync(WorkerSearchDto searchDto);
     }
 }

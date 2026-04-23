@@ -1,7 +1,10 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+using Application.Interfaces;
+using Infrastructure.Services;
 
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 var app = builder.Build();
 

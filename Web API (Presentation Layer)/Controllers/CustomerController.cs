@@ -1,39 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
-public class CustomerController : Controller
+namespace Salahly.Presentation.Controllers
 {
-    private List<CustomerViewModel> customers = new List<CustomerViewModel>
+    public class CustomerController : Controller
     {
-        new CustomerViewModel
+        private readonly ICustomerService _customerService;
+
+        public CustomerController(ICustomerService customerService)
         {
-            Id = 1,
-            FullName = "Saraaa",
-            Email = "saraaaaa@gmail.com",
-            Address = "Cairo",
-            PhoneNumber = "01000000000"
-        },
-        new CustomerViewModel
-        {
-            Id = 2,
-            FullName = "Sara Mohamed",
-            Email = "sara@gmail.com",
-            Address = "Alexandria",
-            PhoneNumber = "01111111111"
+            _customerService = customerService;
         }
-    };
 
-    public IActionResult Index()
-    {
-        return View(customers);
-    }
+        // Action to view and search workers
+        public async Task<IActionResult> Index(WorkerSearchDto searchDto)
+        {
+            var pagedWorkers = await _customerService.GetFilteredWorkersAsync(searchDto);
+            
+            // Pass the search DTO to the view to maintain state
+            ViewData["SearchParameters"] = searchDto;
 
-    public IActionResult Details(int id)
-    {
-        var customer = customers.FirstOrDefault(c => c.Id == id);
+            return View(pagedWorkers);
+        }
 
-        if (customer == null)
-            return NotFound();
-
-        return View(customer);
+        public IActionResult Details(int id)
+        {
+            // Placeholder for viewing a specific worker
+            return View();
+        }
     }
 }
