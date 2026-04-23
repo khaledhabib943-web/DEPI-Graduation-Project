@@ -1,0 +1,48 @@
+@model Application.DTOs.CreateReviewDto
+@{
+    var isEnglish = !ViewContext.RouteData.Values["action"]?.ToString().EndsWith("En") == true;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@(isEnglish ? "Write a Review" : "كتابة تقييم")</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" asp-controller="Review" method="post">
+                        <div asp-validation-summary="All" class="alert alert-danger"></div>
+                        
+                        <input type="hidden" asp-for="WorkerId" />
+                        <input type="hidden" asp-for="CustomerId" />
+                        <input type="hidden" asp-for="ServiceRequestId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Rating" class="form-label">@(isEnglish ? "Rating" : "التقييم")</label>
+                            <select asp-for="Rating" class="form-select">
+                                <option value="5">5 - @(isEnglish ? "Excellent" : "ممتاز")</option>
+                                <option value="4">4 - @(isEnglish ? "Very Good" : "جيد جداً")</option>
+                                <option value="3">3 - @(isEnglish ? "Good" : "جيد")</option>
+                                <option value="2">2 - @(isEnglish ? "Fair" : "متوسط")</option>
+                                <option value="1">1 - @(isEnglish ? "Poor" : "ضعيف")</option>
+                            </select>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Comment" class="form-label">@(isEnglish ? "Comment" : "التعليق")</label>
+                            <textarea asp-for="Comment" class="form-control" rows="4" placeholder="@(isEnglish ? "Share your experience..." : "شارك تجربتك...")"></textarea>
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary flex-grow-1">@(isEnglish ? "Submit Review" : "إرسال التقييم")</button>
+                            <a asp-controller="Customer" asp-action="Index" class="btn btn-secondary">@(isEnglish ? "Cancel" : "إلغاء")</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

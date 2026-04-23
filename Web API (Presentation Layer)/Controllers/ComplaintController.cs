@@ -21,6 +21,17 @@ namespace Salahly.Presentation.Controllers
             return View(complaints);
         }
 
+        [HttpGet]
+        public IActionResult Create(int customerId = 101, int? serviceRequestId = null)
+        {
+            var dto = new CreateComplaintDto
+            {
+                CustomerId = customerId,
+                ServiceRequestId = serviceRequestId
+            };
+            return View(dto);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateComplaintDto dto)
         {

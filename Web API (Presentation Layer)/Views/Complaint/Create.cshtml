@@ -1,0 +1,41 @@
+@model Application.DTOs.CreateComplaintDto
+@{
+    var isEnglish = !ViewContext.RouteData.Values["action"]?.ToString().EndsWith("En") == true;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@(isEnglish ? "File a Complaint" : "تقديم شكوى")</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" asp-controller="Complaint" method="post">
+                        <div asp-validation-summary="All" class="alert alert-danger"></div>
+                        
+                        <input type="hidden" asp-for="CustomerId" />
+                        <input type="hidden" asp-for="ServiceRequestId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">@(isEnglish ? "Title" : "العنوان")</label>
+                            <input asp-for="Title" class="form-control" placeholder="@(isEnglish ? "Brief summary of your complaint..." : "ملخص موجز لشكواك...")" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label">@(isEnglish ? "Description" : "الوصف")</label>
+                            <textarea asp-for="Content" class="form-control" rows="5" placeholder="@(isEnglish ? "Please provide detailed information about your complaint..." : "يرجى تقديم معلومات مفصلة حول شكواك...")"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary flex-grow-1">@(isEnglish ? "Submit Complaint" : "إرسال الشكوى")</button>
+                            <a asp-controller="ServiceRequest" asp-action="Index" class="btn btn-secondary">@(isEnglish ? "Cancel" : "إلغاء")</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
