@@ -1,10 +1,34 @@
+@{
+    // Check if the current page name ends with "En" or if a ViewBag variable is set
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+
+    var isEnglish = currentAction.EndsWith("En") == true ||
+                    ViewData["Language"]?.ToString() == "en";
+    
+    var direction = isEnglish ? "ltr" : "rtl";
+    var lang = isEnglish ? "en" : "ar";
+
+    var oppositeAction = currentAction;
+    if (isEnglish) {
+        if (oppositeAction.EndsWith("En")) {
+            oppositeAction = oppositeAction.Substring(0, oppositeAction.Length - 2);
+        }
+    } else {
+        if (!oppositeAction.EndsWith("En")) {
+            oppositeAction += "En";
+        }
+    }
+    
+    var langToggleUrl = Url.Action(oppositeAction, currentController);
+}
+
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="light">
+<html lang="@lang" dir="@direction">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewBag.Title - صلاحلي | Salahly</title>  
-    <link rel="stylesheet" href="~/Css/main-theme.css" />
+    <title>@ViewBag.Title - @(isEnglish ? "Salahly" : "صلاحلي")</title>  
     <meta name="description" content="@ViewBag.MetaDescription" />
 
     <!-- Tailwind CSS CDN + Plugins -->
@@ -38,6 +62,15 @@
         }
     </script>
 
+    <!-- Theme Check for FOUC Prevention -->
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -52,9 +85,208 @@
     <!-- Per-page styles (optional) -->
     @RenderSection("Styles", required: false)
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen antialiased">
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased transition-colors duration-300">
 
-    @RenderBody()
+    <!-- NAVBAR -->
+    <nav class="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#0a0c16]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-3xl">handyman</span>
+                    <a href="/Home" class="font-display font-bold text-2xl text-primary tracking-tight">
+                        @(isEnglish ? "Salahly" : "صلاحلي")
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="/Home" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary font-medium transition-colors">@(isEnglish ? "Home" : "الرئيسية")</a>
+                    <a href="/Category" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary font-medium transition-colors">@(isEnglish ? "Services" : "الخدمات")</a>
+                    <a href="/Worker" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary font-medium transition-colors">@(isEnglish ? "Professionals" : "الفنيين")</a>
+                    <a href="/Complaint" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary font-medium transition-colors">@(isEnglish ? "Complaints" : "الشكاوى")</a>
+                </div>
+
+                <!-- Right Side (Auth & Toggles) -->
+                <div class="hidden md:flex items-center gap-4">
+                    <!-- Language Toggle -->
+                    <a href="@(langToggleUrl ?? (isEnglish ? "/Home/Index" : "/Home/IndexEn"))" class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" title="@(isEnglish ? "Switch to Arabic" : "التبديل للإنجليزية")">
+                        <span class="font-bold text-sm">@(isEnglish ? "ع" : "EN")</span>
+                    </a>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" type="button" class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" title="@(isEnglish ? "Toggle dark mode" : "تبديل الوضع الداكن")">
+                        <span id="theme-toggle-light-icon" class="hidden material-symbols-outlined">light_mode</span>
+                        <span id="theme-toggle-dark-icon" class="hidden material-symbols-outlined">dark_mode</span>
+                    </button>
+
+                    <div class="w-px h-6 bg-slate-300 dark:bg-slate-700 mx-2"></div>
+
+                    <a href="/Home/@(isEnglish ? "LoginEn" : "Login")" class="text-slate-600 dark:text-slate-300 hover:text-primary font-medium transition-colors">
+                        @(isEnglish ? "Login" : "دخول")
+                    </a>
+                    <a href="/Home/@(isEnglish ? "RegisterEn" : "Register")" class="bg-primary hover:bg-blue-700 text-white px-5 py-2 rounded-full font-medium transition-transform hover:scale-105 shadow-md shadow-primary/30">
+                        @(isEnglish ? "Register" : "حساب جديد")
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center gap-4">
+                    <!-- Mobile Dark Mode -->
+                    <button id="theme-toggle-mobile" type="button" class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        <span class="material-symbols-outlined">dark_mode</span>
+                    </button>
+                    <!-- Mobile Menu Trigger -->
+                    <button id="mobile-menu-btn" class="text-slate-600 dark:text-slate-300 hover:text-primary focus:outline-none">
+                        <span class="material-symbols-outlined text-3xl">menu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-[#0a0c16] border-b border-slate-200 dark:border-slate-800">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="/Home" class="block px-3 py-2 rounded-md text-base font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50">@(isEnglish ? "Home" : "الرئيسية")</a>
+                <a href="/Category" class="block px-3 py-2 rounded-md text-base font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50">@(isEnglish ? "Services" : "الخدمات")</a>
+                <a href="/Worker" class="block px-3 py-2 rounded-md text-base font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50">@(isEnglish ? "Professionals" : "الفنيين")</a>
+                <a href="/Complaint" class="block px-3 py-2 rounded-md text-base font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50">@(isEnglish ? "Complaints" : "الشكاوى")</a>
+                
+                <div class="border-t border-slate-200 dark:border-slate-700 my-4"></div>
+                
+                <a href="@(langToggleUrl ?? (isEnglish ? "/Home/Index" : "/Home/IndexEn"))" class="block px-3 py-2 rounded-md text-base font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    @(isEnglish ? "Switch to Arabic" : "التبديل للإنجليزية")
+                </a>
+
+                <div class="flex items-center gap-4 px-3 py-4 mt-2">
+                    <a href="/Home/@(isEnglish ? "LoginEn" : "Login")" class="flex-1 text-center bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 py-2 rounded-lg font-medium">@(isEnglish ? "Login" : "دخول")</a>
+                    <a href="/Home/@(isEnglish ? "RegisterEn" : "Register")" class="flex-1 text-center bg-primary text-white py-2 rounded-lg font-medium">@(isEnglish ? "Register" : "حساب جديد")</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow w-full">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white dark:bg-[#0a0c16] border-t border-slate-200 dark:border-slate-800 mt-auto transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand Info -->
+                <div class="space-y-4 col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-3xl">handyman</span>
+                        <span class="font-display font-bold text-2xl text-slate-900 dark:text-white">@(isEnglish ? "Salahly" : "صلاحلي")</span>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                        @(isEnglish ? "Your trusted platform for home maintenance and professional services. Quality work, guaranteed." : "منصتك الموثوقة لخدمات الصيانة المنزلية والخدمات المهنية. جودة عمل مضمونة.")
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-4">@(isEnglish ? "Quick Links" : "روابط سريعة")</h3>
+                    <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                        <li><a href="/Home" class="hover:text-primary transition-colors">@(isEnglish ? "Home" : "الرئيسية")</a></li>
+                        <li><a href="/Category" class="hover:text-primary transition-colors">@(isEnglish ? "Services" : "الخدمات")</a></li>
+                        <li><a href="/Worker" class="hover:text-primary transition-colors">@(isEnglish ? "Join as Professional" : "انضم كفني")</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-4">@(isEnglish ? "Support" : "الدعم")</h3>
+                    <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                        <li><a href="/Complaint" class="hover:text-primary transition-colors">@(isEnglish ? "File a Complaint" : "تقديم شكوى")</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">@(isEnglish ? "Contact Us" : "اتصل بنا")</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">@(isEnglish ? "FAQ" : "الأسئلة الشائعة")</a></li>
+                    </ul>
+                </div>
+
+                <!-- Socials -->
+                <div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-4">@(isEnglish ? "Connect With Us" : "تواصل معنا")</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all">
+                            <span class="material-symbols-outlined">public</span>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all">
+                            <span class="material-symbols-outlined">mail</span>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all">
+                            <span class="material-symbols-outlined">call</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 dark:border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    &copy; @DateTime.Now.Year Salahly. @(isEnglish ? "All rights reserved." : "جميع الحقوق محفوظة.")
+                </p>
+                <div class="flex gap-4 text-sm text-slate-500 dark:text-slate-400">
+                    <a href="#" class="hover:text-primary transition-colors">@(isEnglish ? "Privacy Policy" : "سياسة الخصوصية")</a>
+                    <a href="#" class="hover:text-primary transition-colors">@(isEnglish ? "Terms of Service" : "شروط الخدمة")</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Theme Toggle & Mobile Menu Script -->
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Dark Mode Toggle Logic
+        function toggleDarkMode() {
+            const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+            const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+            
+            themeToggleDarkIcon?.classList.toggle('hidden');
+            themeToggleLightIcon?.classList.toggle('hidden');
+
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        }
+
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleMobileBtn = document.getElementById('theme-toggle-mobile');
+
+        // Init icons
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.getElementById('theme-toggle-light-icon')?.classList.remove('hidden');
+        } else {
+            document.getElementById('theme-toggle-dark-icon')?.classList.remove('hidden');
+        }
+
+        themeToggleBtn?.addEventListener('click', toggleDarkMode);
+        themeToggleMobileBtn?.addEventListener('click', toggleDarkMode);
+    </script>
 
     <!-- Per-page scripts (optional) -->
     @RenderSection("Scripts", required: false)
