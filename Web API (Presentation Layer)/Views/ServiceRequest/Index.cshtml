@@ -1,28 +1,107 @@
-﻿@model List<ServiceRequestViewModel>
+﻿@model Application.Wrappers.PagedResult<Application.DTOs.ServiceRequestDto>
+@{
+    var isEnglish = !ViewContext.RouteData.Values["action"]?.ToString().EndsWith("En") == true;
+    var currentStatus = ViewData["CurrentStatus"] as string ?? "";
+}
 
-<h2>قائمة طلبات الخدمة</h2>
-<table border="1">
-    <thead>
-        <tr>
-            <th>رقم الطلب</th>
-            <th>العميل</th>
-            <th>الوصف</th>
-            <th>الحالة</th>
-            <th>التاريخ</th>
-            <th>التفاصيل</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.CustomerName</td>
-                <td>@item.Description</td>
-                <td>@item.Status</td>
-                <td>@item.ScheduledDate</td>
-                <td><a href="/ServiceRequest/Details/@item.Id">عرض</a></td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container mt-5">
+    <h2 class="mb-4">@(isEnglish ? "Order History" : "قائمة طلبات الخدمة")</h2>
+
+    <!-- Status Filter -->
+    <div class="card mb-4 p-3">
+        <form asp-action="Index" method="get" class="d-flex gap-2 align-items-center">
+            <label class="mb-0">@(isEnglish ? "Status:" : "الحالة:")</label>
+            <select name="status" class="form-select w-auto">
+                <option value="">@(isEnglish ? "All" : "الكل")</option>
+                <option value="Pending" selected="@(currentStatus == "Pending")">@(isEnglish ? "Pending" : "قيد الانتظار")</option>
+                <option value="InProgress" selected="@(currentStatus == "InProgress")">@(isEnglish ? "In Progress" : "قيد التنفيذ")</option>
+                <option value="Completed" selected="@(currentStatus == "Completed")">@(isEnglish ? "Completed" : "مكتمل")</option>
+                <option value="Cancelled" selected="@(currentStatus == "Cancelled")">@(isEnglish ? "Cancelled" : "ملغي")</option>
+            </select>
+            <button type="submit" class="btn btn-primary">@(isEnglish ? "Filter" : "تصفية")</button>
+        </form>
+    </div>
+
+    <!-- Results Count -->
+    <p class="text-muted mb-3">@Model.TotalCount @(isEnglish ? "orders found" : "طلب موجود")</p>
+
+    <!-- Orders Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>@(isEnglish ? "Order #" : "رقم الطلب")</th>
+                            <th>@(isEnglish ? "Worker" : "الفني")</th>
+                            <th>@(isEnglish ? "Description" : "الوصف")</th>
+                            <th>@(isEnglish ? "Status" : "الحالة")</th>
+                            <th>@(isEnglish ? "Date" : "التاريخ")</th>
+                            <th>@(isEnglish ? "Details" : "التفاصيل")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.WorkerName</td>
+                                <td>@item.Description</td>
+                                <td>
+                                    <span class="badge @(item.Status.ToString() == "Pending" ? "bg-warning" : item.Status.ToString() == "InProgress" ? "bg-info" : item.Status.ToString() == "Completed" ? "bg-success" : "bg-secondary")">
+                                        @item.Status
+                                    </span>
+                                </td>
+                                <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">@(isEnglish ? "View" : "عرض")</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-PageNumber="@(Model.PageNumber - 1)" asp-route-status="@currentStatus">@(isEnglish ? "Previous" : "السابق")</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">@(isEnglish ? "Previous" : "السابق")</span>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-PageNumber="@i" asp-route-status="@currentStatus">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-PageNumber="@(Model.PageNumber + 1)" asp-route-status="@currentStatus">@(isEnglish ? "Next" : "التالي")</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">@(isEnglish ? "Next" : "التالي")</span>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>

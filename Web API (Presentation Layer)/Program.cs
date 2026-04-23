@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Infrastructure.Services;
 using Application.Mappings;
+using Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 

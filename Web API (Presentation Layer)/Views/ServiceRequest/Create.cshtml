@@ -1,0 +1,47 @@
+@model Application.DTOs.CreateServiceRequestDto
+@{
+    var isEnglish = !ViewContext.RouteData.Values["action"]?.ToString().EndsWith("En") == true;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@(isEnglish ? "Book Service" : "حجز خدمة")</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" asp-controller="ServiceRequest" method="post">
+                        <div asp-validation-summary="All" class="alert alert-danger"></div>
+                        
+                        <input type="hidden" asp-for="WorkerId" />
+                        <input type="hidden" asp-for="CustomerId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">@(isEnglish ? "Description" : "الوصف")</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="@(isEnglish ? "Describe the service you need..." : "صف الخدمة التي تحتاجها...")"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">@(isEnglish ? "Address" : "العنوان")</label>
+                            <input asp-for="Address" class="form-control" placeholder="@(isEnglish ? "Enter your address..." : "أدخل عنوانك...")" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ScheduledDate" class="form-label">@(isEnglish ? "Scheduled Date" : "التاريخ المحدد")</label>
+                            <input asp-for="ScheduledDate" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary flex-grow-1">@(isEnglish ? "Confirm Booking" : "تأكيد الحجز")</button>
+                            <a asp-controller="Customer" asp-action="Index" class="btn btn-secondary">@(isEnglish ? "Cancel" : "إلغاء")</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

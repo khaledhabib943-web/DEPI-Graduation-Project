@@ -18,10 +18,39 @@ namespace Salahly.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int customerId = 101, int pageNumber = 1) // Using 101 as mock logged-in customer
+        public async Task<IActionResult> Index(int customerId = 101, int pageNumber = 1, string status = "") // Using 101 as mock logged-in customer
         {
             var pagedRequests = await _requestService.GetCustomerRequestsAsync(customerId, pageNumber);
+            
+            // Filter by status if provided
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (Enum.TryParse<RequestStatus>(status, out var statusEnum))
+                {
+                    var filteredItems = pagedRequests.Items.Where(r => r.Status == statusEnum).ToList();
+                    pagedRequests = new Application.Wrappers.PagedResult<Application.DTOs.ServiceRequestDto>
+                    {
+                        Items = filteredItems,
+                        TotalCount = filteredItems.Count,
+                        PageNumber = 1,
+                        PageSize = filteredItems.Count
+                    };
+                }
+            }
+            
+            ViewData["CurrentStatus"] = status;
             return View(pagedRequests);
+        }
+
+        [HttpGet]
+        public IActionResult Create(int workerId, int customerId = 101)
+        {
+            var dto = new CreateServiceRequestDto
+            {
+                WorkerId = workerId,
+                CustomerId = customerId
+            };
+            return View(dto);
         }
 
         [HttpPost]
