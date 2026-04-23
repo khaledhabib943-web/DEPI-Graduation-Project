@@ -1,3 +1,4 @@
+@model Application.DTOs.RegisterDto
 @* User Registration (Customer/Worker) – English (LTR) *@
 @* Bundle: Public + Worker | Layout assumes _Layout loads TailwindCSS + main-theme.css *@
 
@@ -10,7 +11,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <p class="hidden md:block text-slate-500 text-sm">Already have an account?</p>
-                <a class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold border border-primary/20 hover:bg-primary/20 transition-all" href="#">Sign In</a>
+                <a class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold border border-primary/20 hover:bg-primary/20 transition-all" asp-controller="Account" asp-action="Login">Sign In</a>
             </div>
         </header>
         <main class="flex flex-1 justify-center py-10 px-4">
@@ -25,64 +26,49 @@
                         <button class="flex items-center gap-2 border-b-[3px] border-transparent text-slate-400 pb-3 px-2 font-bold hover:text-slate-600 transition-all"><span class="material-symbols-outlined text-xl">handyman</span> Technician</button>
                     </div>
                 </div>
-                <form class="space-y-6">
+                <form asp-action="Register" asp-controller="Account" method="post" class="space-y-6">
+                    <div asp-validation-summary="All" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-lg p-4 text-sm"></div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-2">
-                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Full Name</label>
-                            <input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3" placeholder="As shown on your ID" type="text" />
+                            <label asp-for="FullName" class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Full Name</label>
+                            <input asp-for="FullName" class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3" placeholder="As shown on your ID" type="text" />
+                            <span asp-validation-for="FullName" class="text-red-500 text-sm"></span>
                         </div>
                         <div class="flex flex-col gap-2">
-                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Age</label>
-                            <input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3" placeholder="Minimum 18 years" type="number" />
+                            <label asp-for="Role" class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Account Type</label>
+                            <select asp-for="Role" class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3">
+                                <option value="Customer">Customer</option>
+                                <option value="Worker">Technician</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-red-500 text-sm"></span>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-2">
-                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Email</label>
+                            <label asp-for="Email" class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Email</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-3 top-3.5 text-slate-400 text-xl">mail</span>
-                                <input class="pl-11 w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3" placeholder="name@example.com" type="email" />
+                                <input asp-for="Email" class="pl-11 w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3" placeholder="name@example.com" type="email" />
                             </div>
+                            <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
                         </div>
                         <div class="flex flex-col gap-2">
-                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Phone Number</label>
+                            <label asp-for="PhoneNumber" class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Phone Number</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-3 top-3.5 text-slate-400 text-xl">call</span>
-                                <input class="pl-11 w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3" placeholder="01XXXXXXXXX" type="tel" />
+                                <input asp-for="PhoneNumber" class="pl-11 w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3" placeholder="01XXXXXXXXX" type="tel" />
                             </div>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-primary/5 rounded-xl border border-primary/10 space-y-4">
-                        <h4 class="text-primary font-bold flex items-center gap-2"><span class="material-symbols-outlined">verified_user</span> Technician Verification Documents</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 hover:border-primary transition-colors cursor-pointer text-center">
-                                <span class="material-symbols-outlined text-slate-400 text-3xl mb-1">account_circle</span>
-                                <span class="text-xs font-medium text-slate-600">Profile Photo</span>
-                                <input class="hidden" type="file" />
-                            </div>
-                            <div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 hover:border-primary transition-colors cursor-pointer text-center">
-                                <span class="material-symbols-outlined text-slate-400 text-3xl mb-1">badge</span>
-                                <span class="text-xs font-medium text-slate-600">ID Front</span>
-                                <input class="hidden" type="file" />
-                            </div>
-                            <div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 hover:border-primary transition-colors cursor-pointer text-center">
-                                <span class="material-symbols-outlined text-slate-400 text-3xl mb-1">credit_card</span>
-                                <span class="text-xs font-medium text-slate-600">ID Back</span>
-                                <input class="hidden" type="file" />
-                            </div>
+                            <span asp-validation-for="PhoneNumber" class="text-red-500 text-sm"></span>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-200 dark:border-slate-800">
                         <div class="flex flex-col gap-2">
-                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Username</label>
-                            <input class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3" placeholder="unique_username" type="text" />
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Password</label>
+                            <label asp-for="Password" class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Password</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute right-3 top-3.5 text-slate-400 text-xl cursor-pointer">visibility</span>
-                                <input class="w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 pr-11" placeholder="••••••••" type="password" />
+                                <input asp-for="Password" class="w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary p-3 pr-11" placeholder="••••••••" type="password" />
                             </div>
+                            <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
                         </div>
                     </div>
                     <div class="space-y-4 pt-4">

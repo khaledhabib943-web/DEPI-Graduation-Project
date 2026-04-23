@@ -1,3 +1,4 @@
+@model Application.DTOs.HomeDataDto
 @* Landing Page Home – Arabic (RTL) *@
 @* Bundle: Public | Layout assumes _Layout loads TailwindCSS + main-theme.css *@
 
@@ -9,13 +10,13 @@
                 <h1 class="text-xl font-extrabold tracking-tight">صلاحلي</h1>
             </div>
             <nav class="hidden md:flex items-center gap-8">
-                <a class="text-slate-600 text-sm font-medium hover:text-primary transition-colors" href="#">الرئيسية</a>
-                <a class="text-slate-600 text-sm font-medium hover:text-primary transition-colors" href="#">الخدمات</a>
-                <a class="text-slate-600 text-sm font-medium hover:text-primary transition-colors" href="#">تواصل معنا</a>
+                <a class="text-slate-600 text-sm font-medium hover:text-primary transition-colors" asp-controller="Home" asp-action="Index">الرئيسية</a>
+                <a class="text-slate-600 text-sm font-medium hover:text-primary transition-colors" asp-controller="Customer" asp-action="Index">الخدمات</a>
+                <a class="text-slate-600 text-sm font-medium hover:text-primary transition-colors" asp-controller="Complaint" asp-action="Index">تواصل معنا</a>
             </nav>
             <div class="flex items-center gap-3">
-                <a class="text-primary text-sm font-bold hover:underline" href="#">تسجيل الدخول</a>
-                <a class="bg-primary text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20" href="#">سجل الآن</a>
+                <a class="text-primary text-sm font-bold hover:underline" asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
+                <a class="bg-primary text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20" asp-controller="Account" asp-action="Register">سجل الآن</a>
             </div>
         </header>
         <main>
@@ -25,13 +26,13 @@
                     <h2 class="text-4xl md:text-6xl font-black leading-tight tracking-tight">احجز فني صيانة<br /><span class="text-primary">احترافي</span> الآن</h2>
                     <p class="text-slate-500 text-lg max-w-lg">صلاحلي يربطك بأفضل فنيي الصيانة المعتمدين في مصر. سباكة، كهرباء، تكييفات، وأكثر.</p>
                     <div class="flex gap-4 mt-4">
-                        <a class="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 flex items-center gap-2" href="#"><span class="material-symbols-outlined">search</span> ابحث عن فني</a>
-                        <a class="border-2 border-slate-200 px-6 py-4 rounded-xl font-bold text-lg hover:border-primary hover:text-primary transition-colors" href="#">كيف يعمل؟</a>
+                        <a class="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 flex items-center gap-2" asp-controller="Customer" asp-action="Index"><span class="material-symbols-outlined">search</span> ابحث عن فني</a>
+                        <a class="border-2 border-slate-200 px-6 py-4 rounded-xl font-bold text-lg hover:border-primary hover:text-primary transition-colors" asp-controller="Home" asp-action="Index">كيف يعمل؟</a>
                     </div>
                 </div>
                 <div class="flex-1 max-w-lg">
-                    <div class="aspect-square rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden shadow-2xl">
-                        <img alt="صيانة منزلية احترافية" class="w-full h-full object-cover" src="@Model.heroImage" />
+                    <div class="aspect-square rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden shadow-2xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-9xl text-primary/30">home_repair_service</span>
                     </div>
                 </div>
             </section>
@@ -43,9 +44,64 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                     @foreach (var category in Model.Categories)
                     {
-                    <div class="group flex flex-col items-center gap-4 p-6 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary hover:shadow-lg transition-all cursor-pointer">
-                        <div class="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><span class="material-symbols-outlined text-3xl">@category.iconUrl</span></div>
-                        <h4 class="font-bold text-center">@category.name</h4>
+                    <a asp-controller="Customer" asp-action="Index" asp-route-CategoryId="@category.Id" class="group flex flex-col items-center gap-4 p-6 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary hover:shadow-lg transition-all cursor-pointer">
+                        <div class="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><span class="material-symbols-outlined text-3xl">handyman</span></div>
+                        <h4 class="font-bold text-center">@category.Name</h4>
+                    </a>
+                    }
+                </div>
+            </section>
+
+            <!-- Featured Workers Section -->
+            <section class="px-6 md:px-20 py-16 bg-slate-50 dark:bg-slate-800">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold mb-3">أفضل الفنيين</h3>
+                    <p class="text-slate-500 max-w-md mx-auto">فنيون محترفون معتمدون بتقييمات عالية</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach (var worker in Model.FeaturedWorkers)
+                    {
+                    <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="size-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">person</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">@worker.FullName</h4>
+                                <p class="text-slate-500 text-sm">@worker.CategoryName</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-primary font-bold">@worker.HourlyRate ج.م/ساعة</span>
+                            <span class="text-yellow-600 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">star</span>
+                                @worker.AverageRating.ToString("0.0")
+                            </span>
+                        </div>
+                        <a asp-controller="ServiceRequest" asp-action="Create" asp-route-workerId="@worker.Id" asp-route-customerId="101" class="block w-full text-center bg-primary text-white py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors">احجز الآن</a>
+                    </div>
+                    }
+                </div>
+            </section>
+
+            <!-- Recent Reviews Section -->
+            <section class="px-6 md:px-20 py-16 bg-white dark:bg-slate-900">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold mb-3">آراء العملاء</h3>
+                    <p class="text-slate-500 max-w-md mx-auto">ماذا يقول عملاؤنا عن خدماتنا</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach (var review in Model.RecentReviews)
+                    {
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6">
+                        <div class="flex items-center gap-1 mb-3">
+                            @for (int i = 1; i <= review.Rating; i++)
+                            {
+                            <span class="material-symbols-outlined text-yellow-500 text-sm">star</span>
+                            }
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-300 mb-4">"@review.Comment"</p>
+                        <p class="font-bold text-sm">- @review.CustomerName</p>
                     </div>
                     }
                 </div>
@@ -55,7 +111,7 @@
             <div class="flex flex-col md:flex-row justify-between gap-8">
                 <div><h4 class="font-bold text-xl mb-3">صلاحلي</h4><p class="text-slate-400 text-sm max-w-sm">منصتك الموثوقة لخدمات الصيانة المنزلية في مصر.</p></div>
                 <div class="flex gap-12">
-                    <div><h5 class="font-bold mb-3">روابط سريعة</h5><div class="flex flex-col gap-2 text-slate-400 text-sm"><a href="#">الرئيسية</a><a href="#">الخدمات</a><a href="#">اتصل بنا</a></div></div>
+                    <div><h5 class="font-bold mb-3">روابط سريعة</h5><div class="flex flex-col gap-2 text-slate-400 text-sm"><a asp-controller="Home" asp-action="Index">الرئيسية</a><a asp-controller="Customer" asp-action="Index">الخدمات</a><a asp-controller="Complaint" asp-action="Index">اتصل بنا</a></div></div>
                     <div><h5 class="font-bold mb-3">قانوني</h5><div class="flex flex-col gap-2 text-slate-400 text-sm"><a href="#">سياسة الخصوصية</a><a href="#">شروط الخدمة</a></div></div>
                 </div>
             </div>

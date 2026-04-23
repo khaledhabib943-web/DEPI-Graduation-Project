@@ -22,6 +22,18 @@ namespace Salahly.Presentation.Controllers
             return View(pagedReviews);
         }
 
+        [HttpGet]
+        public IActionResult Create(int workerId, int customerId = 101, int? serviceRequestId = null)
+        {
+            var dto = new CreateReviewDto
+            {
+                WorkerId = workerId,
+                CustomerId = customerId,
+                ServiceRequestId = serviceRequestId ?? 0
+            };
+            return View(dto);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateReviewDto dto)
         {

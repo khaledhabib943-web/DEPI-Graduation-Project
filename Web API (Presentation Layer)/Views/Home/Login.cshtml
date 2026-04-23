@@ -1,3 +1,4 @@
+@model Application.DTOs.LoginDto
 @* Secure Login – Arabic (RTL) *@
 @* Bundle: Public | Layout assumes _Layout loads TailwindCSS + main-theme.css *@
 
@@ -10,7 +11,7 @@
             </div>
             <div class="flex items-center gap-3">
                 <p class="hidden md:block text-slate-500 text-sm">ليس لديك حساب؟</p>
-                <a class="px-5 py-2.5 bg-primary/10 text-primary rounded-lg font-bold text-sm hover:bg-primary/20 transition-colors" href="#">سجل الآن</a>
+                <a class="px-5 py-2.5 bg-primary/10 text-primary rounded-lg font-bold text-sm hover:bg-primary/20 transition-colors" asp-controller="Account" asp-action="Register">سجل الآن</a>
             </div>
         </header>
         <main class="flex-1 flex items-center justify-center py-12 px-4">
@@ -20,20 +21,23 @@
                     <h1 class="text-3xl font-black tracking-tight mb-2">تسجيل الدخول</h1>
                     <p class="text-slate-500">ادخل إلى حسابك في صلاحلي</p>
                 </div>
-                <form class="space-y-5">
+                <form asp-action="Login" asp-controller="Account" method="post" class="space-y-5">
+                    <div asp-validation-summary="All" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-lg p-4 text-sm"></div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">البريد الإلكتروني أو رقم الهاتف</label>
+                        <label asp-for="Email" class="text-sm font-semibold text-slate-700 dark:text-slate-300">البريد الإلكتروني</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">mail</span>
-                            <input class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary h-12" placeholder="name@example.com" type="text" />
+                            <input asp-for="Email" class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary h-12" placeholder="name@example.com" type="email" />
                         </div>
+                        <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">كلمة المرور</label>
+                        <label asp-for="Password" class="text-sm font-semibold text-slate-700 dark:text-slate-300">كلمة المرور</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">lock</span>
-                            <input class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary h-12" placeholder="••••••••" type="password" />
+                            <input asp-for="Password" class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pr-10 focus:border-primary focus:ring-primary h-12" placeholder="••••••••" type="password" />
                         </div>
+                        <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
                     </div>
                     <div class="flex justify-between items-center">
                         <label class="flex items-center gap-2 cursor-pointer"><input class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox" /><span class="text-sm text-slate-500">تذكرني</span></label>
@@ -42,7 +46,7 @@
                     <button class="w-full bg-primary text-white h-14 rounded-xl font-bold text-lg hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all" type="submit">تسجيل الدخول</button>
                 </form>
                 <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-center text-sm text-slate-500">
-                    <p>ليس لديك حساب؟ <a class="text-primary font-bold hover:underline" href="#">إنشاء حساب جديد</a></p>
+                    <p>ليس لديك حساب؟ <a class="text-primary font-bold hover:underline" asp-controller="Account" asp-action="Register">إنشاء حساب جديد</a></p>
                 </div>
             </div>
         </main>
