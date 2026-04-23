@@ -1,14 +1,12 @@
 using Application.Interfaces;
 using Infrastructure.Services;
 using Application.Mappings;
-using FluentValidation;
 using Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IServiceRequestService, ServiceRequestService>();

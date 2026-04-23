@@ -33,10 +33,7 @@ namespace Salahly.Presentation.Controllers
                         Items = filteredItems,
                         TotalCount = filteredItems.Count,
                         PageNumber = 1,
-                        PageSize = filteredItems.Count,
-                        TotalPages = 1,
-                        HasPreviousPage = false,
-                        HasNextPage = false
+                        PageSize = filteredItems.Count
                     };
                 }
             }
