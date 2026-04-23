@@ -1,42 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
+namespace Salahly.Presentation.Controllers
+{
     public class ReviewController : Controller
     {
-        
-        private List<ReviewViewModel> reviewsList = new List<ReviewViewModel>
-        {
-            new ReviewViewModel
-            {
-                Id = 1,
-                Rating = 5,
-                Comment = "خدمة ممتازة وفني محترم جداً",
-                CreatedAt = DateTime.Now.ToShortDateString(),
-                CustomerName = "سارة محمود",
-                WorkerName = "محمد السباك",
-                ServiceRequestId = 101
-            },
-            new ReviewViewModel
-            {
-                Id = 2,
-                Rating = 4,
-                Comment = "شغل نضيف بس اتأخر شوية عن الموعد",
-                CreatedAt = DateTime.Now.ToShortDateString(),
-                CustomerName = "أحمد علي",
-                WorkerName = "إبراهيم الكهربائي",
-                ServiceRequestId = 102
-            }
-        };
+        private readonly IReviewService _reviewService;
 
-       
-        public IActionResult Index()
+        public ReviewController(IReviewService reviewService)
         {
-            return View(reviewsList);
+            _reviewService = reviewService;
         }
 
-        public IActionResult Details(int id)
+        [HttpGet]
+        public async Task<IActionResult> WorkerReviews(int workerId, int pageNumber = 1)
         {
-            var review = reviewsList.FirstOrDefault(r => r.Id == id);
-            if (review == null) return NotFound();
-            return View(review);
+            var pagedReviews = await _reviewService.GetWorkerReviewsAsync(workerId, pageNumber);
+            ViewBag.WorkerId = workerId;
+            return View(pagedReviews);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateReviewDto dto)
+        {
+            await _reviewService.CreateReviewAsync(dto);
+            return RedirectToAction(nameof(WorkerReviews), new { workerId = dto.WorkerId });
         }
     }
+}

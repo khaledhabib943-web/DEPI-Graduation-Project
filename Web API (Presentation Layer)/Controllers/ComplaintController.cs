@@ -1,41 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
+namespace Salahly.Presentation.Controllers
+{
     public class ComplaintController : Controller
     {
-       
-        private static List<ComplaintViewModel> complaints = new List<ComplaintViewModel>
-        {
-            new ComplaintViewModel
-            {
-                Id = 1,
-                Title = "تأخير في الموعد",
-                Content = "الفني تأخر عن موعده المتفق عليه بساعتين",
-                Status = "Pending",
-                CreatedAt = DateTime.Now.ToShortDateString(),
-                CustomerName = "سارة محمود",
-                ServiceRequestId = 101
-            },
-            new ComplaintViewModel
-            {
-                Id = 2,
-                Title = "سوء معاملة",
-                Content = "طريقة كلام الفني كانت غير لائقة",
-                Status = "Resolved",
-                CreatedAt = DateTime.Now.AddDays(-1).ToShortDateString(),
-                CustomerName = "أحمد علي",
-                ServiceRequestId = null // شكوى عامة
-            }
-        };
+        private readonly IComplaintService _complaintService;
 
-        public IActionResult Index()
+        public ComplaintController(IComplaintService complaintService)
         {
+            _complaintService = complaintService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index(int customerId = 101)
+        {
+            var complaints = await _complaintService.GetCustomerComplaintsAsync(customerId);
             return View(complaints);
         }
 
-        public IActionResult Details(int id)
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateComplaintDto dto)
         {
-            var complaint = complaints.FirstOrDefault(c => c.Id == id);
-            if (complaint == null) return NotFound();
-            return View(complaint);
+            await _complaintService.CreateComplaintAsync(dto);
+            return RedirectToAction(nameof(Index), new { customerId = dto.CustomerId });
         }
     }
+}

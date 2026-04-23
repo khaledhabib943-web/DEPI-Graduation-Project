@@ -1,45 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
+namespace Salahly.Presentation.Controllers
+{
     public class NotificationController : Controller
     {
-        private static List<NotificationViewModel> notifications = new List<NotificationViewModel>
-        {
-            new NotificationViewModel
-            {
-                Id = 1,
-                Title = "طلب جديد",
-                Message = "لديك طلب سباكة جديد في منطقة المعادي",
-                Type = "NewRequest",
-                IsRead = false,
-                CreatedAt = DateTime.Now.ToString("g"),
-                UserName = "محمد السباك",
-                RelatedRequestId = 101
-            },
-            new NotificationViewModel
-            {
-                Id = 2,
-                Title = "تم قبول الطلب",
-                Message = "وافق الفني إبراهيم على طلب صيانة الكهرباء",
-                Type = "RequestAccepted",
-                IsRead = true,
-                CreatedAt = DateTime.Now.AddMinutes(-30).ToString("g"),
-                UserName = "سارة محمود",
-                RelatedRequestId = 102
-            }
-        };
+        private readonly INotificationService _notificationService;
 
-        public IActionResult Index()
+        public NotificationController(INotificationService notificationService)
         {
+            _notificationService = notificationService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index(int userId = 101)
+        {
+            var notifications = await _notificationService.GetUserNotificationsAsync(userId);
             return View(notifications);
         }
 
-        public IActionResult Details(int id)
+        [HttpPost]
+        public async Task<IActionResult> MarkAsRead(int notificationId, int userId)
         {
-            var notification = notifications.FirstOrDefault(n => n.Id == id);
-            if (notification == null) return NotFound();
-
-            notification.IsRead = true;
-
-            return View(notification);
+            await _notificationService.MarkAsReadAsync(notificationId);
+            return RedirectToAction(nameof(Index), new { userId });
         }
     }
+}
