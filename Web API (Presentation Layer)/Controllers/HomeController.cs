@@ -15,7 +15,15 @@ namespace Salahly.Presentation.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var data = await _homeService.GetLandingPageDataAsync();
+            int customerId = TempData.Peek("UserId") as int? ?? 101; // Mock logged in user
+            var data = await _homeService.GetLandingPageDataAsync(customerId);
+            return View(data);
+        }
+
+        public async Task<IActionResult> IndexEn()
+        {
+            int customerId = TempData.Peek("UserId") as int? ?? 101;
+            var data = await _homeService.GetLandingPageDataAsync(customerId);
             return View(data);
         }
     }

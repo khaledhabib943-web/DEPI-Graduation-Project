@@ -1,12 +1,86 @@
-﻿@model ServiceRequestViewModel
+@model Application.DTOs.ServiceRequestDto
+@{
+    var status = Model.Status;
+    bool isPending = status == Domain_layer.Enums.RequestStatus.Pending;
+    bool isInProgress = status == Domain_layer.Enums.RequestStatus.InProgress;
+    bool isCompleted = status == Domain_layer.Enums.RequestStatus.Completed;
+    bool isCancelled = status == Domain_layer.Enums.RequestStatus.Cancelled;
 
-<h2>تفاصيل الطلب رقم @Model.Id</h2>
-<ul>
-    <li><strong>وصف المشكلة:</strong> @Model.Description</li>
-    <li><strong>العنوان:</strong> @Model.Address</li>
-    <li><strong>حالة الطلب:</strong> @Model.Status</li>
-    <li><strong>تاريخ الموعد:</strong> @Model.ScheduledDate</li>
-    <li><strong>اسم العميل:</strong> @Model.CustomerName</li>
-    <li><strong>اسم الفني القائم بالخدمة:</strong> @Model.WorkerName</li>
-</ul>
-<a href="/ServiceRequest">رجوع للقائمة</a>
+    var steps = new List<(string Icon, string Title, string Description, bool IsCompleted, bool IsCurrent, bool IsLast)>();
+    steps.Add(("receipt_long", "تم استلام الطلب", "تم إرسال طلبك بنجاح", true, isPending, false));
+    steps.Add(("engineering", "جاري التنفيذ", "العمل قيد التنفيذ الآن", isInProgress || isCompleted, isInProgress, false));
+    steps.Add(("check_circle", "تم الإنجاز", "تم الانتهاء من العمل", isCompleted, isCompleted, true));
+}
+@* Track Request Status – Arabic (RTL) *@
+@* Bundle: Customer & Booking | Layout assumes _Layout loads TailwindCSS + main-theme.css *@
+
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden" dir="rtl">
+    <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-6 md:px-20 py-4 sticky top-0 z-50">
+            <div class="flex items-center gap-4">
+                <div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">build</span></div>
+                <h2 class="text-xl font-bold leading-tight tracking-tight">تتبع الطلب</h2>
+            </div>
+            <div class="flex gap-3">
+                <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"><span class="material-symbols-outlined">notifications</span></button>
+            </div>
+        </header>
+        <main class="flex-1 flex justify-center py-6 px-4 md:px-20">
+            <div class="flex flex-col max-w-[960px] flex-1 gap-6">
+                <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <div>
+                            <h1 class="text-2xl font-bold">طلب رقم #@Model.Id</h1>
+                            <p class="text-slate-500 mt-1">تم إنشاء الطلب: @Model.CreatedAt.ToString("g")</p>
+                        </div>
+                        <span class="px-4 py-2 bg-primary/10 text-primary font-bold rounded-full text-sm">@Model.Status</span>
+                    </div>
+                    <div class="relative">
+                        <div class="grid grid-cols-[48px_1fr] gap-x-4">
+                            @foreach (var step in steps)
+                            {
+                            <div class="flex flex-col items-center">
+                                <div class="flex items-center justify-center size-10 rounded-full @(step.IsCompleted ? "bg-primary text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400") @(step.IsCurrent ? "ring-4 ring-primary/20" : "")">
+                                    <span class="material-symbols-outlined text-[20px]">@step.Icon</span>
+                                </div>
+                                @if (!step.IsLast)
+                                {
+                                <div class="w-1 @(step.IsCompleted ? "bg-primary" : "bg-slate-200 dark:bg-slate-700") h-12"></div>
+                                }
+                            </div>
+                            <div class="@(!step.IsLast ? "pb-8" : "")">
+                                <p class="@(step.IsCurrent ? "text-primary" : step.IsCompleted ? "" : "text-slate-400") font-bold">@step.Title</p>
+                                <p class="text-sm @(step.IsCompleted ? "text-slate-500" : "text-slate-400")">@step.Description</p>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+                    <h3 class="text-lg font-bold mb-6">تفاصيل الفني</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <img alt="@Model.WorkerName" class="size-16 rounded-full object-cover ring-2 ring-primary/10" src="https://ui-avatars.com/api/?name=@Model.WorkerName&background=0D8ABC&color=fff" />
+                            <div>
+                                <h4 class="font-bold">@Model.WorkerName</h4>
+                                <p class="text-slate-500 text-sm">فني صلاحلي — تقييم 5.0 ★</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex items-center justify-center size-12 rounded-full bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90"><span class="material-symbols-outlined">call</span></button>
+                            <button class="flex items-center justify-center size-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"><span class="material-symbols-outlined">chat</span></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2"><span class="material-symbols-outlined">support_agent</span> تواصل مع الدعم الفني</button>
+                    <button class="w-full py-4 border-2 border-slate-200 dark:border-slate-800 text-slate-600 font-bold rounded-xl flex items-center justify-center gap-2"><span class="material-symbols-outlined">cancel</span> إلغاء الطلب</button>
+                </div>
+            </div>
+        </main>
+        <footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 py-6 text-center">
+            <p class="text-slate-500 text-sm">جميع الحقوق محفوظة لمنصة صلاحلي © 2024</p>
+        </footer>
+    </div>
+</div>
+

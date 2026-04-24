@@ -70,5 +70,21 @@ namespace Salahly.Presentation.Controllers
             await _requestService.UpdateRequestStatusAsync(requestId, status);
             return RedirectToAction(nameof(Index)); // Needs customerId in a real app
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var request = await _requestService.GetRequestByIdAsync(id);
+            if (request == null) return NotFound();
+            return View(request);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DetailsEn(int id)
+        {
+            var request = await _requestService.GetRequestByIdAsync(id);
+            if (request == null) return NotFound();
+            return View(request);
+        }
     }
 }

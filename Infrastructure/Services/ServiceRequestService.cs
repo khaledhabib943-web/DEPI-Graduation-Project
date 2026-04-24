@@ -85,5 +85,25 @@ namespace Infrastructure.Services
             request.Status = status;
             return Task.FromResult(true);
         }
+
+        public Task<ServiceRequestDto?> GetRequestByIdAsync(int id)
+        {
+            var request = MockDatabase.ServiceRequests.FirstOrDefault(r => r.Id == id);
+            if (request == null) return Task.FromResult<ServiceRequestDto?>(null);
+
+            var worker = MockDatabase.Workers.FirstOrDefault(w => w.Id == request.WorkerId);
+            return Task.FromResult<ServiceRequestDto?>(new ServiceRequestDto
+            {
+                Id = request.Id,
+                Description = request.Description,
+                Address = request.Address,
+                ScheduledDate = request.ScheduledDate,
+                CustomerId = request.CustomerId,
+                WorkerId = request.WorkerId,
+                WorkerName = worker?.FullName ?? string.Empty,
+                Status = request.Status,
+                CreatedAt = request.CreatedAt
+            });
+        }
     }
 }

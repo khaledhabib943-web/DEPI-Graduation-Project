@@ -10,5 +10,6 @@ namespace Application.Interfaces
         Task<ServiceRequestDto> CreateRequestAsync(CreateServiceRequestDto dto);
         Task<PagedResult<ServiceRequestDto>> GetCustomerRequestsAsync(int customerId, int pageNumber = 1, int pageSize = 10);
         Task<bool> UpdateRequestStatusAsync(int requestId, RequestStatus status);
+        Task<ServiceRequestDto?> GetRequestByIdAsync(int id);
     }
 }

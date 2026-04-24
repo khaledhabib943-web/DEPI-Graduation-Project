@@ -5,6 +5,6 @@ namespace Application.Interfaces
 {
     public interface IHomeService
     {
-        Task<HomeDataDto> GetLandingPageDataAsync();
+        Task<HomeDataDto> GetLandingPageDataAsync(int? customerId = null);
     }
 }

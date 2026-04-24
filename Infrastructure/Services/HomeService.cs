@@ -8,7 +8,7 @@ namespace Infrastructure.Services
 {
     public class HomeService : IHomeService
     {
-        public Task<HomeDataDto> GetLandingPageDataAsync()
+        public Task<HomeDataDto> GetLandingPageDataAsync(int? customerId = null)
         {
             var categories = MockDatabase.Workers
                 .Where(w => w.Category != null)
@@ -50,11 +50,29 @@ namespace Infrastructure.Services
                 };
             }).ToList();
 
+            var activeBookings = new System.Collections.Generic.List<ServiceRequestDto>();
+            if (customerId.HasValue)
+            {
+                activeBookings = MockDatabase.ServiceRequests
+                    .Where(sr => sr.CustomerId == customerId.Value && sr.Status != Domain_layer.Enums.RequestStatus.Completed)
+                    .Select(sr => new ServiceRequestDto
+                    {
+                        Id = sr.Id,
+                        Description = sr.Description,
+                        Address = sr.Address,
+                        Status = sr.Status,
+                        CustomerId = sr.CustomerId,
+                        WorkerId = sr.WorkerId,
+                        ScheduledDate = sr.ScheduledDate
+                    }).ToList();
+            }
+
             var homeData = new HomeDataDto
             {
                 Categories = categories,
                 FeaturedWorkers = featuredWorkers,
-                RecentReviews = recentReviews
+                RecentReviews = recentReviews,
+                ActiveBookings = activeBookings
             };
 
             return Task.FromResult(homeData);
