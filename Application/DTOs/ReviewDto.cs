@@ -11,5 +11,7 @@ namespace Application.DTOs
         public int CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public int WorkerId { get; set; }
+        public string WorkerName { get; set; } = string.Empty;
+        public int ServiceRequestId { get; set; }
     }
 }

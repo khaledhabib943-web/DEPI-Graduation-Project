@@ -82,5 +82,26 @@ namespace Infrastructure.Services
 
             return Task.FromResult(result);
         }
+
+        public Task<WorkerDto?> GetWorkerByIdAsync(int id)
+        {
+            var worker = Infrastructure.Persistence.MockDatabase.Workers.FirstOrDefault(w => w.Id == id);
+            if (worker == null) return Task.FromResult<WorkerDto?>(null);
+
+            var dto = new WorkerDto
+            {
+                Id = worker.Id,
+                FullName = worker.FullName ?? "",
+                Bio = worker.Bio ?? "",
+                HourlyRate = worker.HourlyRate,
+                IsVerified = worker.IsVerified,
+                CategoryId = worker.CategoryId,
+                CategoryName = worker.Category?.Name ?? "",
+                Availability = worker.Availability,
+                AverageRating = worker.Reviews?.Any() == true ? worker.Reviews.Average(r => r.Rating) : 0
+            };
+
+            return Task.FromResult<WorkerDto?>(dto);
+        }
     }
 }

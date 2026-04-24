@@ -7,5 +7,6 @@ namespace Application.Interfaces
     public interface ICustomerService
     {
         Task<PagedResult<WorkerDto>> GetFilteredWorkersAsync(WorkerSearchDto searchDto);
+        Task<WorkerDto?> GetWorkerByIdAsync(int id);
     }
 }
