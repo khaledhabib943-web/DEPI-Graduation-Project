@@ -1,0 +1,106 @@
+@model Application.DTOs.HomeDataDto
+@* Customer Dashboard – Arabic (RTL) *@
+@* Bundle: Customer & Booking | Layout assumes _Layout loads TailwindCSS + main-theme.css *@
+
+<div class="relative flex min-h-screen w-full flex-col" dir="rtl">
+    <header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-6 py-4 lg:px-10">
+        <div class="flex items-center gap-4">
+            <div class="text-primary"><span class="material-symbols-outlined text-4xl">home_repair_service</span></div>
+            <h2 class="text-xl font-bold leading-tight tracking-tight">صلاحلي</h2>
+        </div>
+        <div class="flex flex-1 justify-end items-center gap-4">
+            <label class="hidden md:flex flex-col min-w-40 h-10 max-w-64">
+                <div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-slate-100 dark:bg-slate-800">
+                    <div class="text-slate-500 flex items-center justify-center pl-4"><span class="material-symbols-outlined">search</span></div>
+                    <input class="w-full border-none bg-transparent focus:ring-0 text-sm placeholder:text-slate-500 px-3" placeholder="ابحث عن الخدمات..." />
+                </div>
+            </label>
+            <button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary"><span class="material-symbols-outlined">notifications</span></button>
+            <div class="h-10 w-10 rounded-full bg-primary/10 border-2 border-primary overflow-hidden">
+                <img alt="@(TempData.Peek("UserName") as string ?? "ضيف")" class="h-full w-full object-cover" src="https://ui-avatars.com/api/?name=@(TempData.Peek("UserName") as string ?? "Guest")&background=0D8ABC&color=fff" />
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex flex-col lg:flex-row gap-6 p-6 lg:p-10 max-w-[1600px] mx-auto w-full">
+        <aside class="w-full lg:w-72 flex flex-col gap-6">
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="size-14 rounded-full border-2 border-primary overflow-hidden">
+                        <img alt="@(TempData.Peek("UserName") as string ?? "ضيف")" class="size-full object-cover" src="https://ui-avatars.com/api/?name=@(TempData.Peek("UserName") as string ?? "Guest")&background=0D8ABC&color=fff" />
+                    </div>
+                    <div>
+                        <h3 class="font-bold">@(TempData.Peek("UserName") as string ?? "ضيف")</h3>
+                        <p class="text-xs text-slate-500">عميل صلاحلي</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-1">
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white" href="#"><span class="material-symbols-outlined">dashboard</span><span class="text-sm font-medium">لوحة التحكم</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#"><span class="material-symbols-outlined">receipt_long</span><span class="text-sm font-medium">طلباتي</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#"><span class="material-symbols-outlined">favorite</span><span class="text-sm font-medium">المفضلة</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#"><span class="material-symbols-outlined">person</span><span class="text-sm font-medium">الملف الشخصي</span></a>
+                </nav>
+            </div>
+        </aside>
+
+        <section class="flex-1 flex flex-col gap-6">
+            <div>
+                <h2 class="text-2xl font-bold tracking-tight mb-1">مرحباً، @(TempData.Peek("UserName") as string ?? "ضيف") 👋</h2>
+                <p class="text-slate-500">ماذا تحتاج إصلاحه اليوم؟</p>
+            </div>
+
+            <!-- Quick Service Categories -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @foreach (var category in Model.Categories)
+                {
+                <button class="group flex flex-col items-center gap-3 p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary hover:shadow-md transition-all">
+                    <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-2xl">@category.IconUrl</span>
+                    </div>
+                    <span class="text-sm font-bold">@category.Name</span>
+                </button>
+                }
+            </div>
+
+            <!-- Active Bookings -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <div class="p-5 border-b border-slate-200 dark:border-slate-800">
+                    <h3 class="text-lg font-bold">الطلبات النشطة</h3>
+                </div>
+                @foreach (var booking in Model.ActiveBookings)
+                {
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                    <div class="flex flex-col md:flex-row justify-between gap-4">
+                        <div class="flex gap-4">
+                            <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined">handyman</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">@booking.Description</h4>
+                                <div class="flex flex-wrap gap-3 mt-1 text-sm text-slate-500">
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> @booking.ScheduledDate.ToString("dd MMM yyyy")</span>
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> @booking.ScheduledDate.ToString("hh:mm tt")</span>
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span> @booking.Address</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                @(booking.Status == Domain_layer.Enums.RequestStatus.Pending ? "bg-amber-100 text-amber-700" :
+                                  booking.Status == Domain_layer.Enums.RequestStatus.InProgress ? "bg-blue-100 text-blue-700" :
+                                  booking.Status == Domain_layer.Enums.RequestStatus.Completed ? "bg-green-100 text-green-700" :
+                                  "bg-red-100 text-red-700")">@booking.Status</span>
+                            <a asp-controller="ServiceRequest" asp-action="Details" asp-route-id="@booking.Id" class="text-primary font-semibold text-sm hover:underline">تفاصيل</a>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 px-10 text-center text-slate-500 text-sm">
+        <p>© 2024 شركة صلاحلي. جميع الحقوق محفوظة.</p>
+    </footer>
+</div>
+

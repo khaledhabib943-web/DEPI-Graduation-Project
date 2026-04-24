@@ -8,10 +8,26 @@ namespace Salahly.Presentation.Controllers
     public class CustomerController : Controller
     {
         private readonly ICustomerService _customerService;
+        private readonly IHomeService _homeService;
 
-        public CustomerController(ICustomerService customerService)
+        public CustomerController(ICustomerService customerService, IHomeService homeService)
         {
             _customerService = customerService;
+            _homeService = homeService;
+        }
+
+        public async Task<IActionResult> Dashboard()
+        {
+            int customerId = TempData.Peek("UserId") as int? ?? 101; // Mock logged in user
+            var data = await _homeService.GetLandingPageDataAsync(customerId);
+            return View(data);
+        }
+
+        public async Task<IActionResult> DashboardEn()
+        {
+            int customerId = TempData.Peek("UserId") as int? ?? 101;
+            var data = await _homeService.GetLandingPageDataAsync(customerId);
+            return View(data);
         }
 
         // Action to view and search workers
@@ -25,10 +41,13 @@ namespace Salahly.Presentation.Controllers
             return View(pagedWorkers);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            // Placeholder for viewing a specific worker
-            return View();
+            var worker = await _customerService.GetWorkerByIdAsync(id);
+            if (worker == null)
+                return NotFound();
+
+            return View(worker);
         }
     }
 }
