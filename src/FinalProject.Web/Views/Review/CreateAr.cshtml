@@ -1,0 +1,16 @@
+@model ReviewViewModel
+@{ ViewData["Title"] = "تقييم الخدمة"; Layout = "_LayoutArabic"; }
+
+<div class="flex flex-1 justify-center py-8 px-4">
+    <div class="flex flex-col max-w-[560px] flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 md:p-10 border border-slate-100 dark:border-slate-800">
+        <div class="text-center mb-8"><h1 class="text-2xl font-bold mb-2">تقييم الخدمة</h1><p class="text-slate-500 text-sm">شكراً لاستخدامك صلاحلي</p></div>
+        <div class="flex flex-col items-center gap-4 mb-10 p-6 bg-primary/5 rounded-xl border border-primary/10"><div class="size-20 rounded-full bg-primary/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined !text-4xl">person</span></div><p class="text-xl font-bold">@Model.WorkerName</p></div>
+        <form asp-action="CreateAr" method="post" class="flex flex-col gap-6">
+            <input type="hidden" asp-for="RequestId" /><input type="hidden" asp-for="WorkerId" /><input type="hidden" asp-for="WorkerName" />
+            <div class="flex flex-col items-center gap-4"><h3 class="text-lg font-bold">كيف كانت جودة العمل؟</h3><div class="flex gap-2">@for (int i = 1; i <= 5; i++) { <label class="cursor-pointer p-1 hover:scale-110 transition-transform"><input type="radio" name="Rating" value="@i" class="sr-only peer" @(i == 4 ? "checked" : "") /><span class="material-symbols-outlined !text-4xl text-slate-300 peer-checked:text-amber-400" style="font-variation-settings:'FILL' 1">star</span></label> }</div></div>
+            <div class="flex flex-col gap-2"><label class="text-base font-bold">أضف تعليقك</label><textarea asp-for="Comment" class="w-full min-h-[120px] rounded-xl border border-slate-200 dark:border-slate-700 bg-background-light dark:bg-slate-800 p-4 resize-none placeholder:text-slate-400" placeholder="اكتب تجربتك هنا..."></textarea></div>
+            <button type="submit" class="w-full bg-primary text-white h-14 rounded-xl font-bold text-lg shadow-lg shadow-primary/20">إرسال التقييم</button>
+            <a asp-controller="Dashboard" asp-action="IndexAr" class="w-full text-slate-500 h-12 rounded-xl font-medium text-center flex items-center justify-center hover:bg-slate-50">تخطي الآن</a>
+        </form>
+    </div>
+</div>

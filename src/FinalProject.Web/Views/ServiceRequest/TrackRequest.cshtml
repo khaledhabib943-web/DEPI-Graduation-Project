@@ -1,0 +1,71 @@
+@model TrackRequestViewModel
+@{ ViewData["Title"] = "Track Request"; }
+
+<div class="flex-1 flex justify-center py-6 px-4 md:px-20">
+    <div class="flex flex-col max-w-[960px] flex-1 gap-6">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div><h1 class="text-2xl font-bold">Request #@Model.Request.RequestId</h1><p class="text-slate-500 mt-1">Created: @Model.Request.CreatedAt.ToString("MMM dd, yyyy h:mm tt")</p></div>
+                <span class="px-4 py-2 bg-primary/10 text-primary font-bold rounded-full text-sm">@Model.Request.Status</span>
+            </div>
+            <!-- Timeline -->
+            <div class="grid grid-cols-[48px_1fr] gap-x-4">
+                @{ var statuses = new[] { ("check", "Pending", "Received and waiting"), ("thumb_up", "Accepted", "Technician assigned"), ("local_shipping", "In Progress", "Technician on the way"), ("handyman", "Working", "Repair in progress"), ("verified", "Completed", "Job done") };
+                    int step = Model.Request.Status switch { FinalProject.Domain.Enums.RequestStatus.Pending => 0, FinalProject.Domain.Enums.RequestStatus.InProgress => 2, FinalProject.Domain.Enums.RequestStatus.Completed => 4, _ => -1 }; }
+                @for (int i = 0; i < statuses.Length; i++)
+                {
+                    var isActive = i <= step;
+                    var isCurrent = i == step;
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center justify-center size-10 rounded-full @(isActive ? "bg-primary text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400") @(isCurrent ? "ring-4 ring-primary/20" : "")">
+                            <span class="material-symbols-outlined text-[20px]">@statuses[i].Item1</span>
+                        </div>
+                        @if (i < statuses.Length - 1) { <div class="w-1 @(isActive ? "bg-primary" : "bg-slate-200 dark:bg-slate-700") h-12"></div> }
+                    </div>
+                    <div class="@(i < statuses.Length - 1 ? "pb-8" : "")">
+                        <p class="@(isCurrent ? "text-primary" : isActive ? "text-slate-900 dark:text-slate-100" : "text-slate-400") font-bold">@statuses[i].Item2</p>
+                        <p class="text-slate-500 text-sm">@statuses[i].Item3</p>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <h3 class="text-lg font-bold mb-4">Service Details</h3>
+            <div class="flex flex-col gap-3">
+                <div class="flex justify-between"><span class="text-slate-500">Category:</span><span class="font-semibold">@Model.Request.CategoryName</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Worker:</span><span class="font-semibold">@Model.Request.WorkerName</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Location:</span><span class="font-semibold">@Model.Request.LocationDetails</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Date:</span><span class="font-semibold">@Model.Request.ScheduledDate.ToString("MMM dd, yyyy")</span></div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a asp-controller="Dashboard" asp-action="Index" class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">dashboard</span> Back to Dashboard
+            </a>
+            @if (Model.Request.Status == FinalProject.Domain.Enums.RequestStatus.Completed)
+            {
+                <a asp-controller="Review" asp-action="Create" asp-route-requestId="@Model.Request.RequestId" asp-route-workerId="@Model.Request.WorkerId" asp-route-workerName="@Model.Request.WorkerName" class="w-full py-4 bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
+                    <span class="material-symbols-outlined">star</span> Rate Service
+                </a>
+            }
+            else if (Model.Request.Status == FinalProject.Domain.Enums.RequestStatus.InProgress)
+            {
+                <form asp-controller="ServiceRequest" asp-action="SimulateComplete" method="post">
+                    <input type="hidden" name="requestId" value="@Model.Request.RequestId" />
+                    <button class="w-full py-4 bg-amber-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-colors">
+                        <span class="material-symbols-outlined">fast_forward</span> Simulate Completion (Testing)
+                    </button>
+                </form>
+            }
+            else if (Model.Request.Status == FinalProject.Domain.Enums.RequestStatus.Pending)
+            {
+                <form asp-controller="ServiceRequest" asp-action="Cancel" method="post">
+                    <input type="hidden" name="requestId" value="@Model.Request.RequestId" />
+                    <button class="w-full py-4 border-2 border-slate-200 dark:border-slate-800 text-slate-600 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-50">
+                        <span class="material-symbols-outlined">cancel</span> Cancel Request
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

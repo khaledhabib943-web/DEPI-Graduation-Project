@@ -1,0 +1,30 @@
+@model LoginViewModel
+@{ ViewData["Title"] = "تسجيل الدخول"; Layout = "_LayoutArabic"; }
+
+<div class="flex-1 flex items-center justify-center p-6">
+    <div class="w-full max-w-[480px] space-y-8">
+        <div class="text-center md:text-right"><h1 class="text-4xl font-black mb-2">مرحباً بعودتك</h1><p class="text-slate-500">يرجى إدخال بياناتك للوصول إلى حسابك المؤمن.</p></div>
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            { <div class="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium">@Model.ErrorMessage</div> }
+            <form asp-action="LoginAr" method="post" class="space-y-6">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold">اسم المستخدم أو البريد الإلكتروني</label>
+                    <div class="relative"><span class="material-symbols-outlined absolute text-slate-400 right-3 top-3">mail</span><input asp-for="Username" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 focus:ring-2 focus:ring-primary pr-11 pl-4" placeholder="name@company.com" /></div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold">كلمة المرور</label>
+                    <div class="relative"><span class="material-symbols-outlined absolute text-slate-400 right-3 top-3">lock</span><input asp-for="Password" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 focus:ring-2 focus:ring-primary pr-11 pl-4" placeholder="••••••••" /></div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 cursor-pointer"><input asp-for="RememberMe" class="h-4 w-4 rounded border-slate-300 text-primary" /><span class="text-sm text-slate-600 font-medium">تذكرني</span></label>
+                    <a class="text-sm font-semibold text-primary hover:underline" href="#">نسيت كلمة المرور؟</a>
+                </div>
+                <button type="submit" class="w-full h-12 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/20 flex items-center justify-center gap-2">تسجيل الدخول <span class="material-symbols-outlined text-[20px]">login</span></button>
+            </form>
+        </div>
+        <p class="text-center text-slate-500 text-sm">ليس لديك حساب؟ <a asp-controller="Account" asp-action="RegisterAr" class="font-bold text-primary hover:underline">إنشاء حساب جديد</a></p>
+        <div class="text-center text-slate-400 text-xs"><p>تجريب: <strong>ahmed</strong> / <strong>password123</strong></p></div>
+    </div>
+</div>

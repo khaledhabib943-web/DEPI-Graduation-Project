@@ -1,0 +1,15 @@
+@model CreateComplaintViewModel
+@{ ViewData["Title"] = "تقديم شكوى"; Layout = "_LayoutArabic"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[720px] mx-auto">
+        <h1 class="text-3xl font-black mb-2">تقديم شكوى جديدة</h1><p class="text-slate-500 mb-8">أخبرنا عن المشكلة وسنقوم بالتحقيق.</p>
+        <div class="bg-white dark:bg-slate-900 rounded-xl border p-6 shadow-sm">
+            <form asp-action="CreateAr" method="post" class="space-y-6">
+                <div class="flex flex-col gap-2"><label class="text-sm font-semibold">طلب الخدمة المرتبط</label><select name="WorkerId" class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 p-3">@foreach (var r in Model.CompletedRequests) { <option value="@r.WorkerId">طلب #@r.RequestId - @r.CategoryName</option> }</select></div>
+                <div class="flex flex-col gap-2"><label class="text-sm font-semibold">الوصف</label><textarea asp-for="Description" rows="4" class="rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 p-3" placeholder="صف المشكلة بالتفصيل..."></textarea></div>
+                <div class="flex justify-end gap-3"><a asp-action="IndexAr" class="px-6 py-2.5 rounded-lg font-semibold text-slate-700 hover:bg-slate-100">إلغاء</a><button type="submit" class="px-8 py-2.5 rounded-lg font-semibold bg-primary text-white hover:bg-primary/90 shadow-md">إرسال الشكوى</button></div>
+            </form>
+        </div>
+    </div>
+</div>

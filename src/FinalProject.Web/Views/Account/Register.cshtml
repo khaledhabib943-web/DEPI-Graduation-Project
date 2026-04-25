@@ -1,0 +1,73 @@
+@model RegisterViewModel
+@{ ViewData["Title"] = "Create Account"; }
+
+<div class="flex-1 flex items-center justify-center p-6 py-12">
+    <div class="w-full max-w-[640px] space-y-8">
+        <div class="text-center md:text-left">
+            <h1 class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight mb-2">Create Your Account</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-base">Join Salahly to get professional home maintenance at your doorstep.</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-medium">
+                    <span class="material-symbols-outlined text-sm align-middle mr-1">error</span> @Model.ErrorMessage
+                </div>
+            }
+            <form asp-action="Register" method="post" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label asp-for="FullName" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <input asp-for="FullName" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John Doe" />
+                        <span asp-validation-for="FullName" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label asp-for="Username" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <input asp-for="Username" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="johndoe" />
+                        <span asp-validation-for="Username" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                        <label asp-for="Email" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <input asp-for="Email" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@example.com" />
+                        <span asp-validation-for="Email" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label asp-for="Password" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <input asp-for="Password" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="••••••••" />
+                        <span asp-validation-for="Password" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label asp-for="ConfirmPassword" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <input asp-for="ConfirmPassword" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="••••••••" />
+                        <span asp-validation-for="ConfirmPassword" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label asp-for="PhoneNumber" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <input asp-for="PhoneNumber" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="01234567890" />
+                        <span asp-validation-for="PhoneNumber" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label asp-for="NationalId" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <input asp-for="NationalId" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="29901011234567" />
+                        <span asp-validation-for="NationalId" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label asp-for="Age" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <input asp-for="Age" type="number" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="25" />
+                        <span asp-validation-for="Age" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                        <label asp-for="Address" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
+                        <textarea asp-for="Address" class="form-textarea w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent min-h-[80px]" placeholder="Maadi, Cairo"></textarea>
+                        <span asp-validation-for="Address" class="text-red-500 text-xs"></span>
+                    </div>
+                </div>
+                <button type="submit" class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+                    <span>Create Account</span>
+                    <span class="material-symbols-outlined text-[20px]">person_add</span>
+                </button>
+            </form>
+        </div>
+        <p class="text-center text-slate-500 dark:text-slate-400 text-sm">Already have an account? <a asp-controller="Account" asp-action="Login" class="font-bold text-primary hover:underline underline-offset-4">Sign In</a></p>
+    </div>
+</div>

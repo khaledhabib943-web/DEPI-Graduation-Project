@@ -1,0 +1,54 @@
+@model LoginViewModel
+@{ ViewData["Title"] = "Secure Login"; }
+
+<div class="flex-1 flex items-center justify-center p-6">
+    <div class="w-full max-w-[480px] space-y-8">
+        <div class="text-center md:text-left">
+            <h1 class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight mb-2">Welcome Back</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-base font-normal">Please enter your credentials to access your secured account.</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-medium">
+                    <span class="material-symbols-outlined text-sm align-middle mr-1">error</span> @Model.ErrorMessage
+                </div>
+            }
+            <form asp-action="Login" method="post" class="space-y-6">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div class="space-y-2">
+                    <label asp-for="Username" class="text-slate-900 dark:text-slate-200 text-sm font-semibold leading-normal"></label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute text-slate-400 left-3">mail</span>
+                        <input asp-for="Username" class="form-input flex w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white h-12 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-400 pl-11 pr-4" placeholder="name@company.com" />
+                    </div>
+                    <span asp-validation-for="Username" class="text-red-500 text-xs"></span>
+                </div>
+                <div class="space-y-2">
+                    <label asp-for="Password" class="text-slate-900 dark:text-slate-200 text-sm font-semibold leading-normal"></label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute text-slate-400 left-3">lock</span>
+                        <input asp-for="Password" class="form-input flex w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white h-12 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-400 pl-11 pr-4" placeholder="••••••••" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-red-500 text-xs"></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input asp-for="RememberMe" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" />
+                        <span class="text-sm text-slate-600 dark:text-slate-400 font-medium">Remember me</span>
+                    </label>
+                    <a class="text-sm font-semibold text-primary hover:underline underline-offset-4" href="#">Forgot password?</a>
+                </div>
+                <button type="submit" class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+                    <span>Sign In</span>
+                    <span class="material-symbols-outlined text-[20px]">login</span>
+                </button>
+            </form>
+        </div>
+        <p class="text-center text-slate-500 dark:text-slate-400 text-sm">Don't have an account? <a asp-controller="Account" asp-action="Register" class="font-bold text-primary hover:underline underline-offset-4">Create Account</a></p>
+        <div class="text-center text-slate-400 text-xs mt-4 space-y-1">
+            <p>Customer: <strong>ahmed</strong> / <strong>password123</strong></p>
+            <p>Admin: <strong>admin</strong> / <strong>admin123</strong></p>
+        </div>
+    </div>
+</div>

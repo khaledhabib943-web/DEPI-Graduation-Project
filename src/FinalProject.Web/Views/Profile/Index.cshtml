@@ -1,0 +1,33 @@
+@model ProfileViewModel
+@{ ViewData["Title"] = "Profile"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="flex flex-col items-center mb-10">
+            <div class="size-32 rounded-full bg-primary text-white flex items-center justify-center text-4xl font-bold border-4 border-white shadow-xl">
+                @(Model.FullName.Length >= 2 ? Model.FullName.Substring(0, 2).ToUpper() : "U")
+            </div>
+            <h2 class="text-2xl font-bold mt-4">My Profile</h2>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <div class="mb-6 p-3 rounded-lg bg-emerald-50 text-emerald-600 text-sm font-medium flex items-center gap-2"><span class="material-symbols-outlined text-sm">check_circle</span> @Model.SuccessMessage</div>
+        }
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <h3 class="text-lg font-bold mb-6 border-l-4 border-primary pl-3">Personal Information</h3>
+            <form asp-action="Index" method="post" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2"><label class="text-sm font-semibold">Full Name</label><input asp-for="FullName" class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 focus:border-primary focus:ring-primary" /></div>
+                    <div class="flex flex-col gap-2"><label class="text-sm font-semibold">Email</label><input asp-for="Email" class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 focus:border-primary focus:ring-primary" /></div>
+                    <div class="flex flex-col gap-2"><label class="text-sm font-semibold">Phone</label><input asp-for="PhoneNumber" class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 focus:border-primary focus:ring-primary" /></div>
+                    <div class="flex flex-col gap-2"><label class="text-sm font-semibold">Age</label><input asp-for="Age" type="number" class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 focus:border-primary focus:ring-primary" /></div>
+                </div>
+                <div class="flex flex-col gap-2"><label class="text-sm font-semibold">Address</label><textarea asp-for="Address" class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 focus:border-primary focus:ring-primary min-h-[100px]"></textarea></div>
+                <div class="pt-4 flex gap-4">
+                    <button type="submit" class="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/30 flex-1">Save Changes</button>
+                    <a asp-controller="Dashboard" asp-action="Index" class="bg-slate-100 dark:bg-slate-800 text-slate-600 px-8 py-3 rounded-xl font-bold hover:bg-slate-200">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

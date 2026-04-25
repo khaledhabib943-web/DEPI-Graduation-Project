@@ -1,0 +1,43 @@
+@model ServiceDetailsViewModel
+@{ ViewData["Title"] = "Service Details"; }
+
+<div class="flex-1 flex justify-center py-8 px-6">
+    <div class="flex flex-col w-full max-w-[960px] gap-8">
+        <div class="flex flex-col gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm">
+            <div class="flex justify-between"><p class="font-bold">Step 3 of 5</p><p class="text-primary text-sm font-bold">60%</p></div>
+            <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full"><div class="h-full bg-primary rounded-full" style="width:60%"></div></div>
+        </div>
+        <h1 class="text-3xl font-extrabold">Job Details & Scheduling</h1>
+        <form asp-action="ServiceDetails" method="post" class="space-y-6">
+            <input type="hidden" asp-for="WorkerId" /><input type="hidden" asp-for="CategoryId" />
+            <input type="hidden" asp-for="CategoryName" /><input type="hidden" asp-for="WorkerName" /><input type="hidden" asp-for="ServicePrice" />
+            <div class="bg-primary/5 p-4 rounded-xl flex items-center gap-4">
+                <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined">person</span></div>
+                <div><p class="font-bold">@Model.WorkerName</p><p class="text-sm text-primary">@Model.CategoryName • @Model.ServicePrice EGP/hr</p></div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+                <label class="text-lg font-bold flex items-center gap-2 mb-4"><span class="material-symbols-outlined text-primary">edit_note</span>Problem Description</label>
+                <textarea asp-for="Description" class="form-textarea w-full rounded-lg border-slate-300 dark:border-slate-700 min-h-[120px] p-4" placeholder="Describe the issue..."></textarea>
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+                <label class="text-lg font-bold flex items-center gap-2 mb-4"><span class="material-symbols-outlined text-primary">location_on</span>Location</label>
+                <input asp-for="LocationDetails" class="form-input w-full rounded-lg border-slate-300 dark:border-slate-700 p-4" placeholder="Your address..." />
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+                <label class="text-lg font-bold flex items-center gap-2 mb-4"><span class="material-symbols-outlined text-primary">calendar_month</span>Schedule</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label class="text-sm font-bold">Date</label><input asp-for="ScheduledDate" type="date" class="form-input w-full rounded-lg border-slate-300 dark:border-slate-700 mt-1" /></div>
+                    <div><label class="text-sm font-bold">Time</label>
+                        <select asp-for="ScheduledTime" class="form-select w-full rounded-lg border-slate-300 dark:border-slate-700 mt-1">
+                            <option value="08:00:00">Morning (8-12)</option><option value="12:00:00">Afternoon (12-4)</option><option value="16:00:00">Evening (4-8)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" class="px-8 py-3 rounded-lg font-bold text-slate-600 hover:bg-slate-100">Back</a>
+                <button type="submit" class="px-10 py-3 rounded-lg font-bold bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20">Continue →</button>
+            </div>
+        </form>
+    </div>
+</div>

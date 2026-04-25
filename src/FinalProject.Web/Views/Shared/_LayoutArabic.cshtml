@@ -1,0 +1,219 @@
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var fullName = User.FindFirst("FullName")?.Value ?? "";
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+    var initials = fullName.Length >= 2 ? fullName.Substring(0, 2).ToUpper() : "U";
+}
+<!DOCTYPE html>
+<html class="light" dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - صلاحلي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f2cbd",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans Arabic", "Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>body { font-family: 'Noto Sans Arabic', 'Inter', sans-serif; }</style>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay lg:hidden" onclick="closeSidebar()"></div>
+
+    <!-- Mobile Sidebar (RTL = slides from right) -->
+    <aside id="mobileSidebar" class="mobile-sidebar bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 lg:hidden">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-primary">
+                <div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+                    <span class="material-symbols-outlined !text-2xl">rocket_launch</span>
+                </div>
+                <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">صلاحلي</h2>
+            </div>
+            <button onclick="closeSidebar()" class="text-slate-500 hover:text-slate-700">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <nav class="p-4 flex flex-col gap-1">
+            <a asp-controller="Home" asp-action="IndexAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                <span class="material-symbols-outlined">home</span> الرئيسية
+            </a>
+            @if (isAuthenticated && role == "Customer")
+            {
+                <a asp-controller="Dashboard" asp-action="IndexAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">dashboard</span> لوحة التحكم
+                </a>
+                <a asp-controller="ServiceRequest" asp-action="SelectServiceAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">handyman</span> حجز خدمة
+                </a>
+                <a asp-controller="Favorite" asp-action="IndexAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">favorite</span> المفضلة
+                </a>
+                <a asp-controller="Notification" asp-action="IndexAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">notifications</span> التنبيهات
+                </a>
+                <a asp-controller="Complaint" asp-action="IndexAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">report</span> الشكاوى
+                </a>
+                <a asp-controller="Profile" asp-action="IndexAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">person</span> الملف الشخصي
+                </a>
+                <div class="border-t border-slate-200 dark:border-slate-800 my-2"></div>
+                <a asp-controller="Account" asp-action="Logout" class="flex items-center gap-3 px-3 py-3 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 font-medium">
+                    <span class="material-symbols-outlined">logout</span> تسجيل الخروج
+                </a>
+            }
+            else if (!isAuthenticated)
+            {
+                <a asp-controller="Account" asp-action="LoginAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">login</span> تسجيل الدخول
+                </a>
+                <a asp-controller="Account" asp-action="RegisterAr" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">person_add</span> إنشاء حساب
+                </a>
+            }
+            <div class="border-t border-slate-200 dark:border-slate-800 my-2"></div>
+            <button onclick="switchLanguage('en')" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                <span class="material-symbols-outlined">translate</span> English
+            </button>
+            <button onclick="toggleDarkMode()" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                <span class="material-symbols-outlined">dark_mode</span> الوضع الداكن
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Desktop Navigation -->
+    <header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-20 lg:px-40 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-primary">
+                <a asp-controller="Home" asp-action="IndexAr" class="flex items-center gap-2">
+                    <div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+                        <span class="material-symbols-outlined !text-2xl">rocket_launch</span>
+                    </div>
+                    <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">صلاحلي</h2>
+                </a>
+            </div>
+            <nav class="hidden lg:flex flex-1 justify-start gap-8 items-center mr-12">
+                @if (isAuthenticated && role == "Customer")
+                {
+                    <a asp-controller="Dashboard" asp-action="IndexAr" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">لوحة التحكم</a>
+                    <a asp-controller="ServiceRequest" asp-action="SelectServiceAr" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">حجز خدمة</a>
+                    <a asp-controller="Favorite" asp-action="IndexAr" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">المفضلة</a>
+                    <a asp-controller="Complaint" asp-action="IndexAr" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">الشكاوى</a>
+                }
+                else
+                {
+                    <a href="#features" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">الخدمات</a>
+                    <a href="#pricing" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">الأسعار</a>
+                    <a href="#about" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">من نحن</a>
+                }
+            </nav>
+            <div class="flex items-center gap-3">
+                <button onclick="switchLanguage('en')" class="hidden lg:flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors" title="English">
+                    <span class="material-symbols-outlined">translate</span>
+                </button>
+                <button onclick="toggleDarkMode()" class="hidden lg:flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors" title="الوضع الداكن">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+                @if (isAuthenticated)
+                {
+                    <a asp-controller="Notification" asp-action="IndexAr" class="hidden lg:flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </a>
+                    <a asp-controller="Profile" asp-action="IndexAr" class="hidden lg:flex h-10 w-10 rounded-full bg-primary items-center justify-center text-white font-bold text-sm">
+                        @initials
+                    </a>
+                    <a asp-controller="Account" asp-action="Logout" class="hidden lg:flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-300 transition-all">
+                        خروج
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="LoginAr" class="hidden lg:flex min-w-[80px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-300 transition-all">
+                        دخول
+                    </a>
+                    <a asp-controller="Account" asp-action="RegisterAr" class="hidden lg:flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold tracking-wide hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                        ابدأ الآن
+                    </a>
+                }
+                <button onclick="toggleSidebar()" class="lg:hidden flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-6 md:px-20 lg:px-40 py-16">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-2 text-primary mb-6">
+                    <div class="size-6 flex items-center justify-center bg-primary rounded-md text-white">
+                        <span class="material-symbols-outlined !text-lg">rocket_launch</span>
+                    </div>
+                    <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold">صلاحلي</h2>
+                </div>
+                <p class="text-slate-500 text-sm leading-relaxed mb-6">نعيد تعريف صيانة المنازل في مصر. خدمات احترافية وموثوقة.</p>
+            </div>
+            <div>
+                <h4 class="text-slate-900 dark:text-slate-100 font-bold mb-6">المنتج</h4>
+                <ul class="flex flex-col gap-4 text-sm text-slate-500">
+                    <li><a class="hover:text-primary" href="#">المميزات</a></li>
+                    <li><a class="hover:text-primary" href="#">الأسعار</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-slate-900 dark:text-slate-100 font-bold mb-6">الشركة</h4>
+                <ul class="flex flex-col gap-4 text-sm text-slate-500">
+                    <li><a class="hover:text-primary" href="#">من نحن</a></li>
+                    <li><a class="hover:text-primary" href="#">اتصل بنا</a></li>
+                </ul>
+            </div>
+            <div class="col-span-2">
+                <h4 class="text-slate-900 dark:text-slate-100 font-bold mb-6">اشترك في نشرتنا الإخبارية</h4>
+                <div class="flex gap-2">
+                    <input class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/50" placeholder="ادخل بريدك الإلكتروني" type="email" />
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg font-bold text-sm">اشتراك</button>
+                </div>
+            </div>
+        </div>
+        <div class="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between gap-4 text-xs text-slate-400">
+            <p>&copy; 2024 صلاحلي. جميع الحقوق محفوظة.</p>
+            <div class="flex gap-8">
+                <a class="hover:text-slate-600" href="#">سياسة الخصوصية</a>
+                <a class="hover:text-slate-600" href="#">شروط الخدمة</a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script src="~/js/site.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

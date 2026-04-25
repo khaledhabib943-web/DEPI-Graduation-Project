@@ -1,0 +1,36 @@
+@model TrackRequestViewModel
+@{ ViewData["Title"] = "تتبع الطلب"; Layout = "_LayoutArabic"; }
+
+<div class="flex-1 flex justify-center py-6 px-4 md:px-20">
+    <div class="flex flex-col max-w-[960px] flex-1 gap-6">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-8"><div><h1 class="text-2xl font-bold">طلب رقم #@Model.Request.RequestId</h1><p class="text-slate-500 mt-1">تم الإنشاء: @Model.Request.CreatedAt.ToString("dd MMM yyyy")</p></div><span class="px-4 py-2 bg-primary/10 text-primary font-bold rounded-full text-sm">@Model.Request.Status</span></div>
+            <div class="grid grid-cols-[48px_1fr] gap-x-4">
+                @{ var statuses = new[] { ("check", "قيد المراجعة", "تم استلام طلبك"), ("thumb_up", "تم القبول", "تم تخصيص الفني"), ("local_shipping", "في الطريق", "الفني متجه إليك"), ("handyman", "قيد العمل", "العمل جارٍ"), ("verified", "مكتمل", "تم إنجاز المهمة") };
+                    int step = Model.Request.Status switch { FinalProject.Domain.Enums.RequestStatus.Pending => 0, FinalProject.Domain.Enums.RequestStatus.InProgress => 2, FinalProject.Domain.Enums.RequestStatus.Completed => 4, _ => -1 }; }
+                @for (int i = 0; i < statuses.Length; i++)
+                {
+                    var isActive = i <= step; var isCurrent = i == step;
+                    <div class="flex flex-col items-center"><div class="size-10 rounded-full @(isActive ? "bg-primary text-white" : "bg-slate-100 text-slate-400") @(isCurrent ? "ring-4 ring-primary/20" : "") flex items-center justify-center"><span class="material-symbols-outlined text-[20px]">@statuses[i].Item1</span></div>@if (i < 4) { <div class="w-1 @(isActive ? "bg-primary" : "bg-slate-200") h-12"></div> }</div>
+                    <div class="@(i < 4 ? "pb-8" : "")"><p class="@(isCurrent ? "text-primary" : isActive ? "" : "text-slate-400") font-bold">@statuses[i].Item2</p><p class="text-slate-500 text-sm">@statuses[i].Item3</p></div>
+                }
+            </div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <h3 class="text-lg font-bold mb-4">تفاصيل الخدمة</h3>
+            <div class="flex flex-col gap-3">
+                <div class="flex justify-between"><span class="text-slate-500">الفئة:</span><span class="font-semibold">@Model.Request.CategoryName</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">الفني:</span><span class="font-semibold">@Model.Request.WorkerName</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">الموقع:</span><span class="font-semibold">@Model.Request.LocationDetails</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">التاريخ:</span><span class="font-semibold">@Model.Request.ScheduledDate.ToString("dd MMM yyyy")</span></div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a asp-controller="Dashboard" asp-action="IndexAr" class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2"><span class="material-symbols-outlined">dashboard</span> العودة للرئيسية</a>
+            @if (Model.Request.Status == FinalProject.Domain.Enums.RequestStatus.Completed)
+            { <a asp-controller="Review" asp-action="CreateAr" asp-route-requestId="@Model.Request.RequestId" asp-route-workerId="@Model.Request.WorkerId" asp-route-workerName="@Model.Request.WorkerName" class="w-full py-4 bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"><span class="material-symbols-outlined">star</span> تقييم الخدمة</a> }
+            else if (Model.Request.Status == FinalProject.Domain.Enums.RequestStatus.InProgress)
+            { <form asp-controller="ServiceRequest" asp-action="SimulateCompleteAr" method="post"><input type="hidden" name="requestId" value="@Model.Request.RequestId" /><button class="w-full py-4 bg-amber-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:bg-amber-600"><span class="material-symbols-outlined">fast_forward</span> محاكاة الإكتمال (تجريبي)</button></form> }
+        </div>
+    </div>
+</div>

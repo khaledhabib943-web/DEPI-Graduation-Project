@@ -1,0 +1,14 @@
+@{ ViewData["Title"] = "لوحة تحكم المدير"; Layout = "_LayoutArabic"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[960px] mx-auto flex flex-col gap-8">
+        <div class="flex items-center gap-4">
+            <div class="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center"><span class="material-symbols-outlined !text-3xl">admin_panel_settings</span></div>
+            <div><h1 class="text-3xl font-black">لوحة تحكم المدير</h1><p class="text-slate-500">إدارة الشكاوى وإعدادات النظام.</p></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border shadow-sm"><div class="flex items-center gap-4"><div class="size-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center"><span class="material-symbols-outlined">report</span></div><div><p class="text-2xl font-black">@ViewBag.TotalComplaints</p><p class="text-sm text-slate-500">شكاوى معلقة</p></div></div></div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-8 border text-center"><span class="material-symbols-outlined text-6xl text-slate-300 mb-4">construction</span><h3 class="text-xl font-bold text-slate-600 mb-2">لوحة التحكم الكاملة قريباً</h3><p class="text-slate-400">إدارة الشكاوى والمستخدمين والتحليلات ستكون متاحة هنا.</p></div>
+    </div>
+</div>

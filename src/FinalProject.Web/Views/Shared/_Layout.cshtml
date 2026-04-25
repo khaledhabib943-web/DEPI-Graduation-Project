@@ -1,0 +1,227 @@
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var fullName = User.FindFirst("FullName")?.Value ?? "";
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+    var initials = fullName.Length >= 2 ? fullName.Substring(0, 2).ToUpper() : "U";
+}
+<!DOCTYPE html>
+<html class="light" dir="ltr" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Salahly</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f2cbd",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script>
+        // Apply theme before render to prevent flash
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay lg:hidden" onclick="closeSidebar()"></div>
+
+    <!-- Mobile Sidebar -->
+    <aside id="mobileSidebar" class="mobile-sidebar bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 lg:hidden">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-primary">
+                <div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+                    <span class="material-symbols-outlined !text-2xl">rocket_launch</span>
+                </div>
+                <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">Salahly</h2>
+            </div>
+            <button onclick="closeSidebar()" class="text-slate-500 hover:text-slate-700">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <nav class="p-4 flex flex-col gap-1">
+            <a asp-controller="Home" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                <span class="material-symbols-outlined">home</span> Home
+            </a>
+            @if (isAuthenticated && role == "Customer")
+            {
+                <a asp-controller="Dashboard" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+                <a asp-controller="ServiceRequest" asp-action="SelectService" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">handyman</span> Book Service
+                </a>
+                <a asp-controller="Favorite" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">favorite</span> Favorites
+                </a>
+                <a asp-controller="Notification" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">notifications</span> Notifications
+                </a>
+                <a asp-controller="Complaint" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">report</span> Complaints
+                </a>
+                <a asp-controller="Profile" asp-action="Index" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">person</span> Profile
+                </a>
+                <div class="border-t border-slate-200 dark:border-slate-800 my-2"></div>
+                <a asp-controller="Account" asp-action="Logout" class="flex items-center gap-3 px-3 py-3 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 font-medium">
+                    <span class="material-symbols-outlined">logout</span> Logout
+                </a>
+            }
+            else if (!isAuthenticated)
+            {
+                <a asp-controller="Account" asp-action="Login" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">login</span> Login
+                </a>
+                <a asp-controller="Account" asp-action="Register" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                    <span class="material-symbols-outlined">person_add</span> Register
+                </a>
+            }
+            <div class="border-t border-slate-200 dark:border-slate-800 my-2"></div>
+            <!-- Language Toggle -->
+            <button onclick="switchLanguage('ar')" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                <span class="material-symbols-outlined">translate</span> العربية
+            </button>
+            <!-- Dark Mode Toggle -->
+            <button onclick="toggleDarkMode()" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary/10 text-slate-700 dark:text-slate-300 font-medium">
+                <span class="material-symbols-outlined">dark_mode</span> Dark Mode
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Desktop Navigation -->
+    <header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-20 lg:px-40 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-primary">
+                <a asp-controller="Home" asp-action="Index" class="flex items-center gap-2">
+                    <div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+                        <span class="material-symbols-outlined !text-2xl">rocket_launch</span>
+                    </div>
+                    <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">Salahly</h2>
+                </a>
+            </div>
+            <!-- Desktop Nav Links -->
+            <nav class="hidden lg:flex flex-1 justify-start gap-8 items-center ml-12">
+                @if (isAuthenticated && role == "Customer")
+                {
+                    <a asp-controller="Dashboard" asp-action="Index" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">Dashboard</a>
+                    <a asp-controller="ServiceRequest" asp-action="SelectService" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">Book Service</a>
+                    <a asp-controller="Favorite" asp-action="Index" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">Favorites</a>
+                    <a asp-controller="Complaint" asp-action="Index" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">Complaints</a>
+                }
+                else
+                {
+                    <a href="#features" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">Services</a>
+                    <a href="#pricing" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">Pricing</a>
+                    <a href="#about" class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">About Us</a>
+                }
+            </nav>
+            <!-- Right side actions -->
+            <div class="flex items-center gap-3">
+                <!-- Language Toggle (desktop) -->
+                <button onclick="switchLanguage('ar')" class="hidden lg:flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors" title="العربية">
+                    <span class="material-symbols-outlined">translate</span>
+                </button>
+                <!-- Dark Mode Toggle (desktop) -->
+                <button onclick="toggleDarkMode()" class="hidden lg:flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors" title="Toggle Dark Mode">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+                @if (isAuthenticated)
+                {
+                    <a asp-controller="Notification" asp-action="Index" class="hidden lg:flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </a>
+                    <a asp-controller="Profile" asp-action="Index" class="hidden lg:flex h-10 w-10 rounded-full bg-primary items-center justify-center text-white font-bold text-sm">
+                        @initials
+                    </a>
+                    <a asp-controller="Account" asp-action="Logout" class="hidden lg:flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-300 transition-all">
+                        Logout
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="hidden lg:flex min-w-[80px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-300 transition-all">
+                        Login
+                    </a>
+                    <a asp-controller="Account" asp-action="Register" class="hidden lg:flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold tracking-wide hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                        Get Started
+                    </a>
+                }
+                <!-- Mobile hamburger -->
+                <button onclick="toggleSidebar()" class="lg:hidden flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-6 md:px-20 lg:px-40 py-16">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 text-left">
+            <div class="col-span-2">
+                <div class="flex items-center gap-2 text-primary mb-6">
+                    <div class="size-6 flex items-center justify-center bg-primary rounded-md text-white">
+                        <span class="material-symbols-outlined !text-lg">rocket_launch</span>
+                    </div>
+                    <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold">Salahly</h2>
+                </div>
+                <p class="text-slate-500 text-sm leading-relaxed mb-6">Redefining home maintenance across Egypt. Professional, reliable, and punctual services.</p>
+            </div>
+            <div>
+                <h4 class="text-slate-900 dark:text-slate-100 font-bold mb-6">Product</h4>
+                <ul class="flex flex-col gap-4 text-sm text-slate-500">
+                    <li><a class="hover:text-primary" href="#">Features</a></li>
+                    <li><a class="hover:text-primary" href="#">Pricing</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-slate-900 dark:text-slate-100 font-bold mb-6">Company</h4>
+                <ul class="flex flex-col gap-4 text-sm text-slate-500">
+                    <li><a class="hover:text-primary" href="#">About Us</a></li>
+                    <li><a class="hover:text-primary" href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-span-2">
+                <h4 class="text-slate-900 dark:text-slate-100 font-bold mb-6">Subscribe to our newsletter</h4>
+                <div class="flex gap-2">
+                    <input class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/50" placeholder="Enter your email" type="email" />
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg font-bold text-sm">Subscribe</button>
+                </div>
+            </div>
+        </div>
+        <div class="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between gap-4 text-xs text-slate-400">
+            <p>&copy; 2024 Salahly. All rights reserved.</p>
+            <div class="flex gap-8">
+                <a class="hover:text-slate-600" href="#">Privacy Policy</a>
+                <a class="hover:text-slate-600" href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script src="~/js/site.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

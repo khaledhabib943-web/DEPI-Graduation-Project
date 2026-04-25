@@ -1,0 +1,27 @@
+@model RegisterViewModel
+@{ ViewData["Title"] = "إنشاء حساب"; Layout = "_LayoutArabic"; }
+
+<div class="flex-1 flex items-center justify-center p-6 py-12">
+    <div class="w-full max-w-[640px] space-y-8">
+        <div class="text-center md:text-right"><h1 class="text-4xl font-black mb-2">إنشاء حساب جديد</h1><p class="text-slate-500">انضم إلى صلاحلي للحصول على صيانة منزلية احترافية.</p></div>
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            { <div class="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium">@Model.ErrorMessage</div> }
+            <form asp-action="RegisterAr" method="post" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2"><label class="text-sm font-semibold">الاسم بالكامل</label><input asp-for="FullName" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
+                    <div class="space-y-2"><label class="text-sm font-semibold">اسم المستخدم</label><input asp-for="Username" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
+                    <div class="space-y-2 md:col-span-2"><label class="text-sm font-semibold">البريد الإلكتروني</label><input asp-for="Email" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
+                    <div class="space-y-2"><label class="text-sm font-semibold">كلمة المرور</label><input asp-for="Password" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
+                    <div class="space-y-2"><label class="text-sm font-semibold">تأكيد كلمة المرور</label><input asp-for="ConfirmPassword" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
+                    <div class="space-y-2"><label class="text-sm font-semibold">رقم الهاتف</label><input asp-for="PhoneNumber" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
+                    <div class="space-y-2"><label class="text-sm font-semibold">الرقم القومي</label><input asp-for="NationalId" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
+                    <div class="space-y-2"><label class="text-sm font-semibold">العمر</label><input asp-for="Age" type="number" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
+                    <div class="space-y-2 md:col-span-2"><label class="text-sm font-semibold">العنوان</label><textarea asp-for="Address" class="form-textarea w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 focus:ring-2 focus:ring-primary min-h-[80px]"></textarea></div>
+                </div>
+                <button type="submit" class="w-full h-12 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/20 flex items-center justify-center gap-2">إنشاء حساب <span class="material-symbols-outlined text-[20px]">person_add</span></button>
+            </form>
+        </div>
+        <p class="text-center text-slate-500 text-sm">لديك حساب بالفعل؟ <a asp-controller="Account" asp-action="LoginAr" class="font-bold text-primary hover:underline">تسجيل الدخول</a></p>
+    </div>
+</div>

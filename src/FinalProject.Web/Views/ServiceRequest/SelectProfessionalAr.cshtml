@@ -1,0 +1,90 @@
+@model SelectProfessionalViewModel
+@{ ViewData["Title"] = "اختر فني"; Layout = "_LayoutArabic"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[960px] mx-auto flex flex-col gap-8">
+        <div class="flex flex-col gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm">
+            <div class="flex justify-between"><p class="font-bold">الخطوة 2 من 5</p><p class="text-primary text-sm font-bold">40%</p></div>
+            <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full"><div class="h-full bg-primary rounded-full" style="width:40%"></div></div>
+        </div>
+        <div><h1 class="text-3xl font-black">اختر الفني المناسب</h1><p class="text-slate-500 text-lg">فنيون متاحون في <span class="text-primary font-semibold">@Model.CategoryName</span> — @Model.TotalCount نتيجة</p></div>
+
+        <!-- Sort & Filter -->
+        <div class="flex flex-wrap items-center gap-3">
+            <div class="relative group">
+                <button class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-sm hover:border-primary/50 shadow-sm">
+                    <span class="material-symbols-outlined text-primary text-[18px]">sort</span>
+                    ترتيب: <span class="text-primary">@(Model.SortBy switch { "rating" => "الأعلى تقييماً", "price_asc" => "الأقل سعراً", "price_desc" => "الأعلى سعراً", "name" => "الاسم", _ => "الكل (عشوائي)" })</span>
+                    <span class="material-symbols-outlined text-sm text-slate-400">expand_more</span>
+                </button>
+                <div class="absolute top-full right-0 mt-1 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 hidden group-hover:block overflow-hidden">
+                    <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == null ? "text-primary font-bold bg-primary/5" : "")"><span class="material-symbols-outlined text-sm align-middle ml-1">shuffle</span> الكل (عشوائي)</a>
+                    <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="rating" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == "rating" ? "text-primary font-bold bg-primary/5" : "")"><span class="material-symbols-outlined text-sm align-middle ml-1">star</span> الأعلى تقييماً</a>
+                    <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="price_asc" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == "price_asc" ? "text-primary font-bold bg-primary/5" : "")"><span class="material-symbols-outlined text-sm align-middle ml-1">arrow_downward</span> الأقل سعراً</a>
+                    <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="price_desc" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == "price_desc" ? "text-primary font-bold bg-primary/5" : "")"><span class="material-symbols-outlined text-sm align-middle ml-1">arrow_upward</span> الأعلى سعراً</a>
+                    <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="name" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == "name" ? "text-primary font-bold bg-primary/5" : "")"><span class="material-symbols-outlined text-sm align-middle ml-1">sort_by_alpha</span> الاسم</a>
+                </div>
+            </div>
+            <button onclick="toggleFilterPanel()" class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-sm hover:border-primary/50 shadow-sm">
+                <span class="material-symbols-outlined text-primary text-[18px]">tune</span> تصفية
+                @if (Model.MinPrice.HasValue || Model.MaxPrice.HasValue || Model.MinRating.HasValue) { <span class="size-5 bg-primary text-white text-[10px] rounded-full flex items-center justify-center font-bold">!</span> }
+            </button>
+            @if (Model.MinPrice.HasValue || Model.MaxPrice.HasValue || Model.MinRating.HasValue || Model.SortBy != null)
+            { <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" class="flex items-center gap-1 px-4 py-2.5 text-red-500 text-sm font-bold hover:bg-red-50 rounded-xl"><span class="material-symbols-outlined text-sm">close</span> مسح الكل</a> }
+        </div>
+
+        <!-- Filter Panel -->
+        <div id="filterPanel" class="@(Model.MinPrice.HasValue || Model.MaxPrice.HasValue || Model.MinRating.HasValue ? "" : "hidden") bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <form asp-action="SelectProfessionalAr" method="get" class="flex flex-col md:flex-row gap-6 items-end">
+                <input type="hidden" name="categoryId" value="@Model.CategoryId" /><input type="hidden" name="sortBy" value="@Model.SortBy" />
+                <div class="flex-1"><label class="text-sm font-bold mb-1 block">أقل سعر (ج.م)</label><input name="minPrice" value="@Model.MinPrice" type="number" step="10" class="form-input w-full rounded-lg border-slate-300 h-11 px-4" placeholder="0" /></div>
+                <div class="flex-1"><label class="text-sm font-bold mb-1 block">أعلى سعر (ج.م)</label><input name="maxPrice" value="@Model.MaxPrice" type="number" step="10" class="form-input w-full rounded-lg border-slate-300 h-11 px-4" placeholder="500" /></div>
+                <div class="flex-1"><label class="text-sm font-bold mb-1 block">أقل تقييم</label>
+                    @{
+                        var ratingOpts = new[] { ("", "الكل"), ("3", "3+ نجوم"), ("4", "4+ نجوم"), ("4.5", "4.5+ نجوم") };
+                    }
+                    <select name="minRating" class="form-select w-full rounded-lg border-slate-300 h-11 px-4">
+                        @foreach (var (val, label) in ratingOpts)
+                        {
+                            if (Model.MinRating.HasValue && Model.MinRating.Value.ToString("F1").TrimEnd('0').TrimEnd('.') == val)
+                            { <option value="@val" selected>@label</option> }
+                            else
+                            { <option value="@val">@label</option> }
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="px-8 h-11 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 shadow-md flex items-center gap-2 whitespace-nowrap"><span class="material-symbols-outlined text-sm">search</span> تطبيق</button>
+            </form>
+        </div>
+
+        <!-- Worker Cards -->
+        <div class="flex flex-col gap-4">
+            @foreach (var w in Model.Workers)
+            {
+                <div class="flex flex-col md:flex-row gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary/50 shadow-sm">
+                    <div class="relative size-24 shrink-0"><img class="size-24 rounded-lg object-cover" src="@w.ProfilePicture" /><div class="absolute -bottom-1 -left-1 @(w.AvailabilityStatus == FinalProject.Domain.Enums.AvailabilityStatus.Available ? "bg-green-500" : "bg-slate-300") size-4 rounded-full border-2 border-white dark:border-slate-900"></div></div>
+                    <div class="flex flex-col flex-1 gap-1">
+                        <div class="flex justify-between items-start"><div><h3 class="font-bold text-lg">@w.FullName</h3><p class="text-slate-500 text-sm">@w.CategoryName</p></div><div class="text-left"><p class="text-primary font-bold text-lg">@w.ServicePrice ج.م</p><p class="text-slate-400 text-xs">لكل ساعة</p></div></div>
+                        <div class="flex items-center gap-3 mt-2"><div class="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded text-yellow-700 text-sm font-bold"><span class="material-symbols-outlined text-sm">star</span> @w.AverageRating.ToString("F1")</div><span class="text-sm font-medium @(w.AvailabilityStatus == FinalProject.Domain.Enums.AvailabilityStatus.Available ? "text-green-500" : "text-slate-400")">@(w.AvailabilityStatus == FinalProject.Domain.Enums.AvailabilityStatus.Available ? "● متاح" : "○ مشغول")</span></div>
+                        <p class="text-slate-600 text-sm mt-2 line-clamp-1">@w.Portfolio</p>
+                        <div class="mt-4 flex gap-3">
+                            <a asp-action="ServiceDetailsAr" asp-route-workerId="@w.UserId" asp-route-categoryId="@Model.CategoryId" class="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold text-center hover:bg-primary/90 shadow-md shadow-primary/10">اختيار</a>
+                            <form asp-controller="Favorite" asp-action="AddAr" method="post" class="inline"><input type="hidden" name="workerId" value="@w.UserId" /><button class="px-4 py-2.5 border border-slate-200 rounded-lg"><span class="material-symbols-outlined text-sm">favorite</span></button></form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="flex justify-center items-center gap-2 py-6">
+                @if (Model.CurrentPage > 1) { <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="@Model.SortBy" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" asp-route-page="@(Model.CurrentPage - 1)" class="px-4 py-2 rounded-lg font-bold text-sm bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 flex items-center gap-1"><span class="material-symbols-outlined text-sm">chevron_right</span> السابق</a> }
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                { <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="@Model.SortBy" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" asp-route-page="@i" class="px-4 py-2 rounded-lg font-bold text-sm @(i == Model.CurrentPage ? "bg-primary text-white shadow-md" : "bg-slate-100 dark:bg-slate-800 hover:bg-primary/10")">@i</a> }
+                @if (Model.CurrentPage < Model.TotalPages) { <a asp-action="SelectProfessionalAr" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="@Model.SortBy" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" asp-route-page="@(Model.CurrentPage + 1)" class="px-4 py-2 rounded-lg font-bold text-sm bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 flex items-center gap-1">التالي <span class="material-symbols-outlined text-sm">chevron_left</span></a> }
+            </div>
+        }
+        <p class="text-center text-sm text-slate-400">عرض @Model.Workers.Count من @Model.TotalCount فني • صفحة @Model.CurrentPage من @Model.TotalPages</p>
+    </div>
+</div>

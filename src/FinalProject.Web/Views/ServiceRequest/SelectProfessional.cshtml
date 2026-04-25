@@ -1,0 +1,162 @@
+@model SelectProfessionalViewModel
+@{ ViewData["Title"] = "Select a Professional"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[960px] mx-auto flex flex-col gap-8">
+        <!-- Progress -->
+        <div class="flex flex-col gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center"><p class="font-bold">Step 2 of 5</p><p class="text-primary text-sm font-bold">40%</p></div>
+            <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-primary rounded-full" style="width: 40%;"></div></div>
+            <p class="text-slate-500 text-sm">Select a professional for @Model.CategoryName</p>
+        </div>
+
+        <div class="flex flex-col gap-2"><h1 class="text-3xl font-black tracking-tight">Choose a Professional</h1><p class="text-slate-500 text-lg">Available pros in <span class="text-primary font-semibold">@Model.CategoryName</span> — @Model.TotalCount found</p></div>
+
+        <!-- Sort & Filter Buttons -->
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- Sort Dropdown -->
+            <div class="relative group">
+                <button class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-sm hover:border-primary/50 transition-colors shadow-sm">
+                    <span class="material-symbols-outlined text-primary text-[18px]">sort</span>
+                    Sort by: <span class="text-primary">@(Model.SortBy switch { "rating" => "Top Rated", "price_asc" => "Lowest Price", "price_desc" => "Highest Price", "name" => "Name A-Z", _ => "All (Random)" })</span>
+                    <span class="material-symbols-outlined text-sm text-slate-400">expand_more</span>
+                </button>
+                <div class="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 hidden group-hover:block overflow-hidden">
+                    <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == null ? "text-primary font-bold bg-primary/5" : "text-slate-700 dark:text-slate-300")">
+                        <span class="material-symbols-outlined text-sm align-middle mr-1">shuffle</span> All (Random)
+                    </a>
+                    <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="rating" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == "rating" ? "text-primary font-bold bg-primary/5" : "text-slate-700 dark:text-slate-300")">
+                        <span class="material-symbols-outlined text-sm align-middle mr-1">star</span> Top Rated
+                    </a>
+                    <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="price_asc" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == "price_asc" ? "text-primary font-bold bg-primary/5" : "text-slate-700 dark:text-slate-300")">
+                        <span class="material-symbols-outlined text-sm align-middle mr-1">arrow_downward</span> Lowest Price
+                    </a>
+                    <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="price_desc" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == "price_desc" ? "text-primary font-bold bg-primary/5" : "text-slate-700 dark:text-slate-300")">
+                        <span class="material-symbols-outlined text-sm align-middle mr-1">arrow_upward</span> Highest Price
+                    </a>
+                    <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="name" class="block px-4 py-3 text-sm hover:bg-primary/5 @(Model.SortBy == "name" ? "text-primary font-bold bg-primary/5" : "text-slate-700 dark:text-slate-300")">
+                        <span class="material-symbols-outlined text-sm align-middle mr-1">sort_by_alpha</span> Name A-Z
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filter Button -->
+            <button onclick="toggleFilterPanel()" class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-sm hover:border-primary/50 transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-primary text-[18px]">tune</span> Filters
+                @if (Model.MinPrice.HasValue || Model.MaxPrice.HasValue || Model.MinRating.HasValue)
+                {
+                    <span class="size-5 bg-primary text-white text-[10px] rounded-full flex items-center justify-center font-bold">!</span>
+                }
+            </button>
+
+            <!-- Clear filters -->
+            @if (Model.MinPrice.HasValue || Model.MaxPrice.HasValue || Model.MinRating.HasValue || Model.SortBy != null)
+            {
+                <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" class="flex items-center gap-1 px-4 py-2.5 text-red-500 text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors">
+                    <span class="material-symbols-outlined text-sm">close</span> Clear All
+                </a>
+            }
+        </div>
+
+        <!-- Filter Panel (collapsible) -->
+        <div id="filterPanel" class="@(Model.MinPrice.HasValue || Model.MaxPrice.HasValue || Model.MinRating.HasValue ? "" : "hidden") bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <form asp-action="SelectProfessional" method="get" class="flex flex-col md:flex-row gap-6 items-end">
+                <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                <div class="flex-1">
+                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 block">Min Price (EGP)</label>
+                    <input name="minPrice" value="@Model.MinPrice" type="number" step="10" class="form-input w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-11 px-4" placeholder="0" />
+                </div>
+                <div class="flex-1">
+                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 block">Max Price (EGP)</label>
+                    <input name="maxPrice" value="@Model.MaxPrice" type="number" step="10" class="form-input w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-11 px-4" placeholder="500" />
+                </div>
+                <div class="flex-1">
+                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 block">Min Rating</label>
+                    @{
+                        var ratingOptions = new[] { ("", "Any"), ("3", "3+ Stars"), ("4", "4+ Stars"), ("4.5", "4.5+ Stars") };
+                    }
+                    <select name="minRating" class="form-select w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-11 px-4">
+                        @foreach (var (val, label) in ratingOptions)
+                        {
+                            if (Model.MinRating.HasValue && Model.MinRating.Value.ToString("F1").TrimEnd('0').TrimEnd('.') == val)
+                            {
+                                <option value="@val" selected>@label</option>
+                            }
+                            else
+                            {
+                                <option value="@val">@label</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="px-8 h-11 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 shadow-md flex items-center gap-2 whitespace-nowrap">
+                    <span class="material-symbols-outlined text-sm">search</span> Apply Filters
+                </button>
+            </form>
+        </div>
+
+        <!-- Worker Cards -->
+        <div class="flex flex-col gap-4">
+            @foreach (var w in Model.Workers)
+            {
+                <div class="flex flex-col md:flex-row gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-colors shadow-sm">
+                    <div class="relative size-24 shrink-0">
+                        <img class="size-24 rounded-lg object-cover" alt="@w.FullName" src="@w.ProfilePicture" />
+                        <div class="absolute -bottom-1 -right-1 @(w.AvailabilityStatus == FinalProject.Domain.Enums.AvailabilityStatus.Available ? "bg-green-500" : "bg-slate-300") size-4 rounded-full border-2 border-white dark:border-slate-900"></div>
+                    </div>
+                    <div class="flex flex-col flex-1 gap-1">
+                        <div class="flex justify-between items-start">
+                            <div><h3 class="font-bold text-lg">@w.FullName</h3><p class="text-slate-500 text-sm">@w.CategoryName</p></div>
+                            <div class="text-right"><p class="text-primary font-bold text-lg">@w.ServicePrice EGP</p><p class="text-slate-400 text-xs">per hour</p></div>
+                        </div>
+                        <div class="flex items-center gap-3 mt-2">
+                            <div class="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded text-yellow-700 dark:text-yellow-500 text-sm font-bold">
+                                <span class="material-symbols-outlined text-sm">star</span> @w.AverageRating.ToString("F1")
+                            </div>
+                            <span class="text-slate-400 text-sm">@(w.IsValidated ? "✓ Verified" : "")</span>
+                            <span class="text-sm font-medium @(w.AvailabilityStatus == FinalProject.Domain.Enums.AvailabilityStatus.Available ? "text-green-500" : "text-slate-400")">
+                                @(w.AvailabilityStatus == FinalProject.Domain.Enums.AvailabilityStatus.Available ? "● Available" : "○ Busy")
+                            </span>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-300 text-sm mt-2 line-clamp-1">@w.Portfolio</p>
+                        <div class="mt-4 flex gap-3">
+                            <a asp-controller="ServiceRequest" asp-action="ServiceDetails" asp-route-workerId="@w.UserId" asp-route-categoryId="@Model.CategoryId" class="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-all text-center shadow-md shadow-primary/10">Select</a>
+                            <form asp-controller="Favorite" asp-action="Add" method="post" class="inline">
+                                <input type="hidden" name="workerId" value="@w.UserId" />
+                                <button type="submit" class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all" title="Add to Favorites"><span class="material-symbols-outlined text-sm">favorite</span></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="flex justify-center items-center gap-2 py-6">
+                @if (Model.CurrentPage > 1)
+                {
+                    <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="@Model.SortBy" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" asp-route-page="@(Model.CurrentPage - 1)"
+                       class="px-4 py-2 rounded-lg font-bold text-sm bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-primary/10 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">chevron_left</span> Prev
+                    </a>
+                }
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="@Model.SortBy" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" asp-route-page="@i"
+                       class="px-4 py-2 rounded-lg font-bold text-sm @(i == Model.CurrentPage ? "bg-primary text-white shadow-md shadow-primary/20" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-primary/10")">@i</a>
+                }
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <a asp-action="SelectProfessional" asp-route-categoryId="@Model.CategoryId" asp-route-sortBy="@Model.SortBy" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" asp-route-page="@(Model.CurrentPage + 1)"
+                       class="px-4 py-2 rounded-lg font-bold text-sm bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-primary/10 flex items-center gap-1">
+                        Next <span class="material-symbols-outlined text-sm">chevron_right</span>
+                    </a>
+                }
+            </div>
+        }
+        <p class="text-center text-sm text-slate-400">Showing @Model.Workers.Count of @Model.TotalCount professionals • Page @Model.CurrentPage of @Model.TotalPages</p>
+    </div>
+</div>
