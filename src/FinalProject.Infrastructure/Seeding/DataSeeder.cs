@@ -52,7 +52,7 @@ namespace FinalProject.Infrastructure.Seeding
         // ===== Test Customer =====
         private async Task SeedCustomerAsync()
         {
-            if (!await _context.Customers.AnyAsync(c => c.Username == "ahmed"))
+            if (!await _context.Customers.AnyAsync(c => c.UserName == "ahmed"))
             {
                 await _context.Customers.AddAsync(new Customer
                 {
@@ -62,7 +62,7 @@ namespace FinalProject.Infrastructure.Seeding
                     PhoneNumber = "01234567890",
                     NationalId = "29901011234567",
                     Age = 28,
-                    Username = "ahmed",
+                    UserName = "ahmed",
                     Role = UserRole.Customer,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,
@@ -75,7 +75,7 @@ namespace FinalProject.Infrastructure.Seeding
         // ===== Admin =====
         private async Task SeedAdminAsync()
         {
-            if (!await _context.Admins.AnyAsync(a => a.Username == "admin"))
+            if (!await _context.Admins.AnyAsync(a => a.UserName == "admin"))
             {
                 await _context.Admins.AddAsync(new Admin
                 {
@@ -85,7 +85,7 @@ namespace FinalProject.Infrastructure.Seeding
                     PhoneNumber = "01111111111",
                     NationalId = "29801021234567",
                     Age = 35,
-                    Username = "admin",
+                    UserName = "admin",
                     Role = UserRole.Admin,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
@@ -143,7 +143,7 @@ namespace FinalProject.Infrastructure.Seeding
             foreach (var (name, email, username, categoryName, price, rating, bio) in workerData)
             {
                 // Skip if worker already exists (check by username — unique)
-                if (await _context.Workers.AnyAsync(w => w.Username == username))
+                if (await _context.Workers.AnyAsync(w => w.UserName == username))
                     continue;
 
                 // Find the category by name
@@ -162,7 +162,7 @@ namespace FinalProject.Infrastructure.Seeding
                     PhoneNumber = $"010{usernameHash:D8}",
                     NationalId = $"298010{usernameHash:D8}",
                     Age = 25 + (usernameHash % 15),
-                    Username = username,
+                    UserName = username,
                     Role = UserRole.Worker,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,
