@@ -2,7 +2,9 @@
 using FinalProject.Domain.Entities;
 using FinalProject.Infrastructure.DbContext;
 using FinalProject.Infrastructure.Repositories;
+using FinalProject.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +24,7 @@ namespace FinalProject.Infrastructure
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             // ── 2. ASP.NET Core Identity (with custom options) ────────────
-            services.AddIdentityCore<User>(options =>
+            services.AddIdentity<User, IdentityRole<int>>(options =>
             {
                 // Password rules
                 options.Password.RequiredLength = 8;
@@ -37,9 +39,9 @@ namespace FinalProject.Infrastructure
                 options.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
-                // No email confirmation required (change later if needed)
-                options.SignIn.RequireConfirmedEmail = false;
-                options.SignIn.RequireConfirmedAccount = false;
+                // Email confirmation required
+                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedAccount = true;
 
                 // Account lockout after failed attempts
                 options.Lockout.MaxFailedAccessAttempts = 5;
@@ -47,7 +49,10 @@ namespace FinalProject.Infrastructure
                 options.Lockout.AllowedForNewUsers = true;
             })
             .AddRoles<IdentityRole<int>>()
-            .AddEntityFrameworkStores<ApplicationDbContext>(); // wires UserManager to your DB
+            .AddEntityFrameworkStores<ApplicationDbContext>() // wires UserManager to your DB
+            .AddSignInManager<SignInManager<User>>()
+            .AddDefaultTokenProviders()
+            .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>();
 
             // ── 3. Repositories ──────────────────────────────────────────
             services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -62,6 +67,9 @@ namespace FinalProject.Infrastructure
 
             // ── 4. Unit of Work ──────────────────────────────────────────
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // ── 5. Email Service ──────────────────────────────────────────
+            services.AddTransient<IEmailSender, EmailSender>();
 
             return services;
         }

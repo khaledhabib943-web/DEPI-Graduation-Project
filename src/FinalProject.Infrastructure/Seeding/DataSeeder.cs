@@ -1,6 +1,7 @@
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.Enums;
 using FinalProject.Infrastructure.DbContext;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProject.Infrastructure.Seeding
@@ -8,10 +9,12 @@ namespace FinalProject.Infrastructure.Seeding
     public class DataSeeder
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public DataSeeder(ApplicationDbContext context)
+        public DataSeeder(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task SeedAsync()
@@ -54,11 +57,10 @@ namespace FinalProject.Infrastructure.Seeding
         {
             if (!await _context.Customers.AnyAsync(c => c.UserName == "ahmed"))
             {
-                await _context.Customers.AddAsync(new Customer
+                var customer = new Customer
                 {
                     FullName = "Ahmed Hassan",
                     Email = "ahmed@test.com",
-                    PasswordHash = HashPassword("password123"),
                     PhoneNumber = "01234567890",
                     NationalId = "29901011234567",
                     Age = 28,
@@ -66,9 +68,15 @@ namespace FinalProject.Infrastructure.Seeding
                     Role = UserRole.Customer,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,
-                    Address = "Maadi, Street 9, Building 15, Cairo"
-                });
-                await _context.SaveChangesAsync();
+                    Address = "Maadi, Street 9, Building 15, Cairo",
+                    EmailConfirmed = true // Seed users have confirmed email
+                };
+
+                var result = await _userManager.CreateAsync(customer, "password123");
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to create seed customer: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
             }
         }
 
@@ -77,20 +85,25 @@ namespace FinalProject.Infrastructure.Seeding
         {
             if (!await _context.Admins.AnyAsync(a => a.UserName == "admin"))
             {
-                await _context.Admins.AddAsync(new Admin
+                var admin = new Admin
                 {
                     FullName = "Admin User",
                     Email = "admin@salahly.com",
-                    PasswordHash = HashPassword("admin123"),
                     PhoneNumber = "01111111111",
                     NationalId = "29801021234567",
                     Age = 35,
                     UserName = "admin",
                     Role = UserRole.Admin,
                     IsActive = true,
-                    CreatedAt = DateTime.UtcNow
-                });
-                await _context.SaveChangesAsync();
+                    CreatedAt = DateTime.UtcNow,
+                    EmailConfirmed = true // Seed users have confirmed email
+                };
+
+                var result = await _userManager.CreateAsync(admin, "admin123");
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to create seed admin: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
             }
         }
 
@@ -154,11 +167,10 @@ namespace FinalProject.Infrastructure.Seeding
                 // Generate unique Phone/NationalId from username hash (stable, won't collide)
                 var usernameHash = Math.Abs(username.GetHashCode()) % 100000000;
 
-                await _context.Workers.AddAsync(new Worker
+                var worker = new Worker
                 {
                     FullName = name,
                     Email = email,
-                    PasswordHash = HashPassword("worker123"),
                     PhoneNumber = $"010{usernameHash:D8}",
                     NationalId = $"298010{usernameHash:D8}",
                     Age = 25 + (usernameHash % 15),
@@ -174,19 +186,18 @@ namespace FinalProject.Infrastructure.Seeding
                     ServicePrice = price,
                     AvailabilityStatus = usernameHash % 4 == 0 ? AvailabilityStatus.Busy : AvailabilityStatus.Available,
                     AverageRating = rating,
-                    IsValidated = true
-                });
+                    IsValidated = true,
+                    EmailConfirmed = true // Seed users have confirmed email
+                };
+
+                var result = await _userManager.CreateAsync(worker, "worker123");
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to create seed worker {username}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
             }
 
             await _context.SaveChangesAsync();
-        }
-
-        // ===== Helper =====
-        private static string HashPassword(string password)
-        {
-            using var sha = System.Security.Cryptography.SHA256.Create();
-            var bytes = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(bytes);
         }
     }
 }
