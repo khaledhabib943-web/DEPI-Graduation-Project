@@ -14,14 +14,16 @@ namespace FinalProject.Web.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;  
 
-        public AccountController(IUnitOfWork unitOfWork, UserManager<User> userManager)
+        public AccountController(IUnitOfWork unitOfWork, UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
-        // ===== LOGIN (English) =====
+        // ================= LOGIN =================
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
@@ -44,23 +46,15 @@ namespace FinalProject.Web.Controllers
 
             if (!user.IsActive)
             {
-                model.ErrorMessage = "Your account has been deactivated. Please contact support.";
+                model.ErrorMessage = "Your account is deactivated.";
                 return View(model);
             }
 
             await SignInUser(user, model.RememberMe);
-
-            return user.Role switch
-            {
-                UserRole.Admin => RedirectToAction("Index", "AdminDashboard"),
-                UserRole.Worker => RedirectToAction("Index", "WorkerDashboard"),
-                _ => !string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl)
-                    ? Redirect(model.ReturnUrl)
-                    : RedirectToAction("Index", "Dashboard")
-            };
+            return RedirectByRole();
         }
 
-        // ===== REGISTER (English) =====
+        // ================= REGISTER =================
         [HttpGet]
         public IActionResult Register()
         {
@@ -74,104 +68,12 @@ namespace FinalProject.Web.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            // NationalId check — Identity doesn't know about this field
-            var existingNid = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
-            if (existingNid.Any())
-            {
-                model.ErrorMessage = "This National ID is already registered.";
-                return View(model);
-            }
-
-            var customer = new Customer
-            {
-                FullName = model.FullName.Trim(),
-                Email = model.Email.Trim().ToLowerInvariant(),
-                UserName = model.Username.Trim(),   // Identity uses UserName
-                PhoneNumber = model.PhoneNumber.Trim(),
-                NationalId = model.NationalId.Trim(),
-                Age = model.Age,
-                Role = UserRole.Customer,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                Address = model.Address.Trim()
-            };
-
-            // CreateAsync: hashes password + enforces unique Username & Email automatically
-            var result = await _userManager.CreateAsync(customer, model.Password);
-            if (!result.Succeeded)
-            {
-                // Identity gives clear messages like "Username already taken" / "Email already in use"
-                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
-                return View(model);
-            }
-
-            await SignInUser(customer, isPersistent: false);
-            return RedirectToAction("Index", "Dashboard");
-        }
-
-        // ===== LOGOUT =====
-        [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home");
-        }
-
-        // ===== ARABIC versions (same pattern) =====
-        [HttpGet]
-        public IActionResult LoginAr(string? returnUrl = null)
-        {
-            if (User.Identity?.IsAuthenticated == true) return RedirectByRole(arabic: true);
-            return View(new LoginViewModel { ReturnUrl = returnUrl });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LoginAr(LoginViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            var user = await FindUserByCredentials(model.Username, model.Password);
-            if (user == null)
-            {
-                model.ErrorMessage = "اسم المستخدم أو كلمة المرور غير صحيحة.";
-                return View(model);
-            }
-            if (!user.IsActive)
-            {
-                model.ErrorMessage = "تم إيقاف حسابك. يرجى التواصل مع الدعم الفني.";
-                return View(model);
-            }
-
-            await SignInUser(user, model.RememberMe);
-
-            return user.Role switch
-            {
-                UserRole.Admin => RedirectToAction("IndexAr", "AdminDashboard"),
-                UserRole.Worker => RedirectToAction("IndexAr", "WorkerDashboard"),
-                _ => RedirectToAction("IndexAr", "Dashboard")
-            };
-        }
-
-        [HttpGet]
-        public IActionResult RegisterAr()
-        {
-            if (User.Identity?.IsAuthenticated == true) return RedirectToAction("IndexAr", "Dashboard");
-            return View(new RegisterViewModel());
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterAr(RegisterViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
+            // Validations
+            var existingEmail = await _unitOfWork.Customers.FindAsync(c => c.Email == model.Email);
+            if (existingEmail.Any()) { model.ErrorMessage = "هذا البريد الإلكتروني مسجل مسبقاً."; return View(model); }
 
             var existingNid = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
-            if (existingNid.Any())
-            {
-                model.ErrorMessage = "الرقم القومي مسجل مسبقاً.";
-                return View(model);
-            }
+            if (existingNid.Any()) { model.ErrorMessage = "الرقم القومي مسجل مسبقاً."; return View(model); }
 
             var customer = new Customer
             {
@@ -194,62 +96,80 @@ namespace FinalProject.Web.Controllers
                 return View(model);
             }
 
-            await SignInUser(customer, isPersistent: false);
+            await SignInUser(customer, false);
             return RedirectToAction("IndexAr", "Dashboard");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> LogoutAr()
+        // ================= GOOGLE LOGIN =================
+        [HttpPost]
+        public IActionResult ExternalLogin(string provider)
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("IndexAr", "Home");
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        public async Task<IActionResult> ExternalLoginCallback()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null) return RedirectToAction("Login");
+
+            var email = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                user = new Customer { Email = email, UserName = email, FullName = info.Principal.FindFirst(ClaimTypes.Name)?.Value };
+                await _userManager.CreateAsync(user);
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        // ================= LOGOUT & ACCESS DENIED =================
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
         public IActionResult AccessDenied() => View();
 
-        // ===== HELPERS =====
-
+        // ================= HELPERS =================
         private async Task<User?> FindUserByCredentials(string usernameOrEmail, string password)
         {
-            // Try by username first, then by email
-            var user = await _userManager.FindByNameAsync(usernameOrEmail)
-                    ?? await _userManager.FindByEmailAsync(usernameOrEmail);
-
+            var user = await _userManager.FindByNameAsync(usernameOrEmail) 
+                       ?? await _userManager.FindByEmailAsync(usernameOrEmail);
+            
             if (user == null) return null;
-
-            // UserManager uses Identity's secure PBKDF2 verifier (no more SHA256)
-            var passwordValid = await _userManager.CheckPasswordAsync(user, password);
-            return passwordValid ? user : null;
+            return await _userManager.CheckPasswordAsync(user, password) ? user : null;
         }
 
         private async Task SignInUser(User user, bool isPersistent)
         {
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.UserId.ToString()), // bridge property
-                new(ClaimTypes.Name,           user.Username),           // bridge property
-                new(ClaimTypes.Role,           user.Role.ToString()),
-                new("FullName",                user.FullName)
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Role, user.Role.ToString())
             };
-
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal,
+            await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, new ClaimsPrincipal(identity), 
                 new AuthenticationProperties { IsPersistent = isPersistent });
         }
 
         private IActionResult RedirectByRole(bool arabic = false)
         {
             var role = User.FindFirstValue(ClaimTypes.Role);
+            string action = arabic ? "IndexAr" : "Index";
             return role switch
             {
-                "Admin" => RedirectToAction(arabic ? "IndexAr" : "Index", "AdminDashboard"),
-                "Worker" => RedirectToAction(arabic ? "IndexAr" : "Index", "WorkerDashboard"),
-                _ => RedirectToAction(arabic ? "IndexAr" : "Index", "Dashboard")
+                "Admin" => RedirectToAction(action, "AdminDashboard"),
+                "Worker" => RedirectToAction(action, "WorkerDashboard"),
+                _ => RedirectToAction(action, "Dashboard")
             };
         }
     }
