@@ -185,8 +185,8 @@ namespace FinalProject.Application.Services
             {
                 UserId = worker.UserId,
                 FullName = worker.FullName,
-                Email = worker.Email,
-                PhoneNumber = worker.PhoneNumber,
+                Email = worker.Email ?? string.Empty,
+                PhoneNumber = worker.PhoneNumber ?? string.Empty,
                 NationalId = worker.NationalId,
                 Age = worker.Age,
                 Username = worker.Username,

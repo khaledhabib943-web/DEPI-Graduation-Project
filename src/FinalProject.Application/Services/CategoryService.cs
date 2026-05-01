@@ -49,8 +49,8 @@ namespace FinalProject.Application.Services
             var workers = await _unitOfWork.Workers.GetWorkersByCategoryAsync(categoryId);
             return workers.Select(w => new WorkerDto
             {
-                UserId = w.UserId, FullName = w.FullName, Email = w.Email,
-                PhoneNumber = w.PhoneNumber, NationalId = w.NationalId, Age = w.Age,
+                UserId = w.UserId, FullName = w.FullName, Email = w.Email ?? string.Empty,
+                PhoneNumber = w.PhoneNumber ?? string.Empty, NationalId = w.NationalId, Age = w.Age,
                 Username = w.Username, Role = w.Role, IsActive = w.IsActive,
                 CreatedAt = w.CreatedAt, CategoryId = w.CategoryId,
                 CategoryName = w.Category?.Name ?? "", ProfilePicture = w.ProfilePicture,

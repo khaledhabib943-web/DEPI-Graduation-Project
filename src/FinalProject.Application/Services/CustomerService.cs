@@ -218,8 +218,8 @@ namespace FinalProject.Application.Services
             {
                 UserId = customer.UserId,
                 FullName = customer.FullName,
-                Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber,
+                Email = customer.Email ?? string.Empty,
+                PhoneNumber = customer.PhoneNumber ?? string.Empty,
                 NationalId = customer.NationalId,
                 Age = customer.Age,
                 Username = customer.Username,
@@ -236,8 +236,8 @@ namespace FinalProject.Application.Services
             {
                 UserId = worker.UserId,
                 FullName = worker.FullName,
-                Email = worker.Email,
-                PhoneNumber = worker.PhoneNumber,
+                Email = worker.Email ?? string.Empty,
+                PhoneNumber = worker.PhoneNumber ?? string.Empty,
                 NationalId = worker.NationalId,
                 Age = worker.Age,
                 Username = worker.Username,

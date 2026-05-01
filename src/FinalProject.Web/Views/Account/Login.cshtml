@@ -1,6 +1,8 @@
 @model LoginViewModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     ViewData["Title"] = "Secure Login";
+    var googleConfigured = !string.IsNullOrEmpty(Configuration["Authentication:Google:ClientId"]);
 }
 
 <div class="flex-1 flex items-center justify-center p-6">
@@ -65,6 +67,8 @@
                 </div>
 
              
+@if (googleConfigured)
+{
                 <form asp-controller="Account"
       asp-action="ExternalLogin"
       method="post">
@@ -84,6 +88,7 @@
         <span>Continue with Google</span>
     </button>
 </form>
+}
             </div>
         </div>
 
@@ -93,8 +98,8 @@
         </p>
 
         <div class="text-center text-slate-400 text-xs mt-4 space-y-1">
-            <p>Customer: <strong>ahmed</strong> / <strong>password123</strong></p>
-            <p>Admin: <strong>admin</strong> / <strong>admin123</strong></p>
+            <p>Customer: <strong>mohannad</strong> / <strong>P@ssword123</strong></p>
+            <p>Admin: <strong>admin</strong> / <strong>Admin@123</strong></p>
         </div>
     </div>
 </div>

@@ -1,5 +1,8 @@
 @model LoginViewModel
-@{ ViewData["Title"] = "تسجيل الدخول"; Layout = "_LayoutArabic"; }
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{ ViewData["Title"] = "تسجيل الدخول"; Layout = "_LayoutArabic";
+    var googleConfigured = !string.IsNullOrEmpty(Configuration["Authentication:Google:ClientId"]);
+}
 
 <div class="flex-1 flex items-center justify-center p-6">
     <div class="w-full max-w-[480px] space-y-8">
@@ -31,23 +34,24 @@
                     <div class="flex-grow border-t border-slate-200"></div>
                 </div>
 
-                <form asp-area="Identity"
-                      asp-page="/Account/ExternalLogin"
-                      asp-route-returnUrl="@Model.ReturnUrl"
+@if (googleConfigured)
+{
+                <form asp-controller="Account"
+                      asp-action="ExternalLogin"
                       method="post">
 
+                    <input type="hidden" name="provider" value="Google" />
+
                     <button type="submit"
-                            name="provider"
-                            value="Google"
-                            formnovalidate
                             class="w-full h-12 bg-white border border-slate-200 rounded-lg font-bold flex items-center justify-center gap-2">
 
                         <span>المتابعة باستخدام Google</span>
                     </button>
                 </form>
+}
             </div>
         </div>
         <p class="text-center text-slate-500 text-sm">ليس لديك حساب؟ <a asp-controller="Account" asp-action="RegisterAr" class="font-bold text-primary hover:underline">إنشاء حساب جديد</a></p>
-        <div class="text-center text-slate-400 text-xs"><p>تجريب: <strong>ahmed</strong> / <strong>password123</strong></p></div>
+        <div class="text-center text-slate-400 text-xs"><p>تجريب: <strong>mohannad</strong> / <strong>P@ssword123</strong></p></div>
     </div>
 </div>

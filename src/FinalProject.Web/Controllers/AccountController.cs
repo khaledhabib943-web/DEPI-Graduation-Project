@@ -364,20 +364,50 @@ namespace FinalProject.Web.Controllers
             return Challenge(properties, provider);
         }
 
+        [HttpGet]
         public async Task<IActionResult> ExternalLoginCallback()
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null) return RedirectToAction("Login");
 
+            // 1) Try sign-in for returning users who already linked Google
+            var result = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+
+            if (result.Succeeded)
+                return RedirectToAction("Index", "Dashboard");
+
+            // 2) Not linked yet — find or create user by email
             var email = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login");
+
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
             {
-                user = new Customer { Email = email, UserName = email, FullName = info.Principal.FindFirst(ClaimTypes.Name)?.Value };
-                await _userManager.CreateAsync(user);
+                // Create a new Customer account from Google profile
+                var fullName = info.Principal.FindFirst(ClaimTypes.Name)?.Value ?? email;
+                user = new Customer
+                {
+                    Email = email,
+                    UserName = email,
+                    FullName = fullName,
+                    Role = UserRole.Customer,
+                    EmailConfirmed = true,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    Address = string.Empty
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                    return RedirectToAction("Login");
             }
 
+            // 3) Link the Google login to this user account
+            await _userManager.AddLoginAsync(user, info);
+
+            // 4) Sign in
             await _signInManager.SignInAsync(user, isPersistent: false);
             return RedirectToAction("Index", "Dashboard");
         }
@@ -408,7 +438,7 @@ namespace FinalProject.Web.Controllers
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Name, user.UserName ?? user.Email ?? "Unknown"),
                 new(ClaimTypes.Role, user.Role.ToString())
             };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

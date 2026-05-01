@@ -55,24 +55,24 @@ namespace FinalProject.Infrastructure.Seeding
         // ===== Test Customer =====
         private async Task SeedCustomerAsync()
         {
-            if (!await _context.Customers.AnyAsync(c => c.UserName == "ahmed"))
+            if (!await _context.Customers.AnyAsync(c => c.UserName == "mohannad"))
             {
                 var customer = new Customer
                 {
-                    FullName = "Ahmed Hassan",
-                    Email = "ahmed@test.com",
+                    FullName = "Mohannad Waleed",
+                    Email = "mohannad@test.com",
                     PhoneNumber = "01234567890",
                     NationalId = "29901011234567",
-                    Age = 28,
-                    UserName = "ahmed",
+                    Age = 24,
+                    UserName = "mohannad",
                     Role = UserRole.Customer,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,
                     Address = "Maadi, Street 9, Building 15, Cairo",
-                    EmailConfirmed = true // Seed users have confirmed email
+                    EmailConfirmed = true
                 };
 
-                var result = await _userManager.CreateAsync(customer, "password123");
+                var result = await _userManager.CreateAsync(customer, "P@ssword123");
                 if (!result.Succeeded)
                 {
                     throw new Exception($"Failed to create seed customer: {string.Join(", ", result.Errors.Select(e => e.Description))}");
@@ -80,9 +80,10 @@ namespace FinalProject.Infrastructure.Seeding
             }
         }
 
-        // ===== Admin =====
+        // ===== Admins =====
         private async Task SeedAdminAsync()
         {
+            // Admin 1
             if (!await _context.Admins.AnyAsync(a => a.UserName == "admin"))
             {
                 var admin = new Admin
@@ -96,13 +97,37 @@ namespace FinalProject.Infrastructure.Seeding
                     Role = UserRole.Admin,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,
-                    EmailConfirmed = true // Seed users have confirmed email
+                    EmailConfirmed = true
                 };
 
-                var result = await _userManager.CreateAsync(admin, "admin123");
+                var result = await _userManager.CreateAsync(admin, "Admin@123");
                 if (!result.Succeeded)
                 {
                     throw new Exception($"Failed to create seed admin: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+            }
+
+            // Admin 2
+            if (!await _context.Admins.AnyAsync(a => a.UserName == "superadmin"))
+            {
+                var admin2 = new Admin
+                {
+                    FullName = "Super Admin",
+                    Email = "superadmin@salahly.com",
+                    PhoneNumber = "01222222222",
+                    NationalId = "29801031234567",
+                    Age = 40,
+                    UserName = "superadmin",
+                    Role = UserRole.Admin,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    EmailConfirmed = true
+                };
+
+                var result2 = await _userManager.CreateAsync(admin2, "Admin@123");
+                if (!result2.Succeeded)
+                {
+                    throw new Exception($"Failed to create seed superadmin: {string.Join(", ", result2.Errors.Select(e => e.Description))}");
                 }
             }
         }
@@ -190,7 +215,7 @@ namespace FinalProject.Infrastructure.Seeding
                     EmailConfirmed = true // Seed users have confirmed email
                 };
 
-                var result = await _userManager.CreateAsync(worker, "worker123");
+                var result = await _userManager.CreateAsync(worker, "Worker@123");
                 if (!result.Succeeded)
                 {
                     throw new Exception($"Failed to create seed worker {username}: {string.Join(", ", result.Errors.Select(e => e.Description))}");

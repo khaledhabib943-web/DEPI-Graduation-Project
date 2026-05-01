@@ -25,8 +25,8 @@ namespace FinalProject.Application.Services
             foreach (var c in customers)
                 users.Add(new CustomerDto
                 {
-                    UserId = c.UserId, FullName = c.FullName, Email = c.Email,
-                    PhoneNumber = c.PhoneNumber, NationalId = c.NationalId, Age = c.Age,
+                    UserId = c.UserId, FullName = c.FullName, Email = c.Email ?? string.Empty,
+                    PhoneNumber = c.PhoneNumber ?? string.Empty, NationalId = c.NationalId, Age = c.Age,
                     Username = c.Username, Role = c.Role, IsActive = c.IsActive,
                     CreatedAt = c.CreatedAt, Address = c.Address
                 });
@@ -34,8 +34,8 @@ namespace FinalProject.Application.Services
             foreach (var w in workers)
                 users.Add(new WorkerDto
                 {
-                    UserId = w.UserId, FullName = w.FullName, Email = w.Email,
-                    PhoneNumber = w.PhoneNumber, NationalId = w.NationalId, Age = w.Age,
+                    UserId = w.UserId, FullName = w.FullName, Email = w.Email ?? string.Empty,
+                    PhoneNumber = w.PhoneNumber ?? string.Empty, NationalId = w.NationalId, Age = w.Age,
                     Username = w.Username, Role = w.Role, IsActive = w.IsActive,
                     CreatedAt = w.CreatedAt, CategoryId = w.CategoryId,
                     CategoryName = w.Category?.Name ?? "", ProfilePicture = w.ProfilePicture,
@@ -46,8 +46,8 @@ namespace FinalProject.Application.Services
             foreach (var a in admins)
                 users.Add(new AdminDto
                 {
-                    UserId = a.UserId, FullName = a.FullName, Email = a.Email,
-                    PhoneNumber = a.PhoneNumber, NationalId = a.NationalId, Age = a.Age,
+                    UserId = a.UserId, FullName = a.FullName, Email = a.Email ?? string.Empty,
+                    PhoneNumber = a.PhoneNumber ?? string.Empty, NationalId = a.NationalId, Age = a.Age,
                     Username = a.Username, Role = a.Role, IsActive = a.IsActive,
                     CreatedAt = a.CreatedAt
                 });

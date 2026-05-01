@@ -1,38 +1,31 @@
 using Microsoft.AspNetCore.Builder;
 using FinalProject.Application;
 using FinalProject.Infrastructure;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
-<<<<<<< mahmoud_hany
 using FinalProject.Domain.Entities;
-=======
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using FinalProject.Web.Data;
-using FinalProject.Web.Areas.Identity.Data;
->>>>>>> master
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ================= DB =================
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-<<<<<<< mahmoud_hany
-// Register Infrastructure layer (DbContext, Identity, Repositories)
+// ================= LAYERS (DbContext, Identity, Repos, Email, etc.) =================
 builder.Services.AddInfrastructure(builder.Configuration);
-=======
-builder.Services.AddDbContext<FinalProjectWebContext>(options =>
-    options.UseSqlServer(connectionString));
->>>>>>> master
+builder.Services.AddApplication();
 
-// ================= IDENTITY =================
-builder.Services.AddIdentity<FinalProjectWebUser, IdentityRole>(options =>
+// ================= GOOGLE LOGIN =================
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
+var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
 {
-    options.SignIn.RequireConfirmedAccount = false;
-})
-.AddEntityFrameworkStores<FinalProjectWebContext>()
-.AddDefaultTokenProviders();
+    builder.Services.AddAuthentication()
+        .AddGoogle(options =>
+        {
+            options.ClientId = googleClientId;
+            options.ClientSecret = googleClientSecret;
+        });
+}
 
-<<<<<<< mahmoud_hany
+// ================= COOKIE CONFIG =================
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -41,42 +34,29 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "SalahlyAuth";
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SameSite = SameSiteMode.Lax;
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
     options.SlidingExpiration = true;
 });
-=======
-// ================= GOOGLE LOGIN =================
-builder.Services.AddAuthentication()
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    });
->>>>>>> master
 
 // ================= MVC =================
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-<<<<<<< mahmoud_hany
-// Seed the database with test data
+var app = builder.Build();
+
+// ================= SEED DATABASE =================
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<FinalProject.Infrastructure.DbContext.ApplicationDbContext>();
     var userManager = services.GetRequiredService<UserManager<User>>();
 
+    await context.Database.MigrateAsync();
+
     var seeder = new FinalProject.Infrastructure.Seeding.DataSeeder(context, userManager);
     await seeder.SeedAsync();
 }
-=======
-// ================= LAYERS =================
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApplication();
->>>>>>> master
-
-var app = builder.Build();
 
 // ================= PIPELINE =================
 if (!app.Environment.IsDevelopment())
@@ -97,10 +77,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-<<<<<<< mahmoud_hany
-app.Run();
-=======
 app.MapRazorPages();
 
 app.Run();
->>>>>>> master
