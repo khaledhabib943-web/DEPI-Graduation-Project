@@ -2,6 +2,7 @@ using FinalProject.Application.Services;
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FinalProject.Web.Controllers
 {
