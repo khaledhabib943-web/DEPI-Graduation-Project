@@ -1,4 +1,4 @@
-﻿using FinalProject.Application.Interfaces;
+using FinalProject.Application.Interfaces;
 using FinalProject.Domain.Entities;
 using FinalProject.Infrastructure.DbContext;
 using FinalProject.Infrastructure.Repositories;
@@ -47,7 +47,9 @@ namespace FinalProject.Infrastructure
                 options.Lockout.AllowedForNewUsers = true;
             })
             .AddRoles<IdentityRole<int>>()
-            .AddEntityFrameworkStores<ApplicationDbContext>(); // wires UserManager to your DB
+            .AddEntityFrameworkStores<ApplicationDbContext>() // wires UserManager to your DB
+            .AddTokenProvider<Microsoft.AspNetCore.Identity.AuthenticatorTokenProvider<User>>(
+                TokenOptions.DefaultAuthenticatorProvider); // enables TOTP for 2FA
 
             // ── 3. Repositories ──────────────────────────────────────────
             services.AddScoped<ICustomerRepository, CustomerRepository>();

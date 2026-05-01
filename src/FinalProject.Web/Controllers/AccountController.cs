@@ -48,6 +48,71 @@ namespace FinalProject.Web.Controllers
                 return View(model);
             }
 
+            // ── 2FA check ──
+            if (user.TwoFactorEnabled)
+            {
+                // Store user info in TempData so the Verify2fa action can retrieve it
+                TempData["2fa_UserId"] = user.Id;
+                TempData["2fa_RememberMe"] = model.RememberMe;
+                TempData["2fa_ReturnUrl"] = model.ReturnUrl;
+                return RedirectToAction("Verify2fa");
+            }
+
+            await SignInUser(user, model.RememberMe);
+
+            return user.Role switch
+            {
+                UserRole.Admin => RedirectToAction("Index", "AdminDashboard"),
+                UserRole.Worker => RedirectToAction("Index", "WorkerDashboard"),
+                _ => !string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl)
+                    ? Redirect(model.ReturnUrl)
+                    : RedirectToAction("Index", "Dashboard")
+            };
+        }
+
+        // ===== 2FA VERIFICATION (English) =====
+        [HttpGet]
+        public IActionResult Verify2fa()
+        {
+            // Ensure we came from the login flow
+            if (TempData.Peek("2fa_UserId") == null)
+                return RedirectToAction("Login");
+
+            return View(new Verify2faViewModel
+            {
+                RememberMe = TempData.Peek("2fa_RememberMe") as bool? ?? false,
+                ReturnUrl = TempData.Peek("2fa_ReturnUrl") as string
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Verify2fa(Verify2faViewModel model)
+        {
+            var userId = TempData.Peek("2fa_UserId");
+            if (userId == null) return RedirectToAction("Login");
+
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByIdAsync(userId.ToString()!);
+            if (user == null) return RedirectToAction("Login");
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user,
+                _userManager.Options.Tokens.AuthenticatorTokenProvider,
+                model.Code.Trim());
+
+            if (!isValid)
+            {
+                model.ErrorMessage = "Invalid verification code. Please try again.";
+                return View(model);
+            }
+
+            // Clear TempData after successful verification
+            TempData.Remove("2fa_UserId");
+            TempData.Remove("2fa_RememberMe");
+            TempData.Remove("2fa_ReturnUrl");
+
             await SignInUser(user, model.RememberMe);
 
             return user.Role switch
@@ -142,6 +207,68 @@ namespace FinalProject.Web.Controllers
                 model.ErrorMessage = "تم إيقاف حسابك. يرجى التواصل مع الدعم الفني.";
                 return View(model);
             }
+
+            // ── 2FA check (Arabic) ──
+            if (user.TwoFactorEnabled)
+            {
+                TempData["2fa_UserId"] = user.Id;
+                TempData["2fa_RememberMe"] = model.RememberMe;
+                TempData["2fa_ReturnUrl"] = model.ReturnUrl;
+                TempData["2fa_Arabic"] = true;
+                return RedirectToAction("Verify2faAr");
+            }
+
+            await SignInUser(user, model.RememberMe);
+
+            return user.Role switch
+            {
+                UserRole.Admin => RedirectToAction("IndexAr", "AdminDashboard"),
+                UserRole.Worker => RedirectToAction("IndexAr", "WorkerDashboard"),
+                _ => RedirectToAction("IndexAr", "Dashboard")
+            };
+        }
+
+        // ===== 2FA VERIFICATION (Arabic) =====
+        [HttpGet]
+        public IActionResult Verify2faAr()
+        {
+            if (TempData.Peek("2fa_UserId") == null)
+                return RedirectToAction("LoginAr");
+
+            return View(new Verify2faViewModel
+            {
+                RememberMe = TempData.Peek("2fa_RememberMe") as bool? ?? false,
+                ReturnUrl = TempData.Peek("2fa_ReturnUrl") as string
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Verify2faAr(Verify2faViewModel model)
+        {
+            var userId = TempData.Peek("2fa_UserId");
+            if (userId == null) return RedirectToAction("LoginAr");
+
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByIdAsync(userId.ToString()!);
+            if (user == null) return RedirectToAction("LoginAr");
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user,
+                _userManager.Options.Tokens.AuthenticatorTokenProvider,
+                model.Code.Trim());
+
+            if (!isValid)
+            {
+                model.ErrorMessage = "رمز التحقق غير صالح. يرجى المحاولة مرة أخرى.";
+                return View(model);
+            }
+
+            TempData.Remove("2fa_UserId");
+            TempData.Remove("2fa_RememberMe");
+            TempData.Remove("2fa_ReturnUrl");
+            TempData.Remove("2fa_Arabic");
 
             await SignInUser(user, model.RememberMe);
 
