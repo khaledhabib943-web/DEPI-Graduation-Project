@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using FinalProject.Application;
 using FinalProject.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -15,11 +16,12 @@ builder.Services.AddDbContext<FinalProjectWebContext>(options =>
     options.UseSqlServer(connectionString));
 
 // ================= IDENTITY =================
-builder.Services.AddDefaultIdentity<FinalProjectWebUser>(options =>
+builder.Services.AddIdentity<FinalProjectWebUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
 })
-.AddEntityFrameworkStores<FinalProjectWebContext>();
+.AddEntityFrameworkStores<FinalProjectWebContext>()
+.AddDefaultTokenProviders();
 
 // ================= GOOGLE LOGIN =================
 builder.Services.AddAuthentication()
