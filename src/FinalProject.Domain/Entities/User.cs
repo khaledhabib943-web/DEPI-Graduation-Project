@@ -1,22 +1,30 @@
-using FinalProject.Domain.Enums;
+﻿using FinalProject.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProject.Domain.Entities
 {
-    public abstract class User
+    public abstract class User : IdentityUser<int>
     {
-        public int UserId { get; set; }
+        // ── Bridge properties (backward-compatible, not mapped to DB) ──
+        [NotMapped]
+        public int UserId { get => Id; set => Id = value; }
+
+        [NotMapped]
+        public string Username { get => UserName ?? string.Empty; set => UserName = value; }
+
+        [NotMapped]
+        public string PasswordHashLegacy { get => PasswordHash ?? string.Empty; set => PasswordHash = value; }
+
+        // ── Custom properties not in IdentityUser ──
         public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
-        public string PhoneNumber { get; set; } = string.Empty;
         public string NationalId { get; set; } = string.Empty;
         public int Age { get; set; }
-        public string Username { get; set; } = string.Empty;
         public UserRole Role { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation Properties
+        // Navigation
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

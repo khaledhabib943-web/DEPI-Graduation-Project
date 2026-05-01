@@ -7,27 +7,27 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace FinalProject.Web.Controllers
 {
     public class AccountController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;  
 
-        public AccountController(IUnitOfWork unitOfWork)
+        public AccountController(IUnitOfWork unitOfWork, UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // ================= LOGIN =================
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
-            if (User.Identity?.IsAuthenticated == true)
-                return RedirectByRole();
-
+            if (User.Identity?.IsAuthenticated == true) return RedirectByRole();
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
 
@@ -51,73 +51,14 @@ namespace FinalProject.Web.Controllers
             }
 
             await SignInUser(user, model.RememberMe);
-
             return RedirectByRole();
-        }
-
-        // ================= GOOGLE LOGIN START =================
-        [HttpPost]
-        public IActionResult ExternalLogin(string provider)
-        {
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account");
-
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = redirectUrl
-            };
-
-            return Challenge(properties, provider);
-        }
-
-        // ================= GOOGLE CALLBACK =================
-        public async Task<IActionResult> ExternalLoginCallback()
-        {
-            var result = await HttpContext.AuthenticateAsync("Identity.External");
-
-            if (!result.Succeeded)
-                return RedirectToAction("Login");
-
-            var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
-            var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
-
-            if (email == null)
-                return RedirectToAction("Login");
-
-            // search user in your system
-            var users = await _unitOfWork.Customers.FindAsync(c => c.Email == email);
-            var user = users.FirstOrDefault();
-
-            // create if not exists
-            if (user == null)
-            {
-                user = new Customer
-                {
-                    FullName = name ?? email,
-                    Email = email,
-                    Username = email,
-                    PasswordHash = "GOOGLE_LOGIN",
-                    Role = UserRole.Customer,
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                await _unitOfWork.Customers.AddAsync(user);
-                await _unitOfWork.SaveChangesAsync();
-            }
-
-            // IMPORTANT: sign in using YOUR system
-            await SignInUser(user, false);
-
-            return RedirectToAction("Index", "Dashboard");
         }
 
         // ================= REGISTER =================
         [HttpGet]
         public IActionResult Register()
         {
-            if (User.Identity?.IsAuthenticated == true)
-                return RedirectToAction("Index", "Dashboard");
-
+            if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Index", "Dashboard");
             return View(new RegisterViewModel());
         }
 
@@ -127,92 +68,109 @@ namespace FinalProject.Web.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
+            // Validations
             var existingEmail = await _unitOfWork.Customers.FindAsync(c => c.Email == model.Email);
-            if (existingEmail.Any())
-            {
-                model.ErrorMessage = "Email already exists.";
-                return View(model);
-            }
+            if (existingEmail.Any()) { model.ErrorMessage = "هذا البريد الإلكتروني مسجل مسبقاً."; return View(model); }
+
+            var existingNid = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
+            if (existingNid.Any()) { model.ErrorMessage = "الرقم القومي مسجل مسبقاً."; return View(model); }
 
             var customer = new Customer
             {
                 FullName = model.FullName.Trim(),
                 Email = model.Email.Trim().ToLowerInvariant(),
-                PasswordHash = HashPassword(model.Password),
+                UserName = model.Username.Trim(),
                 PhoneNumber = model.PhoneNumber.Trim(),
                 NationalId = model.NationalId.Trim(),
                 Age = model.Age,
-                Username = model.Username.Trim(),
                 Role = UserRole.Customer,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 Address = model.Address.Trim()
             };
 
-            await _unitOfWork.Customers.AddAsync(customer);
-            await _unitOfWork.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(customer, model.Password);
+            if (!result.Succeeded)
+            {
+                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+                return View(model);
+            }
 
             await SignInUser(customer, false);
+            return RedirectToAction("IndexAr", "Dashboard");
+        }
 
+        // ================= GOOGLE LOGIN =================
+        [HttpPost]
+        public IActionResult ExternalLogin(string provider)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        public async Task<IActionResult> ExternalLoginCallback()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null) return RedirectToAction("Login");
+
+            var email = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                user = new Customer { Email = email, UserName = email, FullName = info.Principal.FindFirst(ClaimTypes.Name)?.Value };
+                await _userManager.CreateAsync(user);
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
             return RedirectToAction("Index", "Dashboard");
         }
 
-        // ================= LOGOUT =================
+        // ================= LOGOUT & ACCESS DENIED =================
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public IActionResult AccessDenied() => View();
 
         // ================= HELPERS =================
         private async Task<User?> FindUserByCredentials(string usernameOrEmail, string password)
         {
-            var hash = HashPassword(password);
-
-            var customers = await _unitOfWork.Customers.FindAsync(c =>
-                (c.Username == usernameOrEmail || c.Email == usernameOrEmail) &&
-                c.PasswordHash == hash);
-
-            return customers.FirstOrDefault();
+            var user = await _userManager.FindByNameAsync(usernameOrEmail) 
+                       ?? await _userManager.FindByEmailAsync(usernameOrEmail);
+            
+            if (user == null) return null;
+            return await _userManager.CheckPasswordAsync(user, password) ? user : null;
         }
 
         private async Task SignInUser(User user, bool isPersistent)
         {
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new(ClaimTypes.Name, user.Username),
-                new(ClaimTypes.Role, user.Role.ToString()),
-                new("FullName", user.FullName)
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Role, user.Role.ToString())
             };
-
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(
-                IdentityConstants.ApplicationScheme,
-                principal,
+            await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, new ClaimsPrincipal(identity), 
                 new AuthenticationProperties { IsPersistent = isPersistent });
         }
 
-        private IActionResult RedirectByRole()
+        private IActionResult RedirectByRole(bool arabic = false)
         {
             var role = User.FindFirstValue(ClaimTypes.Role);
-
+            string action = arabic ? "IndexAr" : "Index";
             return role switch
             {
-                "Admin" => RedirectToAction("Index", "AdminDashboard"),
-                "Worker" => RedirectToAction("Index", "WorkerDashboard"),
-                _ => RedirectToAction("Index", "Dashboard")
+                "Admin" => RedirectToAction(action, "AdminDashboard"),
+                "Worker" => RedirectToAction(action, "WorkerDashboard"),
+                _ => RedirectToAction(action, "Dashboard")
             };
-        }
-
-        private static string HashPassword(string password)
-        {
-            using var sha = SHA256.Create();
-            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(bytes);
         }
     }
 }

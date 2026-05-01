@@ -1,4 +1,4 @@
-using FinalProject.Application.DTOs;
+﻿using FinalProject.Application.DTOs;
 
 namespace FinalProject.Application.Validators
 {
@@ -14,8 +14,24 @@ namespace FinalProject.Application.Validators
             if (string.IsNullOrWhiteSpace(dto.Email) || !dto.Email.Contains('@'))
                 errors.Add("A valid email is required.");
 
-            if (string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 6)
-                errors.Add("Password must be at least 6 characters.");
+            // ── Strengthened password rules ──
+            if (string.IsNullOrWhiteSpace(dto.Password))
+                errors.Add("Password is required.");
+            else
+            {
+                if (dto.Password.Length < 8)
+                    errors.Add("Password must be at least 8 characters.");
+                if (!dto.Password.Any(char.IsUpper))
+                    errors.Add("Password must contain at least one uppercase letter.");
+                if (!dto.Password.Any(char.IsLower))
+                    errors.Add("Password must contain at least one lowercase letter.");
+                if (!dto.Password.Any(char.IsDigit))
+                    errors.Add("Password must contain at least one digit.");
+                if (!dto.Password.Any(c => !char.IsLetterOrDigit(c)))
+                    errors.Add("Password must contain at least one special character.");
+                if (dto.Password.Distinct().Count() < 4)
+                    errors.Add("Password must contain at least 4 unique characters.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
                 errors.Add("Phone number is required.");
