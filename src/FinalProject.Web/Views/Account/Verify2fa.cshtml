@@ -1,0 +1,44 @@
+@model Verify2faViewModel
+@{ ViewData["Title"] = "Two-Factor Verification"; }
+
+<div class="flex-1 flex items-center justify-center p-6">
+    <div class="w-full max-w-[480px] space-y-8">
+        <div class="text-center md:text-left">
+            <div class="flex items-center justify-center md:justify-start mb-4">
+                <div class="size-16 flex items-center justify-center bg-primary/10 rounded-2xl">
+                    <span class="material-symbols-outlined !text-4xl text-primary">verified_user</span>
+                </div>
+            </div>
+            <h1 class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight mb-2">Two-Factor Verification</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-base font-normal">Enter the 6-digit code from your authenticator app to complete sign-in.</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-medium">
+                    <span class="material-symbols-outlined text-sm align-middle mr-1">error</span> @Model.ErrorMessage
+                </div>
+            }
+            <form asp-action="Verify2fa" method="post" class="space-y-6">
+                <input type="hidden" asp-for="RememberMe" />
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div class="space-y-2">
+                    <label asp-for="Code" class="text-slate-900 dark:text-slate-200 text-sm font-semibold leading-normal"></label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute text-slate-400 left-3">pin</span>
+                        <input asp-for="Code" class="form-input flex w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white h-14 text-center text-2xl font-mono tracking-[0.5em] focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-400 pl-11 pr-4" placeholder="000000" maxlength="6" autocomplete="one-time-code" inputmode="numeric" autofocus />
+                    </div>
+                    <span asp-validation-for="Code" class="text-red-500 text-xs"></span>
+                </div>
+                <button type="submit" class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+                    <span>Verify & Sign In</span>
+                    <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                </button>
+            </form>
+        </div>
+        <p class="text-center text-slate-400 dark:text-slate-500 text-xs">
+            <span class="material-symbols-outlined text-xs align-middle">info</span>
+            Open your authenticator app (Google Authenticator, Microsoft Authenticator, etc.) and enter the current code.
+        </p>
+    </div>
+</div>

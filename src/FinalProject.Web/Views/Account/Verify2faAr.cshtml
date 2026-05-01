@@ -1,0 +1,41 @@
+@model Verify2faViewModel
+@{ ViewData["Title"] = "التحقق بخطوتين"; Layout = "_LayoutArabic"; }
+
+<div class="flex-1 flex items-center justify-center p-6">
+    <div class="w-full max-w-[480px] space-y-8">
+        <div class="text-center md:text-right">
+            <div class="flex items-center justify-center md:justify-end mb-4">
+                <div class="size-16 flex items-center justify-center bg-primary/10 rounded-2xl">
+                    <span class="material-symbols-outlined !text-4xl text-primary">verified_user</span>
+                </div>
+            </div>
+            <h1 class="text-4xl font-black mb-2">التحقق بخطوتين</h1>
+            <p class="text-slate-500">أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة لإتمام تسجيل الدخول.</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium">@Model.ErrorMessage</div>
+            }
+            <form asp-action="Verify2faAr" method="post" class="space-y-6">
+                <input type="hidden" asp-for="RememberMe" />
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold">رمز التحقق</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute text-slate-400 right-3 top-4">pin</span>
+                        <input asp-for="Code" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-14 text-center text-2xl font-mono tracking-[0.5em] focus:ring-2 focus:ring-primary pr-11 pl-4" placeholder="000000" maxlength="6" autocomplete="one-time-code" inputmode="numeric" autofocus />
+                    </div>
+                    <span asp-validation-for="Code" class="text-red-500 text-xs"></span>
+                </div>
+                <button type="submit" class="w-full h-12 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                    تحقق وسجّل الدخول <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                </button>
+            </form>
+        </div>
+        <p class="text-center text-slate-400 text-xs">
+            <span class="material-symbols-outlined text-xs align-middle">info</span>
+            افتح تطبيق المصادقة (Google Authenticator أو Microsoft Authenticator) وأدخل الرمز الحالي.
+        </p>
+    </div>
+</div>
