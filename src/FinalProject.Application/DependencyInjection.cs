@@ -1,7 +1,6 @@
 using FinalProject.Application.Interfaces;
 using FinalProject.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
-using FinalProject.Domain.Entities;
 
 namespace FinalProject.Application
 {
@@ -15,9 +14,6 @@ namespace FinalProject.Application
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<INotificationService, NotificationService>();
-            
-            // Register Auth Cookie Refresh Service
-            services.AddScoped<IAuthCookieRefreshService, AuthCookieRefreshService>();
 
             return services;
         }
