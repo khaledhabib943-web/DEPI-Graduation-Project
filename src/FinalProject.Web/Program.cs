@@ -1,44 +1,47 @@
+using Microsoft.AspNetCore.Builder;
 using FinalProject.Application;
 using FinalProject.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using FinalProject.Web.Data;
+using FinalProject.Web.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// ================= DB =================
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Register Infrastructure layer (DbContext, Repositories, UnitOfWork)
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddDbContext<FinalProjectWebContext>(options =>
+    options.UseSqlServer(connectionString));
 
-// Register Application layer (Services)
-builder.Services.AddApplication();
+// ================= IDENTITY =================
+builder.Services.AddIdentity<FinalProjectWebUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<FinalProjectWebContext>()
+.AddDefaultTokenProviders();
 
-// Cookie Authentication — Hardened Security
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+// ================= GOOGLE LOGIN =================
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-        options.Cookie.Name = "SalahlyAuth";
-        options.Cookie.HttpOnly = true;                    // Prevent XSS access to cookie
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // HTTPS in prod
-        options.Cookie.SameSite = SameSiteMode.Strict;     // Prevent CSRF via cross-site requests
-        options.ExpireTimeSpan = TimeSpan.FromHours(8);    // Session expires after 8 hours
-        options.SlidingExpiration = true;                   // Renew on activity
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     });
+
+// ================= MVC =================
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+// ================= LAYERS =================
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 
 var app = builder.Build();
 
-// Seed the database with test data
-using (var scope = app.Services.CreateScope())
-{
-    var seeder = new FinalProject.Infrastructure.Seeding.DataSeeder(
-        scope.ServiceProvider.GetRequiredService<FinalProject.Infrastructure.DbContext.ApplicationDbContext>());
-    await seeder.SeedAsync();
-}
-
-// Configure the HTTP request pipeline.
+// ================= PIPELINE =================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -56,5 +59,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();

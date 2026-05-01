@@ -1,7 +1,11 @@
 using FinalProject.Application.Interfaces;
+
+using FinalProject.Application.Services;
+
 using FinalProject.Domain.Entities;
 using FinalProject.Infrastructure.DbContext;
 using FinalProject.Infrastructure.Repositories;
+using FinalProject.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -64,6 +68,9 @@ namespace FinalProject.Infrastructure
 
             // ── 4. Unit of Work ──────────────────────────────────────────
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // ── 5. Auth Cookie Refresh Service ────────────────────────────
+            services.AddScoped<IAuthCookieRefreshService, AuthCookieRefreshService>();
 
             return services;
         }
