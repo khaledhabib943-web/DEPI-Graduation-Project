@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using FinalProject.Domain.Entities;
 
 namespace FinalProject.Application.Services
@@ -10,14 +8,15 @@ namespace FinalProject.Application.Services
     ///
     /// Design Decisions:
     /// - Stateless service: no session state or HTTP context stored as field.
-    /// - IHttpContextAccessor is injected to safely read the current request context.
     /// - SignInManager.RefreshSignInAsync re-issues the cookie with the latest
     ///   user claims without triggering a full sign-out/sign-in cycle, preserving
     ///   all existing session data and avoiding unnecessary redirects.
     /// - Returns a typed Result so callers can react without catching exceptions.
     ///
-    /// Registration (add once in Program.cs / Startup.cs — DO NOT modify existing DI):
-    ///   builder.Services.AddScoped&lt;IAuthCookieRefreshService, AuthCookieRefreshService&gt;();
+    /// NOTE: The concrete implementation lives in FinalProject.Infrastructure.Services.
+    /// The Application layer (plain Microsoft.NET.Sdk class library) cannot reference
+    /// SignInManager&lt;T&gt; — that type requires the Microsoft.AspNetCore.App framework
+    /// reference, which is declared only in the Infrastructure project.
     /// </summary>
     public interface IAuthCookieRefreshService
     {
@@ -43,114 +42,6 @@ namespace FinalProject.Application.Services
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>Same result semantics as <see cref="RefreshAsync(string, CancellationToken)"/>.</returns>
         Task<CookieRefreshResult> RefreshAsync(User user, CancellationToken cancellationToken = default);
-    }
-
-    /// <inheritdoc />
-    public sealed class AuthCookieRefreshService : IAuthCookieRefreshService
-    {
-        // ── Dependencies ────────────────────────────────────────────────────────────
-
-        private readonly UserManager<User>  _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly ILogger<AuthCookieRefreshService> _logger;
-
-        // ── Constructor ─────────────────────────────────────────────────────────────
-
-        public AuthCookieRefreshService(
-            UserManager<User>     userManager,
-            SignInManager<User>   signInManager,
-            ILogger<AuthCookieRefreshService> logger)
-        {
-            _userManager   = userManager   ?? throw new ArgumentNullException(nameof(userManager));
-            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
-            _logger        = logger        ?? throw new ArgumentNullException(nameof(logger));
-        }
-
-        // ── Public API ───────────────────────────────────────────────────────────────
-
-        /// <inheritdoc />
-        public async Task<CookieRefreshResult> RefreshAsync(
-            string userId,
-            CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                _logger.LogWarning(
-                    "[AuthCookieRefresh] RefreshAsync called with a null or empty userId.");
-                return CookieRefreshResult.UserNotFound;
-            }
-
-            // Honour cancellation before hitting the database.
-            cancellationToken.ThrowIfCancellationRequested();
-
-            User? user = await _userManager.FindByIdAsync(userId);
-
-            if (user is null)
-            {
-                _logger.LogWarning(
-                    "[AuthCookieRefresh] User with Id '{UserId}' was not found in the store.",
-                    userId);
-                return CookieRefreshResult.UserNotFound;
-            }
-
-            return await RefreshAsync(user, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public async Task<CookieRefreshResult> RefreshAsync(
-            User user,
-            CancellationToken cancellationToken = default)
-        {
-            if (user is null)
-            {
-                _logger.LogWarning(
-                    "[AuthCookieRefresh] RefreshAsync called with a null user entity.");
-                return CookieRefreshResult.UserNotFound;
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            try
-            {
-                // ── Core Refresh Logic ───────────────────────────────────────────────
-                //
-                // SignInManager.RefreshSignInAsync:
-                //   1. Reads the latest user data (including updated Claims/Roles) from the store.
-                //   2. Re-issues the authentication cookie with a new security stamp validation timestamp.
-                //   3. Does NOT invalidate the current session or cause a redirect.
-                //   4. Is the officially recommended ASP.NET Core Identity method for this purpose.
-                //      Reference: https://docs.microsoft.com/aspnet/core/security/authentication/identity
-                //
-                // Alternative (used only when SignInManager is unavailable, e.g., background jobs):
-                //   IUserClaimsPrincipalFactory<User> can build a new ClaimsPrincipal,
-                //   followed by HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal).
-                //   This is intentionally NOT used here because RefreshSignInAsync is safer: it
-                //   validates the security stamp and respects all Identity configuration options.
-                // ─────────────────────────────────────────────────────────────────────
-
-                await _signInManager.RefreshSignInAsync(user);
-
-                _logger.LogInformation(
-                    "[AuthCookieRefresh] Authentication cookie successfully refreshed for user '{UserId}'.",
-                    user.Id);
-
-                return CookieRefreshResult.Success;
-            }
-            catch (OperationCanceledException)
-            {
-                // Re-throw cancellations — do not swallow them.
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "[AuthCookieRefresh] Unexpected error while refreshing cookie for user '{UserId}'.",
-                    user.Id);
-
-                return CookieRefreshResult.Failed;
-            }
-        }
     }
 
     // ── Result Type ──────────────────────────────────────────────────────────────────
