@@ -1,4 +1,5 @@
 using FinalProject.Application.Interfaces;
+using FinalProject.Application.Services;
 using FinalProject.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,13 +11,17 @@ namespace FinalProject.Web.Controllers
     public class ProfileController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAuthCookieRefreshService _cookieRefresh;
 
-        public ProfileController(IUnitOfWork unitOfWork)
+        public ProfileController(IUnitOfWork unitOfWork, IAuthCookieRefreshService cookieRefresh)
         {
-            _unitOfWork = unitOfWork;
+            _unitOfWork    = unitOfWork;
+            _cookieRefresh = cookieRefresh;
         }
 
         private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        // ── English ──────────────────────────────────────────────────────────────────
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -26,8 +31,12 @@ namespace FinalProject.Web.Controllers
 
             return View(new ProfileViewModel
             {
-                UserId = customer.UserId, FullName = customer.FullName, Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber, Age = customer.Age, Address = customer.Address
+                UserId      = customer.UserId,
+                FullName    = customer.FullName    ?? string.Empty,
+                Email       = customer.Email       ?? string.Empty,
+                PhoneNumber = customer.PhoneNumber ?? string.Empty,
+                Age         = customer.Age,
+                Address     = customer.Address     ?? string.Empty
             });
         }
 
@@ -43,7 +52,8 @@ namespace FinalProject.Web.Controllers
             // Check if email changed and is unique
             if (customer.Email != model.Email.Trim().ToLowerInvariant())
             {
-                var existing = await _unitOfWork.Customers.FindAsync(c => c.Email == model.Email.Trim().ToLowerInvariant() && c.UserId != customer.UserId);
+                var existing = await _unitOfWork.Customers.FindAsync(
+                    c => c.Email == model.Email.Trim().ToLowerInvariant() && c.UserId != customer.UserId);
                 if (existing.Any())
                 {
                     ModelState.AddModelError("Email", "This email is already used by another account.");
@@ -51,18 +61,23 @@ namespace FinalProject.Web.Controllers
                 }
             }
 
-            customer.FullName = model.FullName.Trim();
-            customer.Email = model.Email.Trim().ToLowerInvariant();
+            customer.FullName    = model.FullName.Trim();
+            customer.Email       = model.Email.Trim().ToLowerInvariant();
             customer.PhoneNumber = model.PhoneNumber.Trim();
-            customer.Age = model.Age;
-            customer.Address = model.Address.Trim();
+            customer.Age         = model.Age;
+            customer.Address     = model.Address.Trim();
 
             _unitOfWork.Customers.Update(customer);
             await _unitOfWork.SaveChangesAsync();
 
+            // Refresh the auth cookie so updated claims are reflected immediately
+            await _cookieRefresh.RefreshAsync(customer.UserId.ToString());
+
             model.SuccessMessage = "Profile updated successfully!";
             return View(model);
         }
+
+        // ── Arabic ───────────────────────────────────────────────────────────────────
 
         [HttpGet]
         public async Task<IActionResult> IndexAr()
@@ -72,8 +87,12 @@ namespace FinalProject.Web.Controllers
 
             return View(new ProfileViewModel
             {
-                UserId = customer.UserId, FullName = customer.FullName, Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber, Age = customer.Age, Address = customer.Address
+                UserId      = customer.UserId,
+                FullName    = customer.FullName    ?? string.Empty,
+                Email       = customer.Email       ?? string.Empty,
+                PhoneNumber = customer.PhoneNumber ?? string.Empty,
+                Age         = customer.Age,
+                Address     = customer.Address     ?? string.Empty
             });
         }
 
@@ -88,7 +107,8 @@ namespace FinalProject.Web.Controllers
 
             if (customer.Email != model.Email.Trim().ToLowerInvariant())
             {
-                var existing = await _unitOfWork.Customers.FindAsync(c => c.Email == model.Email.Trim().ToLowerInvariant() && c.UserId != customer.UserId);
+                var existing = await _unitOfWork.Customers.FindAsync(
+                    c => c.Email == model.Email.Trim().ToLowerInvariant() && c.UserId != customer.UserId);
                 if (existing.Any())
                 {
                     ModelState.AddModelError("Email", "هذا البريد الإلكتروني مستخدم من حساب آخر.");
@@ -96,14 +116,17 @@ namespace FinalProject.Web.Controllers
                 }
             }
 
-            customer.FullName = model.FullName.Trim();
-            customer.Email = model.Email.Trim().ToLowerInvariant();
+            customer.FullName    = model.FullName.Trim();
+            customer.Email       = model.Email.Trim().ToLowerInvariant();
             customer.PhoneNumber = model.PhoneNumber.Trim();
-            customer.Age = model.Age;
-            customer.Address = model.Address.Trim();
+            customer.Age         = model.Age;
+            customer.Address     = model.Address.Trim();
 
             _unitOfWork.Customers.Update(customer);
             await _unitOfWork.SaveChangesAsync();
+
+            // Refresh the auth cookie so updated claims are reflected immediately
+            await _cookieRefresh.RefreshAsync(customer.UserId.ToString());
 
             model.SuccessMessage = "تم تحديث الملف الشخصي بنجاح!";
             return View(model);
