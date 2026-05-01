@@ -23,6 +23,29 @@
                 </div>
                 <button type="submit" class="w-full h-12 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/20 flex items-center justify-center gap-2">تسجيل الدخول <span class="material-symbols-outlined text-[20px]">login</span></button>
             </form>
+            @*external loginn*@
+            <div class="mt-6">
+                <div class="relative flex items-center py-4">
+                    <div class="flex-grow border-t border-slate-200"></div>
+                    <span class="mx-4 text-slate-400 text-xs">أو المتابعة باستخدام</span>
+                    <div class="flex-grow border-t border-slate-200"></div>
+                </div>
+
+                <form asp-area="Identity"
+                      asp-page="/Account/ExternalLogin"
+                      asp-route-returnUrl="@Model.ReturnUrl"
+                      method="post">
+
+                    <button type="submit"
+                            name="provider"
+                            value="Google"
+                            formnovalidate
+                            class="w-full h-12 bg-white border border-slate-200 rounded-lg font-bold flex items-center justify-center gap-2">
+
+                        <span>المتابعة باستخدام Google</span>
+                    </button>
+                </form>
+            </div>
         </div>
         <p class="text-center text-slate-500 text-sm">ليس لديك حساب؟ <a asp-controller="Account" asp-action="RegisterAr" class="font-bold text-primary hover:underline">إنشاء حساب جديد</a></p>
         <div class="text-center text-slate-400 text-xs"><p>تجريب: <strong>ahmed</strong> / <strong>password123</strong></p></div>

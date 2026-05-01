@@ -1,20 +1,38 @@
+using Microsoft.AspNetCore.Builder;
 using FinalProject.Application;
 using FinalProject.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+<<<<<<< mahmoud_hany
 using FinalProject.Domain.Entities;
+=======
+using Microsoft.EntityFrameworkCore;
+using FinalProject.Web.Data;
+using FinalProject.Web.Areas.Identity.Data;
+>>>>>>> master
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// ================= DB =================
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+<<<<<<< mahmoud_hany
 // Register Infrastructure layer (DbContext, Identity, Repositories)
 builder.Services.AddInfrastructure(builder.Configuration);
+=======
+builder.Services.AddDbContext<FinalProjectWebContext>(options =>
+    options.UseSqlServer(connectionString));
+>>>>>>> master
 
-// Register Application layer (Services)
-builder.Services.AddApplication();
+// ================= IDENTITY =================
+builder.Services.AddIdentity<FinalProjectWebUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<FinalProjectWebContext>()
+.AddDefaultTokenProviders();
 
+<<<<<<< mahmoud_hany
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -27,9 +45,21 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
     options.SlidingExpiration = true;
 });
+=======
+// ================= GOOGLE LOGIN =================
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    });
+>>>>>>> master
 
-var app = builder.Build();
+// ================= MVC =================
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
+<<<<<<< mahmoud_hany
 // Seed the database with test data
 using (var scope = app.Services.CreateScope())
 {
@@ -40,8 +70,15 @@ using (var scope = app.Services.CreateScope())
     var seeder = new FinalProject.Infrastructure.Seeding.DataSeeder(context, userManager);
     await seeder.SeedAsync();
 }
+=======
+// ================= LAYERS =================
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
+>>>>>>> master
 
-// Configure the HTTP request pipeline.
+var app = builder.Build();
+
+// ================= PIPELINE =================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -60,4 +97,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+<<<<<<< mahmoud_hany
 app.Run();
+=======
+app.MapRazorPages();
+
+app.Run();
+>>>>>>> master

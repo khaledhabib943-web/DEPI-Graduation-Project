@@ -1,4 +1,5 @@
-﻿using FinalProject.Application.Interfaces;
+using FinalProject.Application.Interfaces;
+using FinalProject.Application.Services;
 using FinalProject.Domain.Entities;
 using FinalProject.Infrastructure.DbContext;
 using FinalProject.Infrastructure.Repositories;
@@ -26,7 +27,6 @@ namespace FinalProject.Infrastructure
             // ── 2. ASP.NET Core Identity (with custom options) ────────────
             services.AddIdentity<User, IdentityRole<int>>(options =>
             {
-                // Password rules
                 options.Password.RequiredLength = 8;
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
@@ -34,25 +34,22 @@ namespace FinalProject.Infrastructure
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequiredUniqueChars = 4;
 
-                // Duplicate prevention — Identity enforces these at DB level
                 options.User.RequireUniqueEmail = true;
                 options.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
-                // Email confirmation required
                 options.SignIn.RequireConfirmedEmail = true;
                 options.SignIn.RequireConfirmedAccount = true;
 
-                // Account lockout after failed attempts
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
                 options.Lockout.AllowedForNewUsers = true;
             })
-            .AddRoles<IdentityRole<int>>()
-            .AddEntityFrameworkStores<ApplicationDbContext>() // wires UserManager to your DB
+            .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager<SignInManager<User>>()
             .AddDefaultTokenProviders()
-            .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>();
+            .AddTokenProvider<Microsoft.AspNetCore.Identity.AuthenticatorTokenProvider<User>>(
+                TokenOptions.DefaultAuthenticatorProvider);
 
             // ── 3. Repositories ──────────────────────────────────────────
             services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -70,6 +67,9 @@ namespace FinalProject.Infrastructure
 
             // ── 5. Email Service ──────────────────────────────────────────
             services.AddTransient<IEmailSender, EmailSender>();
+
+            // ── 6. Auth Cookie Refresh Service ────────────────────────────
+            services.AddScoped<IAuthCookieRefreshService, AuthCookieRefreshService>();
 
             return services;
         }
