@@ -47,7 +47,7 @@
                         <input asp-for="RememberMe" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" />
                         <span class="text-sm text-slate-600 dark:text-slate-400 font-medium">Remember me</span>
                     </label>
-                    <a class="text-sm font-semibold text-primary hover:underline underline-offset-4" href="#">Forgot password?</a>
+                    <a class="text-sm font-semibold text-primary hover:underline underline-offset-4" asp-controller="Account" asp-action="ForgotPassword">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
