@@ -11,11 +11,12 @@ namespace FinalProject.Web.ViewModels
 
         [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
-        [StringLength(128, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters.")]
+        [StringLength(128, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters.")]
         public string Password { get; set; } = string.Empty;
 
         public bool RememberMe { get; set; }
         public string? ReturnUrl { get; set; }
         public string? ErrorMessage { get; set; }
+        public string? SuccessMessage { get; set; }
     }
 }

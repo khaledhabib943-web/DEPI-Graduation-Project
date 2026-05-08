@@ -31,7 +31,26 @@ namespace FinalProject.Web.Controllers
         public IActionResult Login(string? returnUrl = null)
         {
             if (User.Identity?.IsAuthenticated == true) return RedirectByRole();
-            return View(new LoginViewModel { ReturnUrl = returnUrl });
+
+            var model = new LoginViewModel { ReturnUrl = returnUrl };
+
+            // Pre-fill from email confirmation or Google registration
+            if (TempData["ConfirmedEmail"] is string confirmedEmail)
+            {
+                model.Username = confirmedEmail;
+                model.SuccessMessage = "Email confirmed successfully! Please sign in to continue.";
+            }
+            else if (TempData["RegisteredEmail"] is string registeredEmail)
+            {
+                model.Username = registeredEmail;
+                model.SuccessMessage = "Registration complete! Please sign in to continue.";
+            }
+
+            // Error messages from Google login redirect
+            if (TempData["LoginError"] is string loginError)
+                model.ErrorMessage = loginError;
+
+            return View(model);
         }
 
         [HttpPost]
@@ -122,7 +141,10 @@ namespace FinalProject.Web.Controllers
         public IActionResult Register()
         {
             if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Index", "Dashboard");
-            return View(new RegisterViewModel());
+            var model = new RegisterViewModel();
+            if (TempData["RegisterError"] is string error)
+                model.ErrorMessage = error;
+            return View(model);
         }
 
         [HttpPost]
@@ -173,7 +195,8 @@ namespace FinalProject.Web.Controllers
                 <p><a href='{callbackUrl}'>Confirm Email</a></p>
                 <p>If you didn't create an account with Salahly, please ignore this email.</p>";
 
-            await _emailSender.SendEmailAsync(customer.Email, emailSubject, emailBody);
+            try { await _emailSender.SendEmailAsync(customer.Email, emailSubject, emailBody); }
+            catch { /* Account created – email will need to be resent */ }
             return RedirectToAction("RegisterConfirmation");
         }
 
@@ -187,8 +210,9 @@ namespace FinalProject.Web.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Dashboard");
+                // Redirect to login with email pre-filled instead of auto-sign-in
+                TempData["ConfirmedEmail"] = user.Email;
+                return RedirectToAction("Login");
             }
 
             return View("Error");
@@ -348,14 +372,15 @@ namespace FinalProject.Web.Controllers
                 <p><a href='{callbackUrl}'>تأكيد البريد الإلكتروني</a></p>
                 <p>إذا لم تقم بإنشاء حساب في صالحly، يرجى تجاهل هذا البريد الإلكتروني.</p>";
 
-            await _emailSender.SendEmailAsync(customer.Email, emailSubject, emailBody);
+            try { await _emailSender.SendEmailAsync(customer.Email, emailSubject, emailBody); }
+            catch { /* Account created – email will need to be resent */ }
             return RedirectToAction("RegisterConfirmationAr");
         }
 
         [HttpGet]
         public IActionResult RegisterConfirmationAr() => View();
 
-        // ================= GOOGLE LOGIN =================
+        // ================= GOOGLE LOGIN (existing users only) =================
         [HttpPost]
         public IActionResult ExternalLogin(string provider)
         {
@@ -370,46 +395,138 @@ namespace FinalProject.Web.Controllers
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null) return RedirectToAction("Login");
 
-            // 1) Try sign-in for returning users who already linked Google
-            var result = await _signInManager.ExternalLoginSignInAsync(
-                info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-
-            if (result.Succeeded)
-                return RedirectToAction("Index", "Dashboard");
-
-            // 2) Not linked yet — find or create user by email
             var email = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
             if (string.IsNullOrEmpty(email)) return RedirectToAction("Login");
 
+            // Find existing user by email
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
             {
-                // Create a new Customer account from Google profile
-                var fullName = info.Principal.FindFirst(ClaimTypes.Name)?.Value ?? email;
-                user = new Customer
-                {
-                    Email = email,
-                    UserName = email,
-                    FullName = fullName,
-                    Role = UserRole.Customer,
-                    EmailConfirmed = true,
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow,
-                    Address = string.Empty
-                };
-
-                var createResult = await _userManager.CreateAsync(user);
-                if (!createResult.Succeeded)
-                    return RedirectToAction("Login");
+                // User is NOT registered — redirect to Register with error
+                TempData["RegisterError"] = $"The email {email} is not registered. Please sign up first.";
+                return RedirectToAction("Register");
             }
 
-            // 3) Link the Google login to this user account
-            await _userManager.AddLoginAsync(user, info);
+            // Link Google login if not already linked
+            var logins = await _userManager.GetLoginsAsync(user);
+            if (!logins.Any(l => l.LoginProvider == info.LoginProvider))
+                await _userManager.AddLoginAsync(user, info);
 
-            // 4) Sign in
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToAction("Index", "Dashboard");
+            // ── 2FA check (same flow as manual login) ──
+            if (user.TwoFactorEnabled)
+            {
+                TempData["2fa_UserId"] = user.Id;
+                TempData["2fa_RememberMe"] = false;
+                TempData["2fa_ReturnUrl"] = (string?)null;
+                return RedirectToAction("Verify2fa");
+            }
+
+            // Sign in with proper role claims
+            await SignInUser(user, isPersistent: false);
+
+            // Redirect based on role
+            return user.Role switch
+            {
+                UserRole.Admin => RedirectToAction("Index", "AdminDashboard"),
+                UserRole.Worker => RedirectToAction("Index", "WorkerDashboard"),
+                _ => RedirectToAction("Index", "Dashboard")
+            };
+        }
+
+        // ================= GOOGLE SIGN-UP (new users) =================
+        [HttpPost]
+        public IActionResult ExternalRegister(string provider)
+        {
+            var redirectUrl = Url.Action("ExternalRegisterCallback", "Account");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExternalRegisterCallback()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null) return RedirectToAction("Register");
+
+            var email = info.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var fullName = info.Principal.FindFirst(ClaimTypes.Name)?.Value ?? "";
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Register");
+
+            // Check if user already exists
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                TempData["LoginError"] = "This email is already registered. Please sign in instead.";
+                return RedirectToAction("Login");
+            }
+
+            // Store Google info in TempData for the completion form
+            TempData["GoogleEmail"] = email;
+            TempData["GoogleFullName"] = fullName;
+
+            return RedirectToAction("CompleteGoogleRegistration");
+        }
+
+        [HttpGet]
+        public IActionResult CompleteGoogleRegistration()
+        {
+            var email = TempData.Peek("GoogleEmail") as string;
+            var fullName = TempData.Peek("GoogleFullName") as string;
+
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Register");
+
+            return View(new CompleteGoogleRegistrationViewModel
+            {
+                Email = email,
+                FullName = fullName ?? ""
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteGoogleRegistration(CompleteGoogleRegistrationViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            // Validate uniqueness
+            var existingEmail = await _unitOfWork.Customers.FindAsync(c => c.Email == model.Email);
+            if (existingEmail.Any()) { model.ErrorMessage = "This email is already registered."; return View(model); }
+
+            var existingNid = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
+            if (existingNid.Any()) { model.ErrorMessage = "This National ID is already registered."; return View(model); }
+
+            var customer = new Customer
+            {
+                FullName = model.FullName.Trim(),
+                Email = model.Email.Trim().ToLowerInvariant(),
+                UserName = model.Username.Trim(),
+                PhoneNumber = model.PhoneNumber.Trim(),
+                NationalId = model.NationalId.Trim(),
+                Age = model.Age,
+                Role = UserRole.Customer,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                Address = model.Address.Trim(),
+                EmailConfirmed = true // Google already verified the email
+            };
+
+            var result = await _userManager.CreateAsync(customer, model.Password);
+            if (!result.Succeeded)
+            {
+                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+                return View(model);
+            }
+
+            // Link Google login to this account (re-authenticate to get the info)
+            // The Google link will happen on first Google sign-in via ExternalLoginCallback
+
+            // Redirect to login with email pre-filled
+            TempData["RegisteredEmail"] = model.Email;
+            TempData.Remove("GoogleEmail");
+            TempData.Remove("GoogleFullName");
+            return RedirectToAction("Login");
         }
 
         // ================= LOGOUT & ACCESS DENIED =================
@@ -453,7 +570,8 @@ namespace FinalProject.Web.Controllers
                 <p>Please reset your password by <a href='{callbackUrl}'>clicking here</a>.</p>
                 <p>If you didn't request a password reset, you can safely ignore this email.</p>";
 
-            await _emailSender.SendEmailAsync(model.Email, emailSubject, emailBody);
+            try { await _emailSender.SendEmailAsync(model.Email, emailSubject, emailBody); }
+            catch { /* Silently fail – don't reveal email delivery status */ }
 
             return RedirectToAction("ForgotPasswordConfirmation");
         }
@@ -528,7 +646,8 @@ namespace FinalProject.Web.Controllers
                     <p>إذا لم تطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذا البريد الإلكتروني.</p>
                 </div>";
 
-            await _emailSender.SendEmailAsync(model.Email, emailSubject, emailBody);
+            try { await _emailSender.SendEmailAsync(model.Email, emailSubject, emailBody); }
+            catch { /* Silently fail – don't reveal email delivery status */ }
 
             return RedirectToAction("ForgotPasswordConfirmationAr");
         }
