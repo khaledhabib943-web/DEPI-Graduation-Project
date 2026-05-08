@@ -423,6 +423,154 @@ namespace FinalProject.Web.Controllers
         [HttpGet]
         public IActionResult AccessDenied() => View();
 
+        // ================= FORGOT / RESET PASSWORD =================
+        [HttpGet]
+        public IActionResult ForgotPassword() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = Url.Action(
+                "ResetPassword",
+                "Account",
+                new { code },
+                protocol: Request.Scheme);
+
+            var emailSubject = "Reset Password";
+            var emailBody = $@"
+                <h2>Reset Your Password</h2>
+                <p>Please reset your password by <a href='{callbackUrl}'>clicking here</a>.</p>
+                <p>If you didn't request a password reset, you can safely ignore this email.</p>";
+
+            await _emailSender.SendEmailAsync(model.Email, emailSubject, emailBody);
+
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation() => View();
+
+        [HttpGet]
+        public IActionResult ResetPassword(string? code = null)
+        {
+            if (code == null) return BadRequest("A code must be supplied for password reset.");
+            return View(new ResetPasswordViewModel { Code = code });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation() => View();
+
+        // ================= FORGOT / RESET PASSWORD (Arabic) =================
+        [HttpGet]
+        public IActionResult ForgotPasswordAr() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPasswordAr(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                return RedirectToAction("ForgotPasswordConfirmationAr");
+            }
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = Url.Action(
+                "ResetPasswordAr",
+                "Account",
+                new { code },
+                protocol: Request.Scheme);
+
+            var emailSubject = "إعادة تعيين كلمة المرور";
+            var emailBody = $@"
+                <div dir='rtl' style='text-align: right;'>
+                    <h2>إعادة تعيين كلمة المرور الخاصة بك</h2>
+                    <p>الرجاء إعادة تعيين كلمة المرور الخاصة بك عن طريق <a href='{callbackUrl}'>الضغط هنا</a>.</p>
+                    <p>إذا لم تطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذا البريد الإلكتروني.</p>
+                </div>";
+
+            await _emailSender.SendEmailAsync(model.Email, emailSubject, emailBody);
+
+            return RedirectToAction("ForgotPasswordConfirmationAr");
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmationAr() => View();
+
+        [HttpGet]
+        public IActionResult ResetPasswordAr(string? code = null)
+        {
+            if (code == null) return BadRequest("A code must be supplied for password reset.");
+            return View(new ResetPasswordViewModel { Code = code });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPasswordAr(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return RedirectToAction("ResetPasswordConfirmationAr");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ResetPasswordConfirmationAr");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmationAr() => View();
+
         // ================= HELPERS =================
         private async Task<User?> FindUserByCredentials(string usernameOrEmail, string password)
         {
