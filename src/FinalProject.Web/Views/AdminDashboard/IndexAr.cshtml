@@ -1,14 +1,121 @@
+@model FinalProject.Web.ViewModels.AdminDashboardViewModel
 @{ ViewData["Title"] = "لوحة تحكم المدير"; Layout = "_LayoutArabic"; }
 
 <div class="px-6 md:px-20 lg:px-40 py-8">
-    <div class="max-w-[960px] mx-auto flex flex-col gap-8">
-        <div class="flex items-center gap-4">
-            <div class="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center"><span class="material-symbols-outlined !text-3xl">admin_panel_settings</span></div>
-            <div><h1 class="text-3xl font-black">لوحة تحكم المدير</h1><p class="text-slate-500">إدارة الشكاوى وإعدادات النظام.</p></div>
+    <div class="max-w-[1200px] mx-auto flex flex-col gap-8">
+        <!-- Welcome / Alerts -->
+        <div class="flex flex-col gap-2">
+            <h1 class="text-slate-900 dark:text-slate-100 text-3xl font-black tracking-tight">مركز تحكم المدير 🛡️</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-lg">إدارة مستخدمي المنصة، التحقق من وثائق عمال الصيانة، وحل شكاوى العملاء.</p>
         </div>
+
+        @if (TempData["SuccessMessageAr"] != null)
+        {
+            <div class="p-4 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center gap-3">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>@TempData["SuccessMessageAr"]</span>
+            </div>
+        }
+        @if (TempData["ErrorMessageAr"] != null)
+        {
+            <div class="p-4 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 flex items-center gap-3">
+                <span class="material-symbols-outlined">error</span>
+                <span>@TempData["ErrorMessageAr"]</span>
+            </div>
+        }
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined">group</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-black text-slate-900 dark:text-slate-100">@Model.TotalCustomers</p>
+                        <p class="text-sm text-slate-500">إجمالي العملاء</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined">engineering</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-black text-slate-900 dark:text-slate-100">@Model.TotalWorkers</p>
+                        <p class="text-sm text-slate-500">إجمالي العمال</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined">report</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-black text-slate-900 dark:text-slate-100">@Model.PendingComplaintsCount</p>
+                        <p class="text-sm text-slate-500">شكاوى قيد الانتظار</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-4">
+                    <div class="size-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined">badge</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-black text-slate-900 dark:text-slate-100">@Model.PendingWorkersCount</p>
+                        <p class="text-sm text-slate-500">عمال غير مؤكدين</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Sections Cards -->
+        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-2">أقسام الإدارة</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border shadow-sm"><div class="flex items-center gap-4"><div class="size-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center"><span class="material-symbols-outlined">report</span></div><div><p class="text-2xl font-black">@ViewBag.TotalComplaints</p><p class="text-sm text-slate-500">شكاوى معلقة</p></div></div></div>
+            <a asp-controller="AdminDashboard" asp-action="UsersAr" class="group bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:shadow-lg transition-all flex flex-col justify-between h-56">
+                <div>
+                    <div class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined !text-3xl">people</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">إدارة المستخدمين</h3>
+                    <p class="text-slate-500 text-sm">تعديل بيانات المستخدمين، تجميد حساباتهم، أو حذفها نهائياً.</p>
+                </div>
+                <div class="flex items-center text-primary font-bold text-sm mt-4 gap-1 group-hover:gap-2 transition-all">
+                    <span>إدارة المستخدمين</span>
+                    <span class="material-symbols-outlined !text-sm">arrow_back</span>
+                </div>
+            </a>
+
+            <a asp-controller="AdminDashboard" asp-action="ComplaintsAr" class="group bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 hover:shadow-lg transition-all flex flex-col justify-between h-56">
+                <div>
+                    <div class="size-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined !text-3xl">report</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">شكاوى العملاء</h3>
+                    <p class="text-slate-500 text-sm">استعراض شكاوى العملاء والرد عليها أو تجاهلها لحل المشاكل.</p>
+                </div>
+                <div class="flex items-center text-amber-500 font-bold text-sm mt-4 gap-1 group-hover:gap-2 transition-all">
+                    <span>إدارة الشكاوى</span>
+                    <span class="material-symbols-outlined !text-sm">arrow_back</span>
+                </div>
+            </a>
+
+            <a asp-controller="AdminDashboard" asp-action="WorkerCredentialsAr" class="group bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 hover:border-rose-500/50 hover:shadow-lg transition-all flex flex-col justify-between h-56">
+                <div>
+                    <div class="size-14 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined !text-3xl">badge</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">وثائق عمال الصيانة</h3>
+                    <p class="text-slate-500 text-sm">مراجعة الهويات والوثائق الرسمية للعمال وقبولهم أو رفضهم.</p>
+                </div>
+                <div class="flex items-center text-rose-500 font-bold text-sm mt-4 gap-1 group-hover:gap-2 transition-all">
+                    <span>مراجعة الوثائق</span>
+                    <span class="material-symbols-outlined !text-sm">arrow_back</span>
+                </div>
+            </a>
         </div>
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-8 border text-center"><span class="material-symbols-outlined text-6xl text-slate-300 mb-4">construction</span><h3 class="text-xl font-bold text-slate-600 mb-2">لوحة التحكم الكاملة قريباً</h3><p class="text-slate-400">إدارة الشكاوى والمستخدمين والتحليلات ستكون متاحة هنا.</p></div>
     </div>
 </div>

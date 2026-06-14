@@ -1,0 +1,198 @@
+@model FinalProject.Web.ViewModels.AdminDashboardViewModel
+@{ ViewData["Title"] = "شكاوى العملاء"; Layout = "_LayoutArabic"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[1000px] mx-auto flex flex-col gap-8">
+        
+        <!-- Header -->
+        <div class="flex items-center gap-4">
+            <a asp-controller="AdminDashboard" asp-action="IndexAr" class="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-primary/10 hover:text-primary transition-colors">
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+            <div>
+                <h1 class="text-slate-900 dark:text-slate-100 text-3xl font-black tracking-tight">شكاوى العملاء</h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm">مراجعة الشكاوى المقدمة من العملاء وحلها أو رفضها.</p>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessageAr"] != null)
+        {
+            <div class="p-4 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center gap-3">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>@TempData["SuccessMessageAr"]</span>
+            </div>
+        }
+        @if (TempData["ErrorMessageAr"] != null)
+        {
+            <div class="p-4 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 flex items-center gap-3">
+                <span class="material-symbols-outlined">error</span>
+                <span>@TempData["ErrorMessageAr"]</span>
+            </div>
+        }
+
+        <!-- Status Filter Tabs -->
+        <div class="flex border-b border-slate-200 dark:border-slate-800 gap-6">
+            <button onclick="filterComplaints('all', this)" class="tab-btn pb-4 text-sm font-bold border-b-2 border-primary text-primary transition-all">
+                الكل (@Model.Complaints.Count)
+            </button>
+            <button onclick="filterComplaints('pending', this)" class="tab-btn pb-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all">
+                قيد الانتظار (@Model.Complaints.Count(c => c.Status == FinalProject.Domain.Enums.ComplaintStatus.Pending || c.Status == FinalProject.Domain.Enums.ComplaintStatus.UnderReview))
+            </button>
+            <button onclick="filterComplaints('resolved', this)" class="tab-btn pb-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all">
+                تم الحل (@Model.Complaints.Count(c => c.Status == FinalProject.Domain.Enums.ComplaintStatus.Resolved))
+            </button>
+            <button onclick="filterComplaints('dismissed', this)" class="tab-btn pb-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all">
+                تم الرفض/التجاهل (@Model.Complaints.Count(c => c.Status == FinalProject.Domain.Enums.ComplaintStatus.Dismissed))
+            </button>
+        </div>
+
+        <!-- Complaints List -->
+        <div id="complaintsContainer" class="flex flex-col gap-6">
+            @if (Model.Complaints.Any())
+            {
+                @foreach (var c in Model.Complaints)
+                {
+                    var statusCategory = c.Status == FinalProject.Domain.Enums.ComplaintStatus.Resolved ? "resolved" 
+                                       : c.Status == FinalProject.Domain.Enums.ComplaintStatus.Dismissed ? "dismissed" 
+                                       : "pending";
+
+                    <div class="complaint-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden text-right" 
+                         data-status="@statusCategory">
+                        <div class="p-6 flex flex-col gap-4">
+                            
+                            <!-- Header Info -->
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-slate-900 dark:text-slate-100">الشكوى #@c.ComplaintId</span>
+                                        @if (c.RequestId.HasValue)
+                                        {
+                                            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">الطلب #@c.RequestId.Value</span>
+                                        }
+                                    </div>
+                                    <p class="text-xs text-slate-400">تاريخ الاستلام: @c.CreatedAt.ToString("yyyy/MM/dd - hh:mm tt")</p>
+                                </div>
+                                
+                                <div>
+                                    @if (c.Status == FinalProject.Domain.Enums.ComplaintStatus.Pending)
+                                    {
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-900/20 text-amber-500 border border-amber-500/10">قيد الانتظار</span>
+                                    }
+                                    else if (c.Status == FinalProject.Domain.Enums.ComplaintStatus.UnderReview)
+                                    {
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 border border-indigo-500/10">قيد المراجعة</span>
+                                    }
+                                    else if (c.Status == FinalProject.Domain.Enums.ComplaintStatus.Resolved)
+                                    {
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 border border-emerald-500/10">تم الحل</span>
+                                    }
+                                    else if (c.Status == FinalProject.Domain.Enums.ComplaintStatus.Dismissed)
+                                    {
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700">مرفوضة</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Parties -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl text-sm border border-slate-100 dark:border-slate-800/80">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-slate-400 text-lg">person</span>
+                                    <span class="text-slate-500 ml-1">العميل:</span>
+                                    <strong class="text-slate-800 dark:text-slate-200">@c.CustomerName</strong>
+                                    <span class="text-xs text-slate-400 mr-1">(معرف: #@c.CustomerId)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-slate-400 text-lg">engineering</span>
+                                    <span class="text-slate-500 ml-1">الفني:</span>
+                                    <strong class="text-slate-800 dark:text-slate-200">@c.WorkerName</strong>
+                                    <span class="text-xs text-slate-400 mr-1">(معرف: #@c.WorkerId)</span>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">وصف المشكلة</p>
+                                <p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">@c.Description</p>
+                            </div>
+
+                            <!-- Expandable Form or Read-only Response -->
+                            @if (c.Status == FinalProject.Domain.Enums.ComplaintStatus.Pending || c.Status == FinalProject.Domain.Enums.ComplaintStatus.UnderReview)
+                            {
+                                <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-2">
+                                    <form method="post" asp-action="ResolveComplaint">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="complaintId" value="@c.ComplaintId" />
+                                        <input type="hidden" name="redirectUrl" value="/AdminDashboard/ComplaintsAr" />
+                                        
+                                        <div class="flex flex-col gap-3">
+                                            <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400">رد المدير</label>
+                                            <textarea name="response" required placeholder="اكتب ردك أو التوجيهات لحل هذه الشكوى..." class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-slate-100 h-24 resize-none text-right"></textarea>
+                                            
+                                            <div class="flex justify-end gap-3 mt-1">
+                                                <button type="submit" name="actionType" value="dismiss" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-sm transition-colors">
+                                                    رفض وتجاهل الشكوى
+                                                </button>
+                                                <button type="submit" name="actionType" value="resolve" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/95 text-white font-bold text-sm shadow-lg shadow-primary/20 transition-all">
+                                                    حل الشكوى وإرسال
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-2">
+                                    <div class="bg-slate-50 dark:bg-slate-800/30 p-4 rounded-xl">
+                                        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                                            <span class="font-semibold uppercase tracking-wider">رد إدارة المنصة</span>
+                                            @if (c.ResolvedAt.HasValue)
+                                            {
+                                                <span>تاريخ الحل: @c.ResolvedAt.Value.ToString("yyyy/MM/dd")</span>
+                                            }
+                                        </div>
+                                        <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed italic">"@c.AdminResponse"</p>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-16 text-center">
+                    <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">sentiment_satisfied</span>
+                    <h3 class="text-xl font-bold text-slate-600 dark:text-slate-400 mb-1">لا توجد شكاوى حالياً</h3>
+                    <p class="text-slate-400">كل شيء يسير بسلاسة على منصة صلاحلي.</p>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterComplaints(status, tab) {
+            // Update tabs active styles
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => {
+                t.className = "tab-btn pb-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all";
+            });
+            tab.className = "tab-btn pb-4 text-sm font-bold border-b-2 border-primary text-primary transition-all";
+
+            // Filter cards
+            const cards = document.querySelectorAll('.complaint-card');
+            cards.forEach(card => {
+                const s = card.getAttribute('data-status');
+                if (status === 'all' || s === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}

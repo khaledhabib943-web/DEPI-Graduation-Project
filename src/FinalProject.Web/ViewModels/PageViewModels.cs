@@ -139,4 +139,17 @@ namespace FinalProject.Web.ViewModels
 
         public string? SuccessMessage { get; set; }
     }
+
+    public class AdminDashboardViewModel
+    {
+        public int TotalCustomers { get; set; }
+        public int TotalWorkers { get; set; }
+        public int PendingComplaintsCount { get; set; }
+        public int PendingWorkersCount { get; set; }
+
+        public List<CustomerDto> Customers { get; set; } = new();
+        public List<WorkerDto> Workers { get; set; } = new();
+        public List<ComplaintDto> Complaints { get; set; } = new();
+        public List<WorkerDto> PendingWorkers { get; set; } = new();
+    }
 }
