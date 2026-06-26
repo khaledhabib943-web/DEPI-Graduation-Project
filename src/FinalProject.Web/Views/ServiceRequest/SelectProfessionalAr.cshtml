@@ -66,9 +66,17 @@
                     <div class="flex flex-col flex-1 gap-1">
                         <div class="flex justify-between items-start"><div><h3 class="font-bold text-lg">@w.FullName</h3><p class="text-slate-500 text-sm">@w.CategoryName</p></div><div class="text-left"><p class="text-primary font-bold text-lg">@w.ServicePrice ج.م</p><p class="text-slate-400 text-xs">لكل ساعة</p></div></div>
                         <div class="flex items-center gap-3 mt-2"><div class="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded text-yellow-700 text-sm font-bold"><span class="material-symbols-outlined text-sm">star</span> @w.AverageRating.ToString("F1")</div><span class="text-sm font-medium @(w.AvailabilityStatus == FinalProject.Domain.Enums.AvailabilityStatus.Available ? "text-green-500" : "text-slate-400")">@(w.AvailabilityStatus == FinalProject.Domain.Enums.AvailabilityStatus.Available ? "● متاح" : "○ مشغول")</span></div>
-                        <p class="text-slate-600 text-sm mt-2 line-clamp-1">@w.Portfolio</p>
-                        <div class="mt-4 flex gap-3">
+                        <p class="text-slate-600 text-sm mt-2 line-clamp-1">@w.CategoryName — @w.ServicePrice ج.م لكل زيارة</p>
+                        <div class="mt-4 flex flex-wrap gap-3">
                             <a asp-action="ServiceDetailsAr" asp-route-workerId="@w.UserId" asp-route-categoryId="@Model.CategoryId" class="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold text-center hover:bg-primary/90 shadow-md shadow-primary/10">اختيار</a>
+                            @if (!string.IsNullOrEmpty(w.Portfolio))
+                            {
+                                <a href="@w.Portfolio" target="_blank"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2.5 border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg font-bold text-sm hover:bg-indigo-100 transition-colors"
+                                   title="عرض ملف الأعمال">
+                                    <span class="material-symbols-outlined !text-base">description</span> ملف الأعمال
+                                </a>
+                            }
                             <form asp-controller="Favorite" asp-action="AddAr" method="post" class="inline"><input type="hidden" name="workerId" value="@w.UserId" /><button class="px-4 py-2.5 border border-slate-200 rounded-lg"><span class="material-symbols-outlined text-sm">favorite</span></button></form>
                         </div>
                     </div>

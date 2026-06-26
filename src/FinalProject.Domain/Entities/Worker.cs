@@ -5,7 +5,6 @@ namespace FinalProject.Domain.Entities
     public class Worker : User
     {
         public int CategoryId { get; set; }
-        public string ProfilePicture { get; set; } = string.Empty;
         public string IdFrontImage { get; set; } = string.Empty;
         public string IdBackImage { get; set; } = string.Empty;
         public string? Portfolio { get; set; }

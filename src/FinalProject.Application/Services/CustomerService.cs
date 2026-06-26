@@ -91,6 +91,22 @@ namespace FinalProject.Application.Services
 
         public async Task<ReviewDto> RateWorkerAsync(int customerId, CreateReviewDto dto)
         {
+            // Prevent duplicate reviews for the same request
+            var alreadyReviewed = await _unitOfWork.Reviews.HasReviewForRequestAsync(customerId, dto.RequestId);
+            if (alreadyReviewed)
+            {
+                // Return a dummy DTO rather than creating a duplicate
+                return new ReviewDto
+                {
+                    CustomerId = customerId,
+                    WorkerId = dto.WorkerId,
+                    RequestId = dto.RequestId,
+                    Rating = dto.Rating,
+                    Comment = dto.Comment,
+                    CreatedAt = DateTime.UtcNow
+                };
+            }
+
             var review = new Review
             {
                 CustomerId = customerId,
@@ -216,17 +232,18 @@ namespace FinalProject.Application.Services
         {
             return new CustomerDto
             {
-                UserId = customer.UserId,
-                FullName = customer.FullName,
-                Email = customer.Email ?? string.Empty,
+                UserId      = customer.UserId,
+                FullName    = customer.FullName,
+                Email       = customer.Email ?? string.Empty,
                 PhoneNumber = customer.PhoneNumber ?? string.Empty,
-                NationalId = customer.NationalId,
-                Age = customer.Age,
-                Username = customer.Username,
-                Role = customer.Role,
-                IsActive = customer.IsActive,
-                CreatedAt = customer.CreatedAt,
-                Address = customer.Address
+                NationalId  = customer.NationalId,
+                Age         = customer.Age,
+                Username    = customer.Username,
+                Role        = customer.Role,
+                IsActive    = customer.IsActive,
+                CreatedAt   = customer.CreatedAt,
+                Address     = customer.Address,
+                ProfilePicture = customer.ProfilePicture
             };
         }
 
@@ -258,25 +275,33 @@ namespace FinalProject.Application.Services
         private async Task<ServiceRequestDto> MapServiceRequestToDto(ServiceRequest sr)
         {
             var customer = await _unitOfWork.Customers.GetByIdAsync(sr.CustomerId);
-            var worker = await _unitOfWork.Workers.GetByIdAsync(sr.WorkerId);
+            var worker   = await _unitOfWork.Workers.GetByIdAsync(sr.WorkerId);
             var category = await _unitOfWork.Categories.GetByIdAsync(sr.CategoryId);
 
             return new ServiceRequestDto
             {
-                RequestId = sr.RequestId,
-                CustomerId = sr.CustomerId,
-                CustomerName = customer?.FullName ?? string.Empty,
-                WorkerId = sr.WorkerId,
-                WorkerName = worker?.FullName ?? string.Empty,
-                CategoryId = sr.CategoryId,
-                CategoryName = category?.Name ?? string.Empty,
+                RequestId       = sr.RequestId,
+                CustomerId      = sr.CustomerId,
+                CustomerName    = customer?.FullName ?? string.Empty,
+                WorkerId        = sr.WorkerId,
+                WorkerName      = worker?.FullName ?? string.Empty,
+                CategoryId      = sr.CategoryId,
+                CategoryName    = category?.Name ?? string.Empty,
                 LocationDetails = sr.LocationDetails,
-                ScheduledDate = sr.ScheduledDate,
-                ScheduledTime = sr.ScheduledTime,
-                Status = sr.Status,
-                Description = sr.Description,
-                CreatedAt = sr.CreatedAt,
-                UpdatedAt = sr.UpdatedAt
+                ScheduledDate   = sr.ScheduledDate,
+                ScheduledTime   = sr.ScheduledTime,
+                Status          = sr.Status,
+                Description     = sr.Description,
+                CreatedAt       = sr.CreatedAt,
+                UpdatedAt       = sr.UpdatedAt,
+                PriceAtBooking  = sr.PriceAtBooking,
+                // Arrival / completion workflow flags
+                IsWorkerArrived                    = sr.IsWorkerArrived,
+                WorkerArrivedAt                    = sr.WorkerArrivedAt,
+                IsArrivalConfirmedByCustomer       = sr.IsArrivalConfirmedByCustomer,
+                ArrivalConfirmedAt                 = sr.ArrivalConfirmedAt,
+                IsWorkCompletedConfirmedByCustomer = sr.IsWorkCompletedConfirmedByCustomer,
+                WorkCompletionConfirmedAt          = sr.WorkCompletionConfirmedAt,
             };
         }
 

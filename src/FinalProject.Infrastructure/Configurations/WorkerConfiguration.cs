@@ -12,10 +12,6 @@ namespace FinalProject.Infrastructure.Configurations
             builder.ToTable("Workers");
 
             // Properties with Fluent API Validation
-            builder.Property(w => w.ProfilePicture)
-                .IsRequired()
-                .HasMaxLength(500);
-
             builder.Property(w => w.IdFrontImage)
                 .IsRequired()
                 .HasMaxLength(500);

@@ -1,0 +1,319 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Service Requests";
+    var pending    = Model.AllServiceRequests.Where(r => r.Status == FinalProject.Domain.Enums.RequestStatus.Pending).ToList();
+    var inProgress = Model.AllServiceRequests.Where(r => r.Status == FinalProject.Domain.Enums.RequestStatus.InProgress).ToList();
+    var completed  = Model.AllServiceRequests.Where(r => r.Status == FinalProject.Domain.Enums.RequestStatus.Completed).ToList();
+    var cancelled  = Model.AllServiceRequests.Where(r => r.Status == FinalProject.Domain.Enums.RequestStatus.Cancelled).ToList();
+
+    string activeTab = "all";
+    string? tabParam = Context.Request.Query["tab"];
+    if (!string.IsNullOrEmpty(tabParam)) activeTab = tabParam;
+
+    var displayList = activeTab switch {
+        "pending"    => pending,
+        "inprogress" => inProgress,
+        "completed"  => completed,
+        "cancelled"  => cancelled,
+        _            => Model.AllServiceRequests
+    };
+}
+
+<div class="px-4 md:px-10 lg:px-20 py-8">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold">Service Requests</h1>
+            <p class="text-slate-500 mt-1 text-sm">Full history of all service requests on the platform</p>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col gap-2">
+            <div class="flex items-center gap-2 text-slate-500 text-sm font-semibold">
+                <span class="material-symbols-outlined !text-lg text-slate-400">receipt_long</span> Total
+            </div>
+            <p class="text-3xl font-extrabold text-slate-900 dark:text-white">@Model.AllServiceRequests.Count</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-amber-100 dark:border-amber-900/30 shadow-sm flex flex-col gap-2">
+            <div class="flex items-center gap-2 text-amber-600 text-sm font-semibold">
+                <span class="material-symbols-outlined !text-lg">schedule</span> Pending
+            </div>
+            <p class="text-3xl font-extrabold text-amber-600">@pending.Count</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-emerald-100 dark:border-emerald-900/30 shadow-sm flex flex-col gap-2">
+            <div class="flex items-center gap-2 text-emerald-600 text-sm font-semibold">
+                <span class="material-symbols-outlined !text-lg">verified</span> Completed
+            </div>
+            <p class="text-3xl font-extrabold text-emerald-600">@completed.Count</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-blue-100 dark:border-blue-900/30 shadow-sm flex flex-col gap-2">
+            <div class="flex items-center gap-2 text-blue-600 text-sm font-semibold">
+                <span class="material-symbols-outlined !text-lg">construction</span> In Progress
+            </div>
+            <p class="text-3xl font-extrabold text-blue-600">@inProgress.Count</p>
+        </div>
+    </div>
+
+    <!-- Tab Filter -->
+    <div class="flex gap-2 mb-6 overflow-x-auto pb-1">
+        @{
+            var tabs = new[] {
+                ("all",        "All",         "receipt_long"),
+                ("pending",    "Pending",     "schedule"),
+                ("inprogress", "In Progress", "construction"),
+                ("completed",  "Completed",   "verified"),
+                ("cancelled",  "Cancelled",   "cancel")
+            };
+        }
+        @foreach (var (key, label, icon) in tabs)
+        {
+            <a href="?tab=@key"
+               class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors @(activeTab == key ? "bg-primary text-white shadow-md shadow-primary/20" : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50")">
+                <span class="material-symbols-outlined !text-base">@icon</span> @label
+            </a>
+        }
+    </div>
+
+    <!-- Search box -->
+    <div class="mb-4">
+        <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+            <input id="srSearch" type="text" placeholder="Search by customer, worker, category, or location..."
+                   class="w-full pl-10 pr-4 h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" id="srTable">
+                <thead>
+                    <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-left">
+                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">ID</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Customer</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Worker</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Category</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Price</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Date</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Status</th>
+                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Rating</th>
+                    </tr>
+                </thead>
+                <tbody id="srTbody">
+                    @foreach (var req in displayList)
+                    {
+                        var (badgeBg, badgeText) = req.Status switch {
+                            FinalProject.Domain.Enums.RequestStatus.Pending    => ("bg-amber-100 text-amber-700",   "Pending"),
+                            FinalProject.Domain.Enums.RequestStatus.InProgress => ("bg-blue-100 text-blue-700",     "In Progress"),
+                            FinalProject.Domain.Enums.RequestStatus.Completed  => ("bg-emerald-100 text-emerald-700","Completed"),
+                            FinalProject.Domain.Enums.RequestStatus.Cancelled  => ("bg-red-100 text-red-600",       "Cancelled"),
+                            _ => ("bg-slate-100 text-slate-600", req.Status.ToString())
+                        };
+                        <tr class="sr-row border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer"
+                            onclick="openRequestModal(@req.RequestId)"
+                            data-search="@req.CustomerName @req.WorkerName @req.CategoryName @req.LocationDetails @req.Status">
+                            <td class="px-4 py-3 font-mono text-xs text-slate-500">#@req.RequestId</td>
+                            <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">@req.CustomerName</td>
+                            <td class="px-4 py-3 text-slate-600 dark:text-slate-300">@(string.IsNullOrEmpty(req.WorkerName) ? "—" : req.WorkerName)</td>
+                            <td class="px-4 py-3 text-slate-600 dark:text-slate-300">@req.CategoryName</td>
+                            <td class="px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold">
+                                @(req.PriceAtBooking > 0 ? req.PriceAtBooking.ToString("N0") + " EGP" : "—")
+                            </td>
+                            <td class="px-4 py-3 text-slate-500 whitespace-nowrap">@req.ScheduledDate.ToString("MMM dd, yyyy")</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 py-1 text-xs font-bold rounded-full @badgeBg">@badgeText</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                @if (req.ReviewRating.HasValue)
+                                {
+                                    <span class="inline-flex items-center gap-1 text-amber-500 font-bold text-xs">
+                                        <span class="material-symbols-outlined !text-sm">star</span>@req.ReviewRating/5
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-slate-300 text-xs">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (!displayList.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="px-4 py-12 text-center text-slate-400">
+                                <span class="material-symbols-outlined !text-4xl mb-3 block">receipt_long</span>
+                                No service requests found for this filter.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="px-4 py-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-400 flex justify-between items-center">
+            <span id="visibleCount">Showing @displayList.Count requests</span>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div id="requestModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" onclick="closeRequestModal(event)">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+    <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-primary/5 flex-shrink-0">
+            <h2 class="text-lg font-bold flex items-center gap-2"><span class="material-symbols-outlined text-primary">receipt_long</span> Request Details</h2>
+            <button onclick="closeRequestModal()" class="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div id="modalBody" class="p-6 space-y-5 text-sm overflow-y-auto"></div>
+    </div>
+</div>
+
+@{
+    // Serialize full data for JS
+    var jsonRequests = System.Text.Json.JsonSerializer.Serialize(Model.AllServiceRequests.Select(r => new {
+        id          = r.RequestId,
+        customer    = r.CustomerName,
+        worker      = r.WorkerName,
+        category    = r.CategoryName,
+        location    = r.LocationDetails,
+        date        = r.ScheduledDate.ToString("MMM dd, yyyy"),
+        time        = r.ScheduledTime.ToString(@"hh\:mm"),
+        status      = r.Status.ToString(),
+        description = r.Description ?? "",
+        created     = r.CreatedAt.ToString("MMM dd, yyyy HH:mm"),
+        updated     = r.UpdatedAt.ToString("MMM dd, yyyy HH:mm"),
+        price       = r.PriceAtBooking,
+        rating      = r.ReviewRating,
+        comment     = r.ReviewComment ?? "",
+        reviewDate  = r.ReviewCreatedAt.HasValue ? r.ReviewCreatedAt.Value.ToString("MMM dd, yyyy") : "",
+        history     = r.StatusHistory.Select(h => new {
+            status    = h.Status.ToString(),
+            changedAt = h.ChangedAt.ToString("MMM dd, yyyy HH:mm"),
+            note      = h.Note ?? ""
+        }).ToList()
+    }));
+}
+
+@section Scripts {
+<script>
+    const requests = @Html.Raw(jsonRequests);
+
+    const statusColors = {
+        'Pending':    'bg-amber-100 text-amber-700',
+        'InProgress': 'bg-blue-100 text-blue-700',
+        'Completed':  'bg-emerald-100 text-emerald-700',
+        'Cancelled':  'bg-red-100 text-red-600'
+    };
+    const statusIcons = {
+        'Pending':    'schedule',
+        'InProgress': 'construction',
+        'Completed':  'verified',
+        'Cancelled':  'cancel'
+    };
+
+    function openRequestModal(id) {
+        const req = requests.find(r => r.id === id);
+        if (!req) return;
+
+        const statusLabel = req.status === 'InProgress' ? 'In Progress' : req.status;
+        const badge = `<span class="px-2 py-1 text-xs font-bold rounded-full ${statusColors[req.status] || 'bg-slate-100 text-slate-600'}">${statusLabel}</span>`;
+
+        // Stars
+        const stars = req.rating
+            ? Array.from({length: 5}, (_, i) =>
+                `<span class="material-symbols-outlined !text-base ${i < req.rating ? 'text-amber-500' : 'text-slate-300'}">${i < req.rating ? 'star' : 'star'}</span>`
+              ).join('')
+            : '<span class="text-slate-400 text-xs">Not yet rated</span>';
+
+        // Status history timeline
+        const historyHtml = req.history && req.history.length > 0
+            ? `<div class="flex flex-col gap-3">
+                ${req.history.map((h, i) => `
+                  <div class="flex items-start gap-3">
+                    <div class="flex flex-col items-center">
+                      <div class="size-8 rounded-full flex items-center justify-center bg-primary/10 text-primary flex-shrink-0">
+                        <span class="material-symbols-outlined !text-sm">${statusIcons[h.status] || 'circle'}</span>
+                      </div>
+                      ${i < req.history.length - 1 ? '<div class="w-0.5 bg-slate-200 dark:bg-slate-700 flex-1 mt-1" style="height:20px"></div>' : ''}
+                    </div>
+                    <div class="pb-1">
+                      <p class="font-bold text-slate-800 dark:text-slate-100 text-xs">${h.status === 'InProgress' ? 'In Progress' : h.status}</p>
+                      <p class="text-xs text-slate-500">${h.changedAt}</p>
+                      ${h.note ? `<p class="text-xs text-slate-400 italic">${h.note}</p>` : ''}
+                    </div>
+                  </div>
+                `).join('')}
+               </div>`
+            : '<p class="text-slate-400 text-xs italic">No timeline recorded for this request.</p>';
+
+        document.getElementById('modalBody').innerHTML = `
+            <div class="flex items-center justify-between">
+                <span class="font-mono text-xs text-slate-500">#${req.id}</span>
+                ${badge}
+            </div>
+
+            <!-- Core info grid -->
+            <div class="grid grid-cols-2 gap-3">
+                ${row('Customer', req.customer)}
+                ${row('Worker', req.worker || '—')}
+                ${row('Category', req.category)}
+                ${row('Location', req.location)}
+                ${row('Scheduled Date', req.date + ' at ' + req.time)}
+                ${row('Booked Price', req.price > 0 ? req.price.toLocaleString() + ' EGP' : '—')}
+                ${row('Created At', req.created)}
+                ${row('Last Updated', req.updated)}
+            </div>
+
+            ${req.description ? `
+            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <p class="text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Description</p>
+                <p class="text-slate-700 dark:text-slate-300">${req.description}</p>
+            </div>` : ''}
+
+            <!-- Rating & Review -->
+            <div class="p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Customer Rating & Review</p>
+                <div class="flex items-center gap-2 mb-2">${stars}</div>
+                ${req.rating ? `<p class="font-bold text-amber-600">${req.rating} / 5</p>` : ''}
+                ${req.comment ? `<p class="text-slate-600 dark:text-slate-400 italic mt-2">"${req.comment}"</p>` : ''}
+                ${req.reviewDate ? `<p class="text-xs text-slate-400 mt-1">Reviewed on ${req.reviewDate}</p>` : ''}
+            </div>
+
+            <!-- Status Timeline -->
+            <div class="p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Status Timeline</p>
+                ${historyHtml}
+            </div>
+        `;
+        document.getElementById('requestModal').classList.remove('hidden');
+        document.getElementById('requestModal').classList.add('flex');
+    }
+
+    function row(label, value) {
+        return `<div class="flex flex-col gap-0.5"><span class="text-xs text-slate-400 font-semibold">${label}</span><span class="font-semibold text-slate-800 dark:text-slate-100">${value}</span></div>`;
+    }
+
+    function closeRequestModal(event) {
+        if (event && event.target !== document.getElementById('requestModal')) return;
+        document.getElementById('requestModal').classList.add('hidden');
+        document.getElementById('requestModal').classList.remove('flex');
+    }
+
+    // Search
+    const srSearch = document.getElementById('srSearch');
+    srSearch.addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        let visible = 0;
+        document.querySelectorAll('.sr-row').forEach(row => {
+            const text = (row.dataset.search || '').toLowerCase();
+            const match = text.includes(q);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        document.getElementById('visibleCount').textContent = `Showing ${visible} requests`;
+    });
+</script>
+}

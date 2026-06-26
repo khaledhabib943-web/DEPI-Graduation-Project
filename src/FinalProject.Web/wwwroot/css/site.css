@@ -65,3 +65,102 @@
 .star-rating button:hover ~ button .material-symbols-outlined {
     color: #cbd5e1;
 }
+
+/* ===== Dark Mode — Enhanced Text Contrast ===== */
+
+/* Form inputs in dark mode must always show white text */
+.dark input,
+.dark textarea,
+.dark select {
+    color: #f1f5f9 !important;        /* slate-100 */
+    background-color: #1e293b;        /* slate-800 */
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #64748b;                   /* slate-500 */
+}
+
+/* Select arrow and options in dark */
+.dark select option {
+    background-color: #1e293b;
+    color: #f1f5f9;
+}
+
+/* Table cells — ensure all text is visible in dark mode */
+.dark table td,
+.dark table th {
+    color: #cbd5e1;                   /* slate-300 */
+}
+
+/* Card and panel body text */
+.dark p,
+.dark span:not(.material-symbols-outlined) {
+    /* Only apply where not already explicitly set */
+}
+
+/* stat card labels — ensure they are visible */
+.dark .text-slate-500 {
+    color: #94a3b8 !important;        /* slate-400 — readable on dark bg */
+}
+
+/* Modal background text contrast */
+.dark .bg-slate-900 p,
+.dark .bg-slate-900 label,
+.dark .bg-slate-900 span:not(.material-symbols-outlined) {
+    color: #cbd5e1;                   /* slate-300 */
+}
+
+/* Nav links in dark sidebar */
+.dark nav a {
+    color: #cbd5e1;
+}
+.dark nav a:hover {
+    color: #f1f5f9;
+}
+
+/* Badge text must always be visible */
+.dark .text-slate-400 {
+    color: #94a3b8 !important;        /* slate-400 */
+}
+
+/* Footer text contrast */
+.dark footer p,
+.dark footer a,
+.dark footer li,
+.dark footer span {
+    color: #94a3b8;
+}
+
+/* Dashboard stat values */
+.dark .text-2xl.font-black,
+.dark .text-xl.font-bold,
+.dark .text-3xl.font-black {
+    color: #f1f5f9 !important;
+}
+
+/* Card descriptions and helper text */
+.dark .text-sm.text-slate-500,
+.dark .text-xs.text-slate-500 {
+    color: #94a3b8 !important;
+}
+
+/* Profile/notification button icons in header */
+.dark header .text-slate-500 {
+    color: #94a3b8;
+}
+
+/* Make sure button text is always visible */
+.dark button:not(.bg-primary):not(.bg-red-500):not(.bg-emerald-500):not(.bg-amber-500) {
+    color: #e2e8f0;
+}
+
+/* Timeline / step status text */
+.dark .text-slate-600 {
+    color: #94a3b8 !important;
+}
+
+/* Section headings */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5 {
+    color: #f1f5f9;
+}

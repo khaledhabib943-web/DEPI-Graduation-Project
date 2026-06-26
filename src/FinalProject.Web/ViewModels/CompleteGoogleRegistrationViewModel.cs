@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using FinalProject.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace FinalProject.Web.ViewModels
 {
@@ -49,6 +51,29 @@ namespace FinalProject.Web.ViewModels
         [Required(ErrorMessage = "Address is required.")]
         [StringLength(300, MinimumLength = 10, ErrorMessage = "Address must be between 10-300 characters.")]
         public string Address { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Role selection is required.")]
+        public UserRole Role { get; set; } = UserRole.Customer;
+
+        // Worker specific fields
+        [Display(Name = "Category")]
+        public int? CategoryId { get; set; }
+
+        [Display(Name = "Price per hour (EGP)")]
+        [Range(1, 100000, ErrorMessage = "Price must be greater than zero.")]
+        public decimal? ServicePrice { get; set; }
+
+        [Display(Name = "National ID Front (Image)")]
+        public IFormFile? IdFrontFile { get; set; }
+
+        [Display(Name = "National ID Back (Image)")]
+        public IFormFile? IdBackFile { get; set; }
+
+        [Display(Name = "Portfolio Document (Optional)")]
+        public IFormFile? PortfolioFile { get; set; }
+
+        [Display(Name = "Profile Picture (Optional)")]
+        public IFormFile? ProfilePictureFile { get; set; }
 
         public string? ErrorMessage { get; set; }
     }

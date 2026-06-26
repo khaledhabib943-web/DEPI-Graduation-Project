@@ -10,6 +10,7 @@ namespace FinalProject.Application.Interfaces
         Task<bool> SetAvailabilityAsync(int workerId, AvailabilityStatus status);
         Task<bool> SetPriceAsync(int workerId, decimal price);
         Task<bool> AcceptRequestAsync(int workerId, int requestId);
+        Task<bool> MarkArrivedAsync(int workerId, int requestId);
         Task<bool> RejectRequestAsync(int workerId, int requestId);
         Task<bool> UpdateRequestStatusAsync(int workerId, int requestId, RequestStatus status);
         Task<IEnumerable<ServiceRequestDto>> GetServiceRequestsAsync(int workerId);

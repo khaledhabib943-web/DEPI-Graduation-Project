@@ -11,11 +11,6 @@ namespace FinalProject.Infrastructure.Configurations
             // TPT: Separate table for Customer
             builder.ToTable("Customers");
 
-            // Properties with Fluent API Validation
-            builder.Property(c => c.Address)
-                .IsRequired()
-                .HasMaxLength(300);
-
             // Relationships
             builder.HasMany(c => c.ServiceRequests)
                 .WithOne(sr => sr.Customer)

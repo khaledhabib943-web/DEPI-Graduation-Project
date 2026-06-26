@@ -12,6 +12,7 @@ namespace FinalProject.Infrastructure.Repositories
         private IAdminRepository? _admins;
         private ICategoryRepository? _categories;
         private IServiceRequestRepository? _serviceRequests;
+        private IRepository<FinalProject.Domain.Entities.ServiceRequestStatusHistory>? _statusHistories;
         private IReviewRepository? _reviews;
         private INotificationRepository? _notifications;
         private IComplaintRepository? _complaints;
@@ -36,6 +37,9 @@ namespace FinalProject.Infrastructure.Repositories
 
         public IServiceRequestRepository ServiceRequests =>
             _serviceRequests ??= new ServiceRequestRepository(_context);
+
+        public IRepository<FinalProject.Domain.Entities.ServiceRequestStatusHistory> StatusHistories =>
+            _statusHistories ??= new GenericRepository<FinalProject.Domain.Entities.ServiceRequestStatusHistory>(_context);
 
         public IReviewRepository Reviews =>
             _reviews ??= new ReviewRepository(_context);

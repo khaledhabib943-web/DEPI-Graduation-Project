@@ -25,6 +25,12 @@ namespace FinalProject.Infrastructure.Services
             // Add FullName claim
             identity.AddClaim(new Claim("FullName", user.FullName));
             
+            // Add ProfilePicture claim so the layout header can display actual photo
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                identity.AddClaim(new Claim("ProfilePicture", user.ProfilePicture));
+            }
+            
             return identity;
         }
     }

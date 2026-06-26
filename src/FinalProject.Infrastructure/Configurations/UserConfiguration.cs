@@ -1,4 +1,4 @@
-﻿using FinalProject.Domain.Entities;
+using FinalProject.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,6 +34,12 @@ namespace FinalProject.Infrastructure.Configurations
             builder.Property(u => u.CreatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Property(u => u.ProfilePicture)
+                .HasMaxLength(500);
+
+            builder.Property(u => u.Address)
+                .HasMaxLength(300);
 
             // NationalId unique index (Identity handles Email & Username uniqueness itself)
             builder.HasIndex(u => u.NationalId)

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace FinalProject.Web.Controllers
 {
@@ -70,6 +72,16 @@ namespace FinalProject.Web.Controllers
             {
                 model.ErrorMessage = "Your account is deactivated.";
                 return View(model);
+            }
+
+            if (user.Role == UserRole.Worker)
+            {
+                var worker = await _unitOfWork.Workers.GetByIdAsync(user.Id);
+                if (worker == null || !worker.IsValidated)
+                {
+                    model.ErrorMessage = "Your account is pending administrator approval. Please wait until your credentials are reviewed.";
+                    return View(model);
+                }
             }
 
             // ── 2FA check ──
@@ -136,14 +148,15 @@ namespace FinalProject.Web.Controllers
             return RedirectByRole();
         }
 
-        // ================= REGISTER =================
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
             if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Index", "Dashboard");
             var model = new RegisterViewModel();
             if (TempData["RegisterError"] is string error)
                 model.ErrorMessage = error;
+
+            await PopulateCategoriesAsync();
             return View(model);
         }
 
@@ -151,41 +164,124 @@ namespace FinalProject.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
-
-            var existingEmail = await _unitOfWork.Customers.FindAsync(c => c.Email == model.Email);
-            if (existingEmail.Any()) { model.ErrorMessage = "هذا البريد الإلكتروني مسجل مسبقاً."; return View(model); }
-
-            var existingNid = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
-            if (existingNid.Any()) { model.ErrorMessage = "الرقم القومي مسجل مسبقاً."; return View(model); }
-
-            var customer = new Customer
+            if (model.Role == UserRole.Worker)
             {
-                FullName = model.FullName.Trim(),
-                Email = model.Email.Trim().ToLowerInvariant(),
-                UserName = model.Username.Trim(),
-                PhoneNumber = model.PhoneNumber.Trim(),
-                NationalId = model.NationalId.Trim(),
-                Age = model.Age,
-                Role = UserRole.Customer,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                Address = model.Address.Trim()
-            };
+                if (!model.CategoryId.HasValue || model.CategoryId <= 0)
+                    ModelState.AddModelError("CategoryId", "Please select a category.");
+                if (!model.ServicePrice.HasValue || model.ServicePrice <= 0)
+                    ModelState.AddModelError("ServicePrice", "Please enter a valid service price.");
+                if (model.IdFrontFile == null || model.IdFrontFile.Length == 0)
+                    ModelState.AddModelError("IdFrontFile", "National ID front image is required.");
+                if (model.IdBackFile == null || model.IdBackFile.Length == 0)
+                    ModelState.AddModelError("IdBackFile", "National ID back image is required.");
 
-            var result = await _userManager.CreateAsync(customer, model.Password);
-            if (!result.Succeeded)
+                var allowedExtensions = new[] { ".png", ".jpg", ".jpeg" };
+                if (model.IdFrontFile != null)
+                {
+                    var ext = Path.GetExtension(model.IdFrontFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(ext))
+                        ModelState.AddModelError("IdFrontFile", "Only PNG, JPG or JPEG images are allowed.");
+                }
+                if (model.IdBackFile != null)
+                {
+                    var ext = Path.GetExtension(model.IdBackFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(ext))
+                        ModelState.AddModelError("IdBackFile", "Only PNG, JPG or JPEG images are allowed.");
+                }
+            }
+
+            if (!ModelState.IsValid)
             {
-                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+                await PopulateCategoriesAsync();
                 return View(model);
             }
 
-            // Generate email confirmation token
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(customer);
+            var existingEmail = await _userManager.FindByEmailAsync(model.Email.Trim().ToLowerInvariant());
+            if (existingEmail != null)
+            {
+                model.ErrorMessage = "This email is already registered.";
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
+
+            var existingNidCust = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
+            var existingNidWrk = await _unitOfWork.Workers.FindAsync(w => w.NationalId == model.NationalId);
+            if (existingNidCust.Any() || existingNidWrk.Any())
+            {
+                model.ErrorMessage = "This National ID is already registered.";
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
+
+            IdentityResult result;
+            User user;
+
+            if (model.Role == UserRole.Worker)
+            {
+                var idFrontPath = await UploadFileAsync(model.IdFrontFile, "id_front");
+                var idBackPath = await UploadFileAsync(model.IdBackFile, "id_back");
+                var portfolioPath = await UploadFileAsync(model.PortfolioFile, "portfolios");
+                var profilePicPath = await UploadFileAsync(model.ProfilePictureFile, "profile_pics");
+                if (string.IsNullOrEmpty(profilePicPath)) profilePicPath = "/images/default-profile.png";
+
+                var worker = new Worker
+                {
+                    FullName = model.FullName.Trim(),
+                    Email = model.Email.Trim().ToLowerInvariant(),
+                    UserName = model.Username.Trim(),
+                    PhoneNumber = model.PhoneNumber.Trim(),
+                    NationalId = model.NationalId.Trim(),
+                    Age = model.Age,
+                    Role = UserRole.Worker,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    Address = model.Address.Trim(),
+                    CategoryId = model.CategoryId!.Value,
+                    ServicePrice = model.ServicePrice!.Value,
+                    IdFrontImage = idFrontPath,
+                    IdBackImage = idBackPath,
+                    Portfolio = portfolioPath,
+                    ProfilePicture = profilePicPath,
+                    IsValidated = false
+                };
+                user = worker;
+                result = await _userManager.CreateAsync(worker, model.Password);
+            }
+            else
+            {
+                var profilePicPath = await UploadFileAsync(model.ProfilePictureFile, "profile_pics");
+                if (string.IsNullOrEmpty(profilePicPath)) profilePicPath = "/images/default-profile.png";
+
+                var customer = new Customer
+                {
+                    FullName = model.FullName.Trim(),
+                    Email = model.Email.Trim().ToLowerInvariant(),
+                    UserName = model.Username.Trim(),
+                    PhoneNumber = model.PhoneNumber.Trim(),
+                    NationalId = model.NationalId.Trim(),
+                    Age = model.Age,
+                    Role = UserRole.Customer,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    Address = model.Address.Trim(),
+                    ProfilePicture = profilePicPath
+                };
+                user = customer;
+                result = await _userManager.CreateAsync(customer, model.Password);
+            }
+
+            if (!result.Succeeded)
+            {
+                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = Url.Action(
                 "ConfirmEmail",
                 "Account",
-                new { userId = customer.Id, token = token },
+                new { userId = user.Id, token = token },
                 protocol: Request.Scheme);
 
             var emailSubject = "Confirm your Salahly account";
@@ -195,7 +291,7 @@ namespace FinalProject.Web.Controllers
                 <p><a href='{callbackUrl}'>Confirm Email</a></p>
                 <p>If you didn't create an account with Salahly, please ignore this email.</p>";
 
-            try { await _emailSender.SendEmailAsync(customer.Email, emailSubject, emailBody); }
+            try { await _emailSender.SendEmailAsync(user.Email!, emailSubject, emailBody); }
             catch { /* Account created – email will need to be resent */ }
             return RedirectToAction("RegisterConfirmation");
         }
@@ -246,6 +342,16 @@ namespace FinalProject.Web.Controllers
             {
                 model.ErrorMessage = "تم إيقاف حسابك. يرجى التواصل مع الدعم الفني.";
                 return View(model);
+            }
+
+            if (user.Role == UserRole.Worker)
+            {
+                var worker = await _unitOfWork.Workers.GetByIdAsync(user.Id);
+                if (worker == null || !worker.IsValidated)
+                {
+                    model.ErrorMessage = "حسابك قيد المراجعة من قبل المسؤول. يرجى الانتظار حتى يتم التحقق من بياناتك.";
+                    return View(model);
+                }
             }
 
             // ── 2FA check (Arabic) ──
@@ -319,50 +425,136 @@ namespace FinalProject.Web.Controllers
 
         // ================= REGISTER AR =================
         [HttpGet]
-        public IActionResult RegisterAr()
+        public async Task<IActionResult> RegisterAr()
         {
             if (User.Identity?.IsAuthenticated == true) return RedirectToAction("IndexAr", "Dashboard");
-            return View(new RegisterViewModel());
+            var model = new RegisterViewModel();
+            await PopulateCategoriesAsync();
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterAr(RegisterViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
-
-            var existingEmail = await _unitOfWork.Customers.FindAsync(c => c.Email == model.Email);
-            if (existingEmail.Any()) { model.ErrorMessage = "هذا البريد الإلكتروني مسجل مسبقاً."; return View(model); }
-
-            var existingNid = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
-            if (existingNid.Any()) { model.ErrorMessage = "الرقم القومي مسجل مسبقاً."; return View(model); }
-
-            var customer = new Customer
+            if (model.Role == UserRole.Worker)
             {
-                FullName = model.FullName.Trim(),
-                Email = model.Email.Trim().ToLowerInvariant(),
-                UserName = model.Username.Trim(),
-                PhoneNumber = model.PhoneNumber.Trim(),
-                NationalId = model.NationalId.Trim(),
-                Age = model.Age,
-                Role = UserRole.Customer,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                Address = model.Address.Trim()
-            };
+                if (!model.CategoryId.HasValue || model.CategoryId <= 0)
+                    ModelState.AddModelError("CategoryId", "يرجى اختيار القسم/الفئة.");
+                if (!model.ServicePrice.HasValue || model.ServicePrice <= 0)
+                    ModelState.AddModelError("ServicePrice", "يرجى إدخال سعر الخدمة.");
+                if (model.IdFrontFile == null || model.IdFrontFile.Length == 0)
+                    ModelState.AddModelError("IdFrontFile", "صورة وجه البطاقة الشخصية مطلوبة.");
+                if (model.IdBackFile == null || model.IdBackFile.Length == 0)
+                    ModelState.AddModelError("IdBackFile", "صورة ظهر البطاقة الشخصية مطلوبة.");
 
-            var result = await _userManager.CreateAsync(customer, model.Password);
-            if (!result.Succeeded)
+                var allowedExtensions = new[] { ".png", ".jpg", ".jpeg" };
+                if (model.IdFrontFile != null)
+                {
+                    var ext = Path.GetExtension(model.IdFrontFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(ext))
+                        ModelState.AddModelError("IdFrontFile", "مسموح بالصور من نوع PNG أو JPG أو JPEG فقط.");
+                }
+                if (model.IdBackFile != null)
+                {
+                    var ext = Path.GetExtension(model.IdBackFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(ext))
+                        ModelState.AddModelError("IdBackFile", "مسموح بالصور من نوع PNG أو JPG أو JPEG فقط.");
+                }
+            }
+
+            if (!ModelState.IsValid)
             {
-                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+                await PopulateCategoriesAsync();
                 return View(model);
             }
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(customer);
+            var existingEmail = await _userManager.FindByEmailAsync(model.Email.Trim().ToLowerInvariant());
+            if (existingEmail != null)
+            {
+                model.ErrorMessage = "هذا البريد الإلكتروني مسجل مسبقاً.";
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
+
+            var existingNidCust = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
+            var existingNidWrk = await _unitOfWork.Workers.FindAsync(w => w.NationalId == model.NationalId);
+            if (existingNidCust.Any() || existingNidWrk.Any())
+            {
+                model.ErrorMessage = "الرقم القومي مسجل مسبقاً.";
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
+
+            IdentityResult result;
+            User user;
+
+            if (model.Role == UserRole.Worker)
+            {
+                var idFrontPath = await UploadFileAsync(model.IdFrontFile, "id_front");
+                var idBackPath = await UploadFileAsync(model.IdBackFile, "id_back");
+                var portfolioPath = await UploadFileAsync(model.PortfolioFile, "portfolios");
+                var profilePicPath = await UploadFileAsync(model.ProfilePictureFile, "profile_pics");
+                if (string.IsNullOrEmpty(profilePicPath)) profilePicPath = "/images/default-profile.png";
+
+                var worker = new Worker
+                {
+                    FullName = model.FullName.Trim(),
+                    Email = model.Email.Trim().ToLowerInvariant(),
+                    UserName = model.Username.Trim(),
+                    PhoneNumber = model.PhoneNumber.Trim(),
+                    NationalId = model.NationalId.Trim(),
+                    Age = model.Age,
+                    Role = UserRole.Worker,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    Address = model.Address.Trim(),
+                    CategoryId = model.CategoryId!.Value,
+                    ServicePrice = model.ServicePrice!.Value,
+                    IdFrontImage = idFrontPath,
+                    IdBackImage = idBackPath,
+                    Portfolio = portfolioPath,
+                    ProfilePicture = profilePicPath,
+                    IsValidated = false
+                };
+                user = worker;
+                result = await _userManager.CreateAsync(worker, model.Password);
+            }
+            else
+            {
+                var profilePicPath = await UploadFileAsync(model.ProfilePictureFile, "profile_pics");
+                if (string.IsNullOrEmpty(profilePicPath)) profilePicPath = "/images/default-profile.png";
+
+                var customer = new Customer
+                {
+                    FullName = model.FullName.Trim(),
+                    Email = model.Email.Trim().ToLowerInvariant(),
+                    UserName = model.Username.Trim(),
+                    PhoneNumber = model.PhoneNumber.Trim(),
+                    NationalId = model.NationalId.Trim(),
+                    Age = model.Age,
+                    Role = UserRole.Customer,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    Address = model.Address.Trim(),
+                    ProfilePicture = profilePicPath
+                };
+                user = customer;
+                result = await _userManager.CreateAsync(customer, model.Password);
+            }
+
+            if (!result.Succeeded)
+            {
+                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = Url.Action(
                 "ConfirmEmail",
                 "Account",
-                new { userId = customer.Id, token = token },
+                new { userId = user.Id, token = token },
                 protocol: Request.Scheme);
 
             var emailSubject = "تأكيد حسابك في صالحly";
@@ -372,7 +564,7 @@ namespace FinalProject.Web.Controllers
                 <p><a href='{callbackUrl}'>تأكيد البريد الإلكتروني</a></p>
                 <p>إذا لم تقم بإنشاء حساب في صالحly، يرجى تجاهل هذا البريد الإلكتروني.</p>";
 
-            try { await _emailSender.SendEmailAsync(customer.Email, emailSubject, emailBody); }
+            try { await _emailSender.SendEmailAsync(user.Email!, emailSubject, emailBody); }
             catch { /* Account created – email will need to be resent */ }
             return RedirectToAction("RegisterConfirmationAr");
         }
@@ -406,6 +598,16 @@ namespace FinalProject.Web.Controllers
                 // User is NOT registered — redirect to Register with error
                 TempData["RegisterError"] = $"The email {email} is not registered. Please sign up first.";
                 return RedirectToAction("Register");
+            }
+
+            if (user.Role == UserRole.Worker)
+            {
+                var worker = await _unitOfWork.Workers.GetByIdAsync(user.Id);
+                if (worker == null || !worker.IsValidated)
+                {
+                    TempData["LoginError"] = "Your account is pending administrator approval. Please wait until your credentials are reviewed.";
+                    return RedirectToAction("Login");
+                }
             }
 
             // Link Google login if not already linked
@@ -469,13 +671,15 @@ namespace FinalProject.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult CompleteGoogleRegistration()
+        public async Task<IActionResult> CompleteGoogleRegistration()
         {
             var email = TempData.Peek("GoogleEmail") as string;
             var fullName = TempData.Peek("GoogleFullName") as string;
 
             if (string.IsNullOrEmpty(email))
                 return RedirectToAction("Register");
+
+            await PopulateCategoriesAsync();
 
             return View(new CompleteGoogleRegistrationViewModel
             {
@@ -488,41 +692,121 @@ namespace FinalProject.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CompleteGoogleRegistration(CompleteGoogleRegistrationViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
-
-            // Validate uniqueness
-            var existingEmail = await _unitOfWork.Customers.FindAsync(c => c.Email == model.Email);
-            if (existingEmail.Any()) { model.ErrorMessage = "This email is already registered."; return View(model); }
-
-            var existingNid = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
-            if (existingNid.Any()) { model.ErrorMessage = "This National ID is already registered."; return View(model); }
-
-            var customer = new Customer
+            if (model.Role == UserRole.Worker)
             {
-                FullName = model.FullName.Trim(),
-                Email = model.Email.Trim().ToLowerInvariant(),
-                UserName = model.Username.Trim(),
-                PhoneNumber = model.PhoneNumber.Trim(),
-                NationalId = model.NationalId.Trim(),
-                Age = model.Age,
-                Role = UserRole.Customer,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                Address = model.Address.Trim(),
-                EmailConfirmed = true // Google already verified the email
-            };
+                if (!model.CategoryId.HasValue || model.CategoryId <= 0)
+                    ModelState.AddModelError("CategoryId", "Please select a category.");
+                if (!model.ServicePrice.HasValue || model.ServicePrice <= 0)
+                    ModelState.AddModelError("ServicePrice", "Please enter a valid service price.");
+                if (model.IdFrontFile == null || model.IdFrontFile.Length == 0)
+                    ModelState.AddModelError("IdFrontFile", "National ID front image is required.");
+                if (model.IdBackFile == null || model.IdBackFile.Length == 0)
+                    ModelState.AddModelError("IdBackFile", "National ID back image is required.");
 
-            var result = await _userManager.CreateAsync(customer, model.Password);
-            if (!result.Succeeded)
+                var allowedExtensions = new[] { ".png", ".jpg", ".jpeg" };
+                if (model.IdFrontFile != null)
+                {
+                    var ext = Path.GetExtension(model.IdFrontFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(ext))
+                        ModelState.AddModelError("IdFrontFile", "Only PNG, JPG or JPEG images are allowed.");
+                }
+                if (model.IdBackFile != null)
+                {
+                    var ext = Path.GetExtension(model.IdBackFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(ext))
+                        ModelState.AddModelError("IdBackFile", "Only PNG, JPG or JPEG images are allowed.");
+                }
+            }
+
+            if (!ModelState.IsValid)
             {
-                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+                await PopulateCategoriesAsync();
                 return View(model);
             }
 
-            // Link Google login to this account (re-authenticate to get the info)
-            // The Google link will happen on first Google sign-in via ExternalLoginCallback
+            var existingEmail = await _userManager.FindByEmailAsync(model.Email.Trim().ToLowerInvariant());
+            if (existingEmail != null)
+            {
+                model.ErrorMessage = "This email is already registered.";
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
 
-            // Redirect to login with email pre-filled
+            var existingNidCust = await _unitOfWork.Customers.FindAsync(c => c.NationalId == model.NationalId);
+            var existingNidWrk = await _unitOfWork.Workers.FindAsync(w => w.NationalId == model.NationalId);
+            if (existingNidCust.Any() || existingNidWrk.Any())
+            {
+                model.ErrorMessage = "This National ID is already registered.";
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
+
+            IdentityResult result;
+            User user;
+
+            if (model.Role == UserRole.Worker)
+            {
+                var idFrontPath = await UploadFileAsync(model.IdFrontFile, "id_front");
+                var idBackPath = await UploadFileAsync(model.IdBackFile, "id_back");
+                var portfolioPath = await UploadFileAsync(model.PortfolioFile, "portfolios");
+                var profilePicPath = await UploadFileAsync(model.ProfilePictureFile, "profile_pics");
+                if (string.IsNullOrEmpty(profilePicPath)) profilePicPath = "/images/default-profile.png";
+
+                var worker = new Worker
+                {
+                    FullName = model.FullName.Trim(),
+                    Email = model.Email.Trim().ToLowerInvariant(),
+                    UserName = model.Username.Trim(),
+                    PhoneNumber = model.PhoneNumber.Trim(),
+                    NationalId = model.NationalId.Trim(),
+                    Age = model.Age,
+                    Role = UserRole.Worker,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    Address = model.Address.Trim(),
+                    CategoryId = model.CategoryId!.Value,
+                    ServicePrice = model.ServicePrice!.Value,
+                    IdFrontImage = idFrontPath,
+                    IdBackImage = idBackPath,
+                    Portfolio = portfolioPath,
+                    ProfilePicture = profilePicPath,
+                    IsValidated = false,
+                    EmailConfirmed = true
+                };
+                user = worker;
+                result = await _userManager.CreateAsync(worker, model.Password);
+            }
+            else
+            {
+                var profilePicPath = await UploadFileAsync(model.ProfilePictureFile, "profile_pics");
+                if (string.IsNullOrEmpty(profilePicPath)) profilePicPath = "/images/default-profile.png";
+
+                var customer = new Customer
+                {
+                    FullName = model.FullName.Trim(),
+                    Email = model.Email.Trim().ToLowerInvariant(),
+                    UserName = model.Username.Trim(),
+                    PhoneNumber = model.PhoneNumber.Trim(),
+                    NationalId = model.NationalId.Trim(),
+                    Age = model.Age,
+                    Role = UserRole.Customer,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    Address = model.Address.Trim(),
+                    ProfilePicture = profilePicPath,
+                    EmailConfirmed = true
+                };
+                user = customer;
+                result = await _userManager.CreateAsync(customer, model.Password);
+            }
+
+            if (!result.Succeeded)
+            {
+                model.ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+                await PopulateCategoriesAsync();
+                return View(model);
+            }
+
             TempData["RegisteredEmail"] = model.Email;
             TempData.Remove("GoogleEmail");
             TempData.Remove("GoogleFullName");
@@ -702,14 +986,63 @@ namespace FinalProject.Web.Controllers
 
         private async Task SignInUser(User user, bool isPersistent)
         {
+            // Load profile picture from the specific user table
+            string? profilePic = null;
+            if (user.Role == UserRole.Worker)
+            {
+                var w = await _unitOfWork.Workers.GetByIdAsync(user.Id);
+                profilePic = w?.ProfilePicture;
+            }
+            else if (user.Role == UserRole.Customer)
+            {
+                var c = await _unitOfWork.Customers.GetByIdAsync(user.Id);
+                profilePic = c?.ProfilePicture;
+            }
+
+            await IssueAuthCookieAsync(
+                HttpContext,
+                userId:      user.Id.ToString(),
+                userName:    user.UserName ?? user.Email ?? "Unknown",
+                email:       user.Email ?? string.Empty,
+                fullName:    user.FullName,
+                role:        user.Role.ToString(),
+                profilePic:  profilePic ?? string.Empty,
+                isPersistent: isPersistent);
+        }
+
+        /// <summary>
+        /// Issues / re-issues the custom auth cookie with all required claims.
+        /// Call this both at login AND after any profile update to keep the header in sync.
+        /// </summary>
+        public static async Task IssueAuthCookieAsync(
+            HttpContext context,
+            string userId,
+            string userName,
+            string email,
+            string fullName,
+            string role,
+            string profilePic,
+            bool isPersistent = false)
+        {
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Name, user.UserName ?? user.Email ?? "Unknown"),
-                new(ClaimTypes.Role, user.Role.ToString())
+                new(ClaimTypes.NameIdentifier, userId),
+                new(ClaimTypes.Name,           userName),
+                new(ClaimTypes.Email,          email),
+                new(ClaimTypes.Role,           role),
+                new("FullName",                fullName),
             };
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, new ClaimsPrincipal(identity),
+            if (!string.IsNullOrEmpty(profilePic))
+                claims.Add(new Claim("ProfilePicture", profilePic));
+
+            // Use IdentityConstants.ApplicationScheme as the authenticationType so the
+            // SecurityStampValidator recognises the cookie and does NOT invalidate it.
+            var identity  = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await context.SignInAsync(
+                IdentityConstants.ApplicationScheme,
+                principal,
                 new AuthenticationProperties { IsPersistent = isPersistent });
         }
 
@@ -723,6 +1056,26 @@ namespace FinalProject.Web.Controllers
                 "Worker" => RedirectToAction(action, "WorkerDashboard"),
                 _ => RedirectToAction(action, "Dashboard")
             };
+        }
+
+        private async Task PopulateCategoriesAsync()
+        {
+            var categories = await _unitOfWork.Categories.GetAllAsync();
+            ViewBag.Categories = categories.Where(c => c.IsActive).ToList();
+        }
+
+        private async Task<string> UploadFileAsync(IFormFile? file, string folder)
+        {
+            if (file == null || file.Length == 0) return string.Empty;
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", folder);
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+            return $"/uploads/{folder}/{uniqueFileName}";
         }
     }
 }

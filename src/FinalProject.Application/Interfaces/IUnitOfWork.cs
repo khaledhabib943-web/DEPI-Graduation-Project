@@ -7,6 +7,7 @@ namespace FinalProject.Application.Interfaces
         IAdminRepository Admins { get; }
         ICategoryRepository Categories { get; }
         IServiceRequestRepository ServiceRequests { get; }
+        IRepository<FinalProject.Domain.Entities.ServiceRequestStatusHistory> StatusHistories { get; }
         IReviewRepository Reviews { get; }
         INotificationRepository Notifications { get; }
         IComplaintRepository Complaints { get; }

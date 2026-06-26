@@ -23,6 +23,7 @@ namespace FinalProject.Web.Controllers
             var workers = await _adminService.GetWorkersAsync();
             var complaints = await _adminService.GetAllComplaintsAsync();
             var pendingWorkers = await _adminService.GetPendingWorkersAsync();
+            var serviceRequests = await _adminService.GetAllServiceRequestsAsync();
 
             return new AdminDashboardViewModel
             {
@@ -33,7 +34,8 @@ namespace FinalProject.Web.Controllers
                 Customers = customers.ToList(),
                 Workers = workers.ToList(),
                 Complaints = complaints.ToList(),
-                PendingWorkers = pendingWorkers.ToList()
+                PendingWorkers = pendingWorkers.ToList(),
+                AllServiceRequests = serviceRequests.ToList()
             };
         }
 
@@ -198,6 +200,18 @@ namespace FinalProject.Web.Controllers
         }
 
         public async Task<IActionResult> WorkerCredentialsAr()
+        {
+            var model = await GetDashboardViewModelAsync();
+            return View(model);
+        }
+
+        public async Task<IActionResult> ServiceRequests()
+        {
+            var model = await GetDashboardViewModelAsync();
+            return View(model);
+        }
+
+        public async Task<IActionResult> ServiceRequestsAr()
         {
             var model = await GetDashboardViewModelAsync();
             return View(model);

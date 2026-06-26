@@ -42,5 +42,17 @@ namespace FinalProject.Infrastructure.Repositories
                 .OrderByDescending(sr => sr.CreatedAt)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<ServiceRequest>> GetAllWithDetailsAsync()
+        {
+            return await _context.ServiceRequests
+                .Include(sr => sr.Customer)
+                .Include(sr => sr.Worker)
+                .Include(sr => sr.Category)
+                .Include(sr => sr.Review)
+                .Include(sr => sr.StatusHistory)
+                .OrderByDescending(sr => sr.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

@@ -7,5 +7,6 @@ namespace FinalProject.Application.Interfaces
         Task<IEnumerable<Review>> GetReviewsByWorkerAsync(int workerId);
         Task<IEnumerable<Review>> GetReviewsByCustomerAsync(int customerId);
         Task<double> GetAverageRatingForWorkerAsync(int workerId);
+        Task<bool> HasReviewForRequestAsync(int customerId, int requestId);
     }
 }

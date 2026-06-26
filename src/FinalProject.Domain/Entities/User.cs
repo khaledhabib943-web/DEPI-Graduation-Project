@@ -1,4 +1,4 @@
-﻿using FinalProject.Domain.Enums;
+using FinalProject.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +23,8 @@ namespace FinalProject.Domain.Entities
         public UserRole Role { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string ProfilePicture { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
 
         // Navigation
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();

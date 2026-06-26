@@ -16,7 +16,7 @@ namespace FinalProject.Infrastructure.Repositories
             return await _context.Customers
                 .Include(c => c.Favorites)
                     .ThenInclude(f => f.Worker)
-                .FirstOrDefaultAsync(c => c.UserId == customerId);
+                .FirstOrDefaultAsync(c => c.Id == customerId);
         }
 
         public async Task<Customer?> GetCustomerWithServiceRequestsAsync(int customerId)
@@ -26,7 +26,7 @@ namespace FinalProject.Infrastructure.Repositories
                     .ThenInclude(sr => sr.Worker)
                 .Include(c => c.ServiceRequests)
                     .ThenInclude(sr => sr.Category)
-                .FirstOrDefaultAsync(c => c.UserId == customerId);
+                .FirstOrDefaultAsync(c => c.Id == customerId);
         }
     }
 }

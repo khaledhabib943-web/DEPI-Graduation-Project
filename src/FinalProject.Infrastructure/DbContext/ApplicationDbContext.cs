@@ -1,4 +1,4 @@
-﻿using FinalProject.Domain.Entities;
+using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +19,7 @@ namespace FinalProject.Infrastructure.DbContext
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ServiceRequest> ServiceRequests { get; set; }
+        public DbSet<ServiceRequestStatusHistory> ServiceRequestStatusHistories { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Complaint> Complaints { get; set; }
@@ -45,6 +46,18 @@ namespace FinalProject.Infrastructure.DbContext
                 .HasIndex(f => new { f.CustomerId, f.WorkerId })
                 .IsUnique()
                 .HasDatabaseName("IX_Favorites_CustomerId_WorkerId");
+
+            // Status history cascade
+            modelBuilder.Entity<ServiceRequestStatusHistory>()
+                .HasOne(h => h.Request)
+                .WithMany(r => r.StatusHistory)
+                .HasForeignKey(h => h.RequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Decimal precision
+            modelBuilder.Entity<ServiceRequest>()
+                .Property(sr => sr.PriceAtBooking)
+                .HasColumnType("decimal(18,2)");
         }
     }
 }

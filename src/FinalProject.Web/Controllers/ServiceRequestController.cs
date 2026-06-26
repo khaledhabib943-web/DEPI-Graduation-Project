@@ -144,8 +144,24 @@ namespace FinalProject.Web.Controllers
 
             var result = await _customerService.CreateServiceRequestAsync(userId, dto);
 
-            // AUTO-ACCEPT: Simulate worker accepting the request immediately
-            await AutoAcceptRequest(result.RequestId);
+            // Capture the worker's price at booking time
+            var reqEntity = await _unitOfWork.ServiceRequests.GetByIdAsync(result.RequestId);
+            if (reqEntity != null)
+            {
+                var workerEntity = await _unitOfWork.Workers.GetByIdAsync(model.WorkerId);
+                reqEntity.PriceAtBooking = workerEntity?.ServicePrice ?? 0;
+                _unitOfWork.ServiceRequests.Update(reqEntity);
+
+                // Record initial Pending status history
+                await _unitOfWork.StatusHistories.AddAsync(new Domain.Entities.ServiceRequestStatusHistory
+                {
+                    RequestId = result.RequestId,
+                    Status    = RequestStatus.Pending,
+                    ChangedAt = DateTime.UtcNow,
+                    Note      = "Service request created"
+                });
+                await _unitOfWork.SaveChangesAsync();
+            }
 
             return RedirectToAction("Confirmation", new { requestId = result.RequestId });
         }
@@ -181,8 +197,19 @@ namespace FinalProject.Web.Controllers
             };
             var result = await _customerService.CreateServiceRequestAsync(userId, dto);
 
-            // AUTO-ACCEPT
-            await AutoAcceptRequest(result.RequestId);
+            var reqEntity = await _unitOfWork.ServiceRequests.GetByIdAsync(result.RequestId);
+            if (reqEntity != null)
+            {
+                var workerEntity = await _unitOfWork.Workers.GetByIdAsync(model.WorkerId);
+                reqEntity.PriceAtBooking = workerEntity?.ServicePrice ?? 0;
+                _unitOfWork.ServiceRequests.Update(reqEntity);
+                await _unitOfWork.StatusHistories.AddAsync(new Domain.Entities.ServiceRequestStatusHistory
+                {
+                    RequestId = result.RequestId, Status = RequestStatus.Pending,
+                    ChangedAt = DateTime.UtcNow, Note = "Service request created"
+                });
+                await _unitOfWork.SaveChangesAsync();
+            }
 
             return RedirectToAction("ConfirmationAr", new { requestId = result.RequestId });
         }
@@ -207,49 +234,63 @@ namespace FinalProject.Web.Controllers
         // ===== Step 5: Track Request =====
         public async Task<IActionResult> TrackRequest(int requestId)
         {
-            var requests = await _customerService.GetServiceRequestsAsync(GetUserId());
-            var request = requests.FirstOrDefault(r => r.RequestId == requestId);
+            var customerId = GetUserId();
+            var requests   = await _customerService.GetServiceRequestsAsync(customerId);
+            var request    = requests.FirstOrDefault(r => r.RequestId == requestId);
             if (request == null) return RedirectToAction("Index", "Dashboard");
+
+            var hasRated = await _unitOfWork.Reviews.HasReviewForRequestAsync(customerId, requestId);
+            ViewBag.HasAlreadyRated = hasRated;
+
             return View(new TrackRequestViewModel { Request = request });
         }
 
         public async Task<IActionResult> TrackRequestAr(int requestId)
         {
-            var requests = await _customerService.GetServiceRequestsAsync(GetUserId());
-            var request = requests.FirstOrDefault(r => r.RequestId == requestId);
+            var customerId = GetUserId();
+            var requests   = await _customerService.GetServiceRequestsAsync(customerId);
+            var request    = requests.FirstOrDefault(r => r.RequestId == requestId);
             if (request == null) return RedirectToAction("IndexAr", "Dashboard");
+
+            var hasRated = await _unitOfWork.Reviews.HasReviewForRequestAsync(customerId, requestId);
+            ViewBag.HasAlreadyRated = hasRated;
+
             return View(new TrackRequestViewModel { Request = request });
         }
 
-        // ===== Simulate Completion (for testing) =====
+        // ===== Customer Confirmation Actions =====
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SimulateComplete(int requestId)
+        public async Task<IActionResult> ConfirmArrival(int requestId)
         {
-            var sr = await _unitOfWork.ServiceRequests.GetByIdAsync(requestId);
-            if (sr != null && sr.CustomerId == GetUserId())
+            var req = await _unitOfWork.ServiceRequests.GetByIdAsync(requestId);
+            if (req != null && req.CustomerId == GetUserId() && req.IsWorkerArrived && !req.IsArrivalConfirmedByCustomer)
             {
-                sr.Status = RequestStatus.Completed;
-                sr.UpdatedAt = DateTime.UtcNow;
-                _unitOfWork.ServiceRequests.Update(sr);
+                req.IsArrivalConfirmedByCustomer = true;
+                req.ArrivalConfirmedAt = DateTime.UtcNow;
+                req.UpdatedAt = DateTime.UtcNow;
+                _unitOfWork.ServiceRequests.Update(req);
                 await _unitOfWork.SaveChangesAsync();
+                TempData["Success"] = "Arrival confirmed. The technician can now proceed with the work.";
             }
             return RedirectToAction("TrackRequest", new { requestId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SimulateCompleteAr(int requestId)
+        public async Task<IActionResult> ConfirmWorkDone(int requestId)
         {
-            var sr = await _unitOfWork.ServiceRequests.GetByIdAsync(requestId);
-            if (sr != null && sr.CustomerId == GetUserId())
+            var req = await _unitOfWork.ServiceRequests.GetByIdAsync(requestId);
+            if (req != null && req.CustomerId == GetUserId() && req.IsArrivalConfirmedByCustomer && !req.IsWorkCompletedConfirmedByCustomer)
             {
-                sr.Status = RequestStatus.Completed;
-                sr.UpdatedAt = DateTime.UtcNow;
-                _unitOfWork.ServiceRequests.Update(sr);
+                req.IsWorkCompletedConfirmedByCustomer = true;
+                req.WorkCompletionConfirmedAt = DateTime.UtcNow;
+                req.UpdatedAt = DateTime.UtcNow;
+                _unitOfWork.ServiceRequests.Update(req);
                 await _unitOfWork.SaveChangesAsync();
+                TempData["Success"] = "Work confirmed. The technician can now mark the request as complete.";
             }
-            return RedirectToAction("TrackRequestAr", new { requestId });
+            return RedirectToAction("TrackRequest", new { requestId });
         }
 
         // ===== Cancel =====
@@ -261,19 +302,15 @@ namespace FinalProject.Web.Controllers
             return RedirectToAction("Index", "Dashboard");
         }
 
-        // ===== Helpers =====
-        private async Task AutoAcceptRequest(int requestId)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelAr(int requestId)
         {
-            var sr = await _unitOfWork.ServiceRequests.GetByIdAsync(requestId);
-            if (sr != null)
-            {
-                sr.Status = RequestStatus.InProgress;
-                sr.UpdatedAt = DateTime.UtcNow;
-                _unitOfWork.ServiceRequests.Update(sr);
-                await _unitOfWork.SaveChangesAsync();
-            }
+            await _customerService.CancelRequestAsync(GetUserId(), requestId);
+            return RedirectToAction("IndexAr", "Dashboard");
         }
 
+        // ===== Helpers =====
         private static List<T> Shuffle<T>(List<T> list)
         {
             var rng = new Random();

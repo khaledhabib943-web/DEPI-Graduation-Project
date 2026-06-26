@@ -252,6 +252,9 @@ namespace FinalProject.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
 
+                    b.Property<DateTime?>("ArrivalConfirmedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
@@ -268,10 +271,22 @@ namespace FinalProject.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<bool>("IsArrivalConfirmedByCustomer")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsWorkCompletedConfirmedByCustomer")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsWorkerArrived")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LocationDetails")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("PriceAtBooking")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("ScheduledDate")
                         .HasColumnType("datetime2");
@@ -289,6 +304,12 @@ namespace FinalProject.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
+                    b.Property<DateTime?>("WorkCompletionConfirmedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("WorkerArrivedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("WorkerId")
                         .HasColumnType("int");
 
@@ -303,6 +324,33 @@ namespace FinalProject.Infrastructure.Migrations
                     b.ToTable("ServiceRequests", (string)null);
                 });
 
+            modelBuilder.Entity("FinalProject.Domain.Entities.ServiceRequestStatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.ToTable("ServiceRequestStatusHistories");
+                });
+
             modelBuilder.Entity("FinalProject.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -314,6 +362,11 @@ namespace FinalProject.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -371,6 +424,11 @@ namespace FinalProject.Infrastructure.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ProfilePicture")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -550,11 +608,6 @@ namespace FinalProject.Infrastructure.Migrations
                 {
                     b.HasBaseType("FinalProject.Domain.Entities.User");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
                     b.ToTable("Customers", (string)null);
                 });
 
@@ -591,11 +644,6 @@ namespace FinalProject.Infrastructure.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("Portfolio")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ProfilePicture")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -725,6 +773,17 @@ namespace FinalProject.Infrastructure.Migrations
                     b.Navigation("Worker");
                 });
 
+            modelBuilder.Entity("FinalProject.Domain.Entities.ServiceRequestStatusHistory", b =>
+                {
+                    b.HasOne("FinalProject.Domain.Entities.ServiceRequest", "Request")
+                        .WithMany("StatusHistory")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Request");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
@@ -823,6 +882,8 @@ namespace FinalProject.Infrastructure.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("Review");
+
+                    b.Navigation("StatusHistory");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.User", b =>

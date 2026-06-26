@@ -36,7 +36,14 @@ namespace FinalProject.Infrastructure.Repositories
                 .Include(w => w.Reviews)
                     .ThenInclude(r => r.Customer)
                 .Include(w => w.Category)
-                .FirstOrDefaultAsync(w => w.UserId == workerId);
+                .FirstOrDefaultAsync(w => w.Id == workerId);
+        }
+
+        public async Task<IEnumerable<Worker>> GetAllWithCategoryAsync()
+        {
+            return await _context.Workers
+                .Include(w => w.Category)
+                .ToListAsync();
         }
     }
 }

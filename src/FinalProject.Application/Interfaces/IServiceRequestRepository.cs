@@ -8,5 +8,6 @@ namespace FinalProject.Application.Interfaces
         Task<IEnumerable<ServiceRequest>> GetRequestsByCustomerAsync(int customerId);
         Task<IEnumerable<ServiceRequest>> GetRequestsByWorkerAsync(int workerId);
         Task<IEnumerable<ServiceRequest>> GetRequestsByStatusAsync(RequestStatus status);
+        Task<IEnumerable<ServiceRequest>> GetAllWithDetailsAsync();
     }
 }

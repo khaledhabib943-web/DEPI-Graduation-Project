@@ -79,17 +79,45 @@ namespace FinalProject.Application.Services
             if (request.Status != RequestStatus.Pending)
                 return false;
 
-            request.Status = RequestStatus.InProgress;
+            request.Status    = RequestStatus.InProgress;
             request.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.ServiceRequests.Update(request);
+
+            // Record status history
+            await RecordHistoryAsync(requestId, RequestStatus.InProgress, "Request accepted by worker");
+
             await _unitOfWork.SaveChangesAsync();
 
-            // Notify the customer
             await _notificationService.SendNotificationAsync(
                 request.CustomerId,
                 "Request Accepted",
-                "Your service request has been accepted by the worker.",
+                "Your service request has been accepted. The technician is on their way.",
                 NotificationType.RequestAccepted,
+                requestId);
+
+            return true;
+        }
+
+        public async Task<bool> MarkArrivedAsync(int workerId, int requestId)
+        {
+            var request = await _unitOfWork.ServiceRequests.GetByIdAsync(requestId);
+            if (request == null || request.WorkerId != workerId)
+                return false;
+
+            if (request.Status != RequestStatus.InProgress)
+                return false;
+
+            request.IsWorkerArrived  = true;
+            request.WorkerArrivedAt  = DateTime.UtcNow;
+            request.UpdatedAt        = DateTime.UtcNow;
+            _unitOfWork.ServiceRequests.Update(request);
+            await _unitOfWork.SaveChangesAsync();
+
+            await _notificationService.SendNotificationAsync(
+                request.CustomerId,
+                "Technician Has Arrived",
+                "Your technician has arrived at your location. Please confirm their arrival.",
+                NotificationType.General,
                 requestId);
 
             return true;
@@ -117,18 +145,23 @@ namespace FinalProject.Application.Services
             if (request == null || request.WorkerId != workerId)
                 return false;
 
-            request.Status = status;
+            // Guard: worker can only mark Complete if customer confirmed work is done
+            if (status == RequestStatus.Completed && !request.IsWorkCompletedConfirmedByCustomer)
+                return false;
+
+            request.Status    = status;
             request.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.ServiceRequests.Update(request);
+
+            await RecordHistoryAsync(requestId, status, null);
             await _unitOfWork.SaveChangesAsync();
 
-            // Notify customer if service is completed
             if (status == RequestStatus.Completed)
             {
                 await _notificationService.SendNotificationAsync(
                     request.CustomerId,
                     "Service Completed",
-                    "Your service request has been completed.",
+                    "Your service request has been marked as completed. You can now rate the service.",
                     NotificationType.ServiceCompleted,
                     requestId);
             }
@@ -142,20 +175,27 @@ namespace FinalProject.Application.Services
 
             return requests.Select(sr => new ServiceRequestDto
             {
-                RequestId = sr.RequestId,
-                CustomerId = sr.CustomerId,
-                CustomerName = sr.Customer?.FullName ?? string.Empty,
-                WorkerId = sr.WorkerId,
-                WorkerName = sr.Worker?.FullName ?? string.Empty,
-                CategoryId = sr.CategoryId,
-                CategoryName = sr.Category?.Name ?? string.Empty,
-                LocationDetails = sr.LocationDetails,
-                ScheduledDate = sr.ScheduledDate,
-                ScheduledTime = sr.ScheduledTime,
-                Status = sr.Status,
-                Description = sr.Description,
-                CreatedAt = sr.CreatedAt,
-                UpdatedAt = sr.UpdatedAt
+                RequestId           = sr.RequestId,
+                CustomerId          = sr.CustomerId,
+                CustomerName        = sr.Customer?.FullName ?? string.Empty,
+                WorkerId            = sr.WorkerId,
+                WorkerName          = sr.Worker?.FullName ?? string.Empty,
+                CategoryId          = sr.CategoryId,
+                CategoryName        = sr.Category?.Name ?? string.Empty,
+                LocationDetails     = sr.LocationDetails,
+                ScheduledDate       = sr.ScheduledDate,
+                ScheduledTime       = sr.ScheduledTime,
+                Status              = sr.Status,
+                Description         = sr.Description,
+                CreatedAt           = sr.CreatedAt,
+                UpdatedAt           = sr.UpdatedAt,
+                IsWorkerArrived                    = sr.IsWorkerArrived,
+                WorkerArrivedAt                    = sr.WorkerArrivedAt,
+                IsArrivalConfirmedByCustomer       = sr.IsArrivalConfirmedByCustomer,
+                ArrivalConfirmedAt                 = sr.ArrivalConfirmedAt,
+                IsWorkCompletedConfirmedByCustomer = sr.IsWorkCompletedConfirmedByCustomer,
+                WorkCompletionConfirmedAt          = sr.WorkCompletionConfirmedAt,
+                PriceAtBooking                     = sr.PriceAtBooking
             });
         }
 
@@ -177,30 +217,44 @@ namespace FinalProject.Application.Services
             });
         }
 
-        // ---- Private Mapping ----
+        // ---- Private Helpers ----
+
+        private async Task RecordHistoryAsync(int requestId, RequestStatus status, string? note)
+        {
+            var history = new Domain.Entities.ServiceRequestStatusHistory
+            {
+                RequestId = requestId,
+                Status    = status,
+                ChangedAt = DateTime.UtcNow,
+                Note      = note
+            };
+            await _unitOfWork.StatusHistories.AddAsync(history);
+        }
 
         private static WorkerDto MapToDto(Domain.Entities.Worker worker)
         {
             return new WorkerDto
             {
-                UserId = worker.UserId,
-                FullName = worker.FullName,
-                Email = worker.Email ?? string.Empty,
-                PhoneNumber = worker.PhoneNumber ?? string.Empty,
-                NationalId = worker.NationalId,
-                Age = worker.Age,
-                Username = worker.Username,
-                Role = worker.Role,
-                IsActive = worker.IsActive,
-                CreatedAt = worker.CreatedAt,
-                CategoryId = worker.CategoryId,
-                CategoryName = worker.Category?.Name ?? string.Empty,
-                ProfilePicture = worker.ProfilePicture,
-                Portfolio = worker.Portfolio,
-                ServicePrice = worker.ServicePrice,
+                UserId             = worker.UserId,
+                FullName           = worker.FullName,
+                Email              = worker.Email ?? string.Empty,
+                PhoneNumber        = worker.PhoneNumber ?? string.Empty,
+                NationalId         = worker.NationalId,
+                Age                = worker.Age,
+                Username           = worker.Username,
+                Role               = worker.Role,
+                IsActive           = worker.IsActive,
+                CreatedAt          = worker.CreatedAt,
+                CategoryId         = worker.CategoryId,
+                CategoryName       = worker.Category?.Name ?? string.Empty,
+                ProfilePicture     = worker.ProfilePicture,
+                IdFrontImage       = worker.IdFrontImage,
+                IdBackImage        = worker.IdBackImage,
+                Portfolio          = worker.Portfolio,
+                ServicePrice       = worker.ServicePrice,
                 AvailabilityStatus = worker.AvailabilityStatus,
-                AverageRating = worker.AverageRating,
-                IsValidated = worker.IsValidated
+                AverageRating      = worker.AverageRating,
+                IsValidated        = worker.IsValidated
             };
         }
     }

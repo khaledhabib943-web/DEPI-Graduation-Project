@@ -5,6 +5,7 @@ using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using FinalProject.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Language persistence — redirect to Ar/En views based on salahly_lang cookie
+app.UseMiddleware<LanguageRedirectMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

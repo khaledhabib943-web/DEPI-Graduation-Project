@@ -40,5 +40,11 @@ namespace FinalProject.Infrastructure.Repositories
 
             return reviews.Average(r => r.Rating);
         }
+
+        public async Task<bool> HasReviewForRequestAsync(int customerId, int requestId)
+        {
+            return await _context.Reviews
+                .AnyAsync(r => r.CustomerId == customerId && r.RequestId == requestId);
+        }
     }
 }

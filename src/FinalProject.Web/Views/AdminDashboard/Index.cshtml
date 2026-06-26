@@ -74,14 +74,14 @@
 
         <!-- Quick Sections Cards -->
         <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-2">Management Sections</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <a asp-controller="AdminDashboard" asp-action="Users" class="group bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:shadow-lg transition-all flex flex-col justify-between h-56">
                 <div>
                     <div class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <span class="material-symbols-outlined !text-3xl">people</span>
                     </div>
                     <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Users Management</h3>
-                    <p class="text-slate-500 text-sm">Edit, delete, suspend, and view customers or workers.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Edit, delete, suspend, and view customers or workers.</p>
                 </div>
                 <div class="flex items-center text-primary font-bold text-sm mt-4 gap-1 group-hover:gap-2 transition-all">
                     <span>Manage Users</span>
@@ -95,7 +95,7 @@
                         <span class="material-symbols-outlined !text-3xl">report</span>
                     </div>
                     <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Customer Complaints</h3>
-                    <p class="text-slate-500 text-sm">Access, review, reply, and dismiss customer complaints.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Access, review, reply, and dismiss customer complaints.</p>
                 </div>
                 <div class="flex items-center text-amber-500 font-bold text-sm mt-4 gap-1 group-hover:gap-2 transition-all">
                     <span>Manage Complaints</span>
@@ -109,10 +109,24 @@
                         <span class="material-symbols-outlined !text-3xl">badge</span>
                     </div>
                     <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Worker Vetting</h3>
-                    <p class="text-slate-500 text-sm">Scan, accept, and reject worker signup credentials.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Scan, accept, and reject worker signup credentials.</p>
                 </div>
                 <div class="flex items-center text-rose-500 font-bold text-sm mt-4 gap-1 group-hover:gap-2 transition-all">
                     <span>Verify Credentials</span>
+                    <span class="material-symbols-outlined !text-sm">arrow_forward</span>
+                </div>
+            </a>
+
+            <a asp-controller="AdminDashboard" asp-action="ServiceRequests" class="group bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 hover:shadow-lg transition-all flex flex-col justify-between h-56">
+                <div>
+                    <div class="size-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined !text-3xl">receipt_long</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Service Requests</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">View all requests with ratings, prices, and status timeline.</p>
+                </div>
+                <div class="flex items-center text-emerald-500 font-bold text-sm mt-4 gap-1 group-hover:gap-2 transition-all">
+                    <span>View Requests</span>
                     <span class="material-symbols-outlined !text-sm">arrow_forward</span>
                 </div>
             </a>

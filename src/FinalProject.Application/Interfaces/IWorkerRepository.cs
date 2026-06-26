@@ -8,5 +8,6 @@ namespace FinalProject.Application.Interfaces
         Task<IEnumerable<Worker>> GetWorkersByCategoryAsync(int categoryId);
         Task<IEnumerable<Worker>> GetAvailableWorkersAsync();
         Task<Worker?> GetWorkerWithReviewsAsync(int workerId);
+        Task<IEnumerable<Worker>> GetAllWithCategoryAsync();
     }
 }

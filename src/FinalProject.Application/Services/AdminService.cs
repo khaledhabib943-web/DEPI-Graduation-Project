@@ -23,20 +23,20 @@ namespace FinalProject.Application.Services
                 UserId = c.UserId, FullName = c.FullName, Email = c.Email ?? string.Empty,
                 PhoneNumber = c.PhoneNumber ?? string.Empty, NationalId = c.NationalId, Age = c.Age,
                 Username = c.Username, Role = c.Role, IsActive = c.IsActive,
-                CreatedAt = c.CreatedAt, Address = c.Address
+                CreatedAt = c.CreatedAt, Address = c.Address, ProfilePicture = c.ProfilePicture
             });
         }
 
         // ── Workers ──────────────────────────────────────────────────────
         public async Task<IEnumerable<WorkerDto>> GetWorkersAsync()
         {
-            var workers = await _unitOfWork.Workers.GetAllAsync();
+            var workers = await _unitOfWork.Workers.GetAllWithCategoryAsync();
             return workers.Select(w => MapWorkerDto(w));
         }
 
         public async Task<IEnumerable<WorkerDto>> GetPendingWorkersAsync()
         {
-            var workers = await _unitOfWork.Workers.GetAllAsync();
+            var workers = await _unitOfWork.Workers.GetAllWithCategoryAsync();
             return workers.Where(w => !w.IsValidated).Select(w => MapWorkerDto(w));
         }
 
@@ -55,7 +55,7 @@ namespace FinalProject.Application.Services
                     UserId = c.UserId, FullName = c.FullName, Email = c.Email ?? string.Empty,
                     PhoneNumber = c.PhoneNumber ?? string.Empty, NationalId = c.NationalId, Age = c.Age,
                     Username = c.Username, Role = c.Role, IsActive = c.IsActive,
-                    CreatedAt = c.CreatedAt, Address = c.Address
+                    CreatedAt = c.CreatedAt, Address = c.Address, ProfilePicture = c.ProfilePicture
                 });
 
             foreach (var w in workers)
@@ -83,7 +83,7 @@ namespace FinalProject.Application.Services
                     UserId = customer.UserId, FullName = customer.FullName, Email = customer.Email ?? string.Empty,
                     PhoneNumber = customer.PhoneNumber ?? string.Empty, NationalId = customer.NationalId, Age = customer.Age,
                     Username = customer.Username, Role = customer.Role, IsActive = customer.IsActive,
-                    CreatedAt = customer.CreatedAt, Address = customer.Address
+                    CreatedAt = customer.CreatedAt, Address = customer.Address, ProfilePicture = customer.ProfilePicture
                 };
 
             var worker = await _unitOfWork.Workers.GetByIdAsync(userId);
@@ -180,9 +180,127 @@ namespace FinalProject.Application.Services
         public async Task<bool> DeleteAccountAsync(int userId)
         {
             var customer = await _unitOfWork.Customers.GetByIdAsync(userId);
-            if (customer != null) { _unitOfWork.Customers.Delete(customer); await _unitOfWork.SaveChangesAsync(); return true; }
+            if (customer != null)
+            {
+                // Delete Favorites
+                var favorites = await _unitOfWork.Favorites.FindAsync(f => f.CustomerId == userId);
+                foreach (var favorite in favorites)
+                {
+                    _unitOfWork.Favorites.Delete(favorite);
+                }
+
+                // Delete Complaints
+                var complaints = await _unitOfWork.Complaints.FindAsync(c => c.CustomerId == userId);
+                foreach (var complaint in complaints)
+                {
+                    _unitOfWork.Complaints.Delete(complaint);
+                }
+
+                // Delete Reviews
+                var reviews = await _unitOfWork.Reviews.FindAsync(r => r.CustomerId == userId);
+                foreach (var review in reviews)
+                {
+                    _unitOfWork.Reviews.Delete(review);
+                }
+
+                // Delete ServiceRequests
+                var requests = await _unitOfWork.ServiceRequests.FindAsync(sr => sr.CustomerId == userId);
+                foreach (var request in requests)
+                {
+                    var statusHistories = await _unitOfWork.StatusHistories.FindAsync(sh => sh.RequestId == request.RequestId);
+                    foreach (var sh in statusHistories)
+                    {
+                        _unitOfWork.StatusHistories.Delete(sh);
+                    }
+
+                    var reqReviews = await _unitOfWork.Reviews.FindAsync(r => r.RequestId == request.RequestId);
+                    foreach (var rr in reqReviews)
+                    {
+                        _unitOfWork.Reviews.Delete(rr);
+                    }
+
+                    var reqNotifications = await _unitOfWork.Notifications.FindAsync(n => n.RelatedRequestId == request.RequestId);
+                    foreach (var rn in reqNotifications)
+                    {
+                        _unitOfWork.Notifications.Delete(rn);
+                    }
+
+                    _unitOfWork.ServiceRequests.Delete(request);
+                }
+
+                // Delete Notifications
+                var notifications = await _unitOfWork.Notifications.FindAsync(n => n.UserId == userId);
+                foreach (var notification in notifications)
+                {
+                    _unitOfWork.Notifications.Delete(notification);
+                }
+
+                _unitOfWork.Customers.Delete(customer);
+                await _unitOfWork.SaveChangesAsync();
+                return true;
+            }
+
             var worker = await _unitOfWork.Workers.GetByIdAsync(userId);
-            if (worker != null) { _unitOfWork.Workers.Delete(worker); await _unitOfWork.SaveChangesAsync(); return true; }
+            if (worker != null)
+            {
+                // Delete Favorites
+                var favorites = await _unitOfWork.Favorites.FindAsync(f => f.WorkerId == userId);
+                foreach (var favorite in favorites)
+                {
+                    _unitOfWork.Favorites.Delete(favorite);
+                }
+
+                // Delete Complaints
+                var complaints = await _unitOfWork.Complaints.FindAsync(c => c.WorkerId == userId);
+                foreach (var complaint in complaints)
+                {
+                    _unitOfWork.Complaints.Delete(complaint);
+                }
+
+                // Delete Reviews
+                var reviews = await _unitOfWork.Reviews.FindAsync(r => r.WorkerId == userId);
+                foreach (var review in reviews)
+                {
+                    _unitOfWork.Reviews.Delete(review);
+                }
+
+                // Delete ServiceRequests
+                var requests = await _unitOfWork.ServiceRequests.FindAsync(sr => sr.WorkerId == userId);
+                foreach (var request in requests)
+                {
+                    var statusHistories = await _unitOfWork.StatusHistories.FindAsync(sh => sh.RequestId == request.RequestId);
+                    foreach (var sh in statusHistories)
+                    {
+                        _unitOfWork.StatusHistories.Delete(sh);
+                    }
+
+                    var reqReviews = await _unitOfWork.Reviews.FindAsync(r => r.RequestId == request.RequestId);
+                    foreach (var rr in reqReviews)
+                    {
+                        _unitOfWork.Reviews.Delete(rr);
+                    }
+
+                    var reqNotifications = await _unitOfWork.Notifications.FindAsync(n => n.RelatedRequestId == request.RequestId);
+                    foreach (var rn in reqNotifications)
+                    {
+                        _unitOfWork.Notifications.Delete(rn);
+                    }
+
+                    _unitOfWork.ServiceRequests.Delete(request);
+                }
+
+                // Delete Notifications
+                var notifications = await _unitOfWork.Notifications.FindAsync(n => n.UserId == userId);
+                foreach (var notification in notifications)
+                {
+                    _unitOfWork.Notifications.Delete(notification);
+                }
+
+                _unitOfWork.Workers.Delete(worker);
+                await _unitOfWork.SaveChangesAsync();
+                return true;
+            }
+
             return false;
         }
 
@@ -282,17 +400,47 @@ namespace FinalProject.Application.Services
         // ── Service Requests ─────────────────────────────────────────────
         public async Task<IEnumerable<ServiceRequestDto>> GetAllServiceRequestsAsync()
         {
-            var requests = await _unitOfWork.ServiceRequests.GetAllAsync();
-            var result = new List<ServiceRequestDto>();
-            foreach (var sr in requests)
+            var requests = await _unitOfWork.ServiceRequests.GetAllWithDetailsAsync();
+            return requests.Select(sr => new ServiceRequestDto
             {
-                var cust = await _unitOfWork.Customers.GetByIdAsync(sr.CustomerId);
-                var wkr = await _unitOfWork.Workers.GetByIdAsync(sr.WorkerId);
-                var cat = await _unitOfWork.Categories.GetByIdAsync(sr.CategoryId);
-                result.Add(new ServiceRequestDto { RequestId = sr.RequestId, CustomerId = sr.CustomerId, CustomerName = cust?.FullName ?? "", WorkerId = sr.WorkerId, WorkerName = wkr?.FullName ?? "", CategoryId = sr.CategoryId, CategoryName = cat?.Name ?? "", LocationDetails = sr.LocationDetails, ScheduledDate = sr.ScheduledDate, ScheduledTime = sr.ScheduledTime, Status = sr.Status, Description = sr.Description, CreatedAt = sr.CreatedAt, UpdatedAt = sr.UpdatedAt });
-            }
-            return result;
+                RequestId       = sr.RequestId,
+                CustomerId      = sr.CustomerId,
+                CustomerName    = sr.Customer?.FullName ?? string.Empty,
+                WorkerId        = sr.WorkerId,
+                WorkerName      = sr.Worker?.FullName ?? string.Empty,
+                CategoryId      = sr.CategoryId,
+                CategoryName    = sr.Category?.Name ?? string.Empty,
+                LocationDetails = sr.LocationDetails,
+                ScheduledDate   = sr.ScheduledDate,
+                ScheduledTime   = sr.ScheduledTime,
+                Status          = sr.Status,
+                Description     = sr.Description,
+                CreatedAt       = sr.CreatedAt,
+                UpdatedAt       = sr.UpdatedAt,
+                PriceAtBooking  = sr.PriceAtBooking,
+                // Arrival / completion workflow flags
+                IsWorkerArrived                    = sr.IsWorkerArrived,
+                WorkerArrivedAt                    = sr.WorkerArrivedAt,
+                IsArrivalConfirmedByCustomer       = sr.IsArrivalConfirmedByCustomer,
+                ArrivalConfirmedAt                 = sr.ArrivalConfirmedAt,
+                IsWorkCompletedConfirmedByCustomer = sr.IsWorkCompletedConfirmedByCustomer,
+                WorkCompletionConfirmedAt          = sr.WorkCompletionConfirmedAt,
+                // Review data
+                ReviewRating    = sr.Review?.Rating,
+                ReviewComment   = sr.Review?.Comment,
+                ReviewCreatedAt = sr.Review?.CreatedAt,
+                // Status timeline
+                StatusHistory = sr.StatusHistory
+                    .OrderBy(h => h.ChangedAt)
+                    .Select(h => new StatusHistoryEntryDto
+                    {
+                        Status    = h.Status,
+                        ChangedAt = h.ChangedAt,
+                        Note      = h.Note
+                    }).ToList()
+            });
         }
+
 
         // ── Private Helpers ──────────────────────────────────────────────
         private static WorkerDto MapWorkerDto(Worker w)

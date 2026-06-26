@@ -78,9 +78,16 @@
                                 data-active="@user.IsActive.ToString().ToLower()">
                                 <td class="p-4 pr-6">
                                     <div class="flex items-center gap-3">
-                                        <div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-                                            @((user.FullName.Length >= 2) ? user.FullName.Substring(0, 2).ToUpper() : "C")
-                                        </div>
+                                        @if (!string.IsNullOrEmpty(user.ProfilePicture))
+                                        {
+                                            <img src="@user.ProfilePicture" class="size-10 rounded-full object-cover" alt="@user.FullName" />
+                                        }
+                                        else
+                                        {
+                                            <div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                                                @((user.FullName.Length >= 2) ? user.FullName.Substring(0, 2).ToUpper() : "C")
+                                            </div>
+                                        }
                                         <div>
                                             <p class="font-bold text-slate-900 dark:text-slate-100 text-sm">@user.FullName</p>
                                             <p class="text-xs text-slate-500">معرف: #@user.UserId</p>
@@ -114,6 +121,7 @@
                                                 data-phone="@user.PhoneNumber" data-role="Customer" data-age="@user.Age"
                                                 data-address="@user.Address" data-nationalid="@user.NationalId"
                                                 data-joined="@user.CreatedAt.ToString("yyyy/MM/dd")" data-active="@user.IsActive"
+                                                data-profilepic="@user.ProfilePicture"
                                                 onclick="openPreviewModal(this)">
                                             <span class="material-symbols-outlined !text-xl">visibility</span>
                                         </button>
@@ -194,6 +202,9 @@
                                                 data-address="" data-nationalid="@user.NationalId"
                                                 data-joined="@user.CreatedAt.ToString("yyyy/MM/dd")" data-active="@user.IsActive"
                                                 data-category="@user.CategoryName" data-validated="@user.IsValidated"
+                                                data-profilepic="@user.ProfilePicture"
+                                                data-idfront="@user.IdFrontImage" data-idback="@user.IdBackImage"
+                                                data-portfolio="@user.Portfolio"
                                                 onclick="openPreviewModal(this)">
                                             <span class="material-symbols-outlined !text-xl">visibility</span>
                                         </button>
@@ -275,7 +286,7 @@
 
 <!-- Preview Modal -->
 <div id="previewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden text-right">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg p-8 border border-slate-200 dark:border-slate-800 shadow-2xl m-4 animate-in fade-in zoom-in-95 duration-200">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xl m-4 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">تفاصيل المستخدم</h3>
             <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
@@ -285,8 +296,8 @@
         
         <div class="flex flex-col gap-6">
             <div class="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div id="previewInitials" class="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black text-2xl">
-                    US
+                <div id="previewAvatarContainer" class="size-16 rounded-2xl overflow-hidden bg-primary/10 text-primary flex items-center justify-center font-black text-2xl flex-shrink-0">
+                    <span id="previewInitials">US</span>
                 </div>
                 <div>
                     <h4 id="previewFullName" class="text-xl font-bold text-slate-900 dark:text-slate-100">اسم المستخدم</h4>
@@ -328,12 +339,38 @@
                     <p id="previewValidated" class="font-bold mt-0.5">مقبول</p>
                 </div>
                 <div class="col-span-2">
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">الرقم القومي (مخفي للسلامة والأمان)</p>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">الرقم القومي (مخفي للسلامة)</p>
                     <p id="previewNationalId" class="font-bold text-slate-800 dark:text-slate-200 tracking-widest mt-0.5">290**********8</p>
                 </div>
                 <div id="previewAddressContainer" class="col-span-2">
                     <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">العنوان</p>
                     <p id="previewAddress" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5">لا يوجد عنوان</p>
+                </div>
+            </div>
+
+            <!-- Worker Media Section -->
+            <div id="previewWorkerMedia" class="hidden flex-col gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <h4 class="font-bold text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">وثائق وصور العامل</h4>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">بطاقة الهوية — الوجه</p>
+                        <div id="previewIdFrontContainer" class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-center h-32">
+                            <span class="text-slate-400 text-xs">لم يتم الرفع</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">بطاقة الهوية — الظهر</p>
+                        <div id="previewIdBackContainer" class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-center h-32">
+                            <span class="text-slate-400 text-xs">لم يتم الرفع</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="previewPortfolioContainer" class="hidden">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">ملف الأعمال</p>
+                    <a id="previewPortfolioLink" href="#" target="_blank"
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-xl text-sm font-bold hover:bg-primary/20 transition-colors">
+                        <span class="material-symbols-outlined text-sm">download</span> تحميل ملف الأعمال
+                    </a>
                 </div>
             </div>
         </div>
@@ -423,65 +460,89 @@
 
         // Preview Modal Operations
         function openPreviewModal(button) {
-            const id = button.getAttribute('data-id');
-            const name = button.getAttribute('data-name');
-            const email = button.getAttribute('data-email');
-            const phone = button.getAttribute('data-phone');
-            const role = button.getAttribute('data-role');
-            const age = button.getAttribute('data-age');
-            const address = button.getAttribute('data-address');
+            const id         = button.getAttribute('data-id');
+            const name       = button.getAttribute('data-name');
+            const email      = button.getAttribute('data-email');
+            const phone      = button.getAttribute('data-phone');
+            const role       = button.getAttribute('data-role');
+            const age        = button.getAttribute('data-age');
+            const address    = button.getAttribute('data-address');
             const nationalId = button.getAttribute('data-nationalid');
-            const joined = button.getAttribute('data-joined');
-            const active = button.getAttribute('data-active') === 'True';
+            const joined     = button.getAttribute('data-joined');
+            const active     = button.getAttribute('data-active') === 'True';
+            const profilePic = button.getAttribute('data-profilepic') || '';
+            const idFront    = button.getAttribute('data-idfront') || '';
+            const idBack     = button.getAttribute('data-idback') || '';
+            const portfolio  = button.getAttribute('data-portfolio') || '';
 
-            document.getElementById('previewId').innerText = '#' + id;
+            document.getElementById('previewId').innerText     = '#' + id;
             document.getElementById('previewFullName').innerText = name;
-            document.getElementById('previewInitials').innerText = name.substring(0, 2).toUpperCase();
-            document.getElementById('previewEmail').innerText = email;
-            document.getElementById('previewPhone').innerText = phone;
-            document.getElementById('previewAge').innerText = age;
+            document.getElementById('previewEmail').innerText  = email;
+            document.getElementById('previewPhone').innerText  = phone;
+            document.getElementById('previewAge').innerText    = age;
             document.getElementById('previewJoined').innerText = joined;
-            
+
+            // Avatar — show profile picture if available, else initials
+            const avatarContainer = document.getElementById('previewAvatarContainer');
+            if (profilePic) {
+                avatarContainer.innerHTML = `<img src="${profilePic}" class="size-16 rounded-2xl object-cover" />`;
+            } else {
+                avatarContainer.innerHTML = `<span id="previewInitials" class="text-2xl font-black">${name.substring(0, 2).toUpperCase()}</span>`;
+            }
+
             // Mask National ID for safety
             if (nationalId) {
                 const len = nationalId.length;
-                if (len > 4) {
-                    document.getElementById('previewNationalId').innerText = nationalId.substring(0, 3) + '*'.repeat(len - 6) + nationalId.substring(len - 3);
-                } else {
-                    document.getElementById('previewNationalId').innerText = '*'.repeat(len);
-                }
+                document.getElementById('previewNationalId').innerText =
+                    len > 4 ? nationalId.substring(0, 3) + '*'.repeat(len - 6) + nationalId.substring(len - 3) : '*'.repeat(len);
             } else {
                 document.getElementById('previewNationalId').innerText = 'غير متوفر';
             }
 
-            // Role and status badges
+            // Role badge
             const roleBadge = document.getElementById('previewRoleBadge');
+            const workerMedia = document.getElementById('previewWorkerMedia');
+
             if (role === 'Customer') {
                 roleBadge.innerText = 'عميل';
-                roleBadge.className = "px-2 py-0.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 mt-1 inline-block";
+                roleBadge.className = 'px-2 py-0.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 mt-1 inline-block';
                 document.getElementById('previewCategoryContainer').classList.add('hidden');
                 document.getElementById('previewValidatedContainer').classList.add('hidden');
-                
                 document.getElementById('previewAddressContainer').classList.remove('hidden');
-                document.getElementById('previewAddress').innerText = address || 'N/A';
+                document.getElementById('previewAddress').innerText = address || 'غير محدد';
+                workerMedia.classList.add('hidden'); workerMedia.classList.remove('flex');
             } else {
                 roleBadge.innerText = 'عامل صيانة';
-                roleBadge.className = "px-2 py-0.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400 mt-1 inline-block";
+                roleBadge.className = 'px-2 py-0.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400 mt-1 inline-block';
                 document.getElementById('previewCategoryContainer').classList.remove('hidden');
                 document.getElementById('previewCategory').innerText = button.getAttribute('data-category') || 'غير محدد';
-                
                 document.getElementById('previewValidatedContainer').classList.remove('hidden');
                 const isValidated = button.getAttribute('data-validated') === 'True';
                 const vNode = document.getElementById('previewValidated');
-                if (isValidated) {
-                    vNode.innerText = 'تم التحقق والقبول';
-                    vNode.className = "font-bold text-emerald-500 mt-0.5";
-                } else {
-                    vNode.innerText = 'قيد الانتظار';
-                    vNode.className = "font-bold text-rose-500 mt-0.5";
-                }
-                
+                vNode.innerText   = isValidated ? 'تم التحقق والقبول' : 'قيد المراجعة';
+                vNode.className   = isValidated ? 'font-bold text-emerald-500 mt-0.5' : 'font-bold text-rose-500 mt-0.5';
                 document.getElementById('previewAddressContainer').classList.add('hidden');
+
+                // Worker media
+                workerMedia.classList.remove('hidden'); workerMedia.classList.add('flex');
+
+                const frontCont = document.getElementById('previewIdFrontContainer');
+                frontCont.innerHTML = idFront
+                    ? `<a href="${idFront}" target="_blank"><img src="${idFront}" class="w-full h-32 object-cover hover:opacity-90 transition-opacity" /></a>`
+                    : '<span class="text-slate-400 text-xs">لم يتم الرفع</span>';
+
+                const backCont = document.getElementById('previewIdBackContainer');
+                backCont.innerHTML = idBack
+                    ? `<a href="${idBack}" target="_blank"><img src="${idBack}" class="w-full h-32 object-cover hover:opacity-90 transition-opacity" /></a>`
+                    : '<span class="text-slate-400 text-xs">لم يتم الرفع</span>';
+
+                const portCont = document.getElementById('previewPortfolioContainer');
+                if (portfolio) {
+                    portCont.classList.remove('hidden');
+                    document.getElementById('previewPortfolioLink').href = portfolio;
+                } else {
+                    portCont.classList.add('hidden');
+                }
             }
 
             const statusNode = document.getElementById('previewStatus');

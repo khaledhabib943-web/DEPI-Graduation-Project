@@ -1,5 +1,7 @@
 using FinalProject.Application.DTOs;
 using System.ComponentModel.DataAnnotations;
+using FinalProject.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace FinalProject.Web.ViewModels
 {
@@ -115,7 +117,9 @@ namespace FinalProject.Web.ViewModels
     public class ProfileViewModel
     {
         public int UserId { get; set; }
+        public UserRole Role { get; set; }
 
+        // Same rules as RegisterViewModel ─────────────────────────────────────
         [Required(ErrorMessage = "Full name is required.")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "Full name must be between 3-100 characters.")]
         [RegularExpression(@"^[\p{L}\s\-\.]+$", ErrorMessage = "Full name can only contain letters, spaces, hyphens, and dots.")]
@@ -123,21 +127,37 @@ namespace FinalProject.Web.ViewModels
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        [StringLength(150)]
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Phone number is required.")]
-        [RegularExpression(@"^01[0125]\d{8}$", ErrorMessage = "Please enter a valid Egyptian phone number.")]
+        [RegularExpression(@"^01[0125]\d{8}$", ErrorMessage = "Please enter a valid Egyptian phone number (e.g., 01012345678).")]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Age is required.")]
         [Range(18, 100, ErrorMessage = "Age must be between 18 and 100.")]
         public int Age { get; set; }
 
-        [Required(ErrorMessage = "Address is required.")]
-        [StringLength(300, MinimumLength = 10, ErrorMessage = "Address must be between 10-300 characters.")]
-        public string Address { get; set; } = string.Empty;
+        // Address is optional — if provided, max 300 chars; no minimum enforced on nullable field
+        [StringLength(300, ErrorMessage = "Address must not exceed 300 characters.")]
+        public string? Address { get; set; }
+
+        // ──────────────────────────────────────────────────────────────────────
+        public string? ProfilePicture { get; set; }
+        public IFormFile? ProfilePictureFile { get; set; }
+
+        // Worker specific (nullable)
+        public int? CategoryId { get; set; }
+        public string? CategoryName { get; set; }
+
+        [Range(1, 100000, ErrorMessage = "Price must be greater than zero.")]
+        public decimal? ServicePrice { get; set; }
+
+        public string? Portfolio { get; set; }
+        public IFormFile? PortfolioFile { get; set; }
 
         public string? SuccessMessage { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 
     public class AdminDashboardViewModel
@@ -151,5 +171,25 @@ namespace FinalProject.Web.ViewModels
         public List<WorkerDto> Workers { get; set; } = new();
         public List<ComplaintDto> Complaints { get; set; } = new();
         public List<WorkerDto> PendingWorkers { get; set; } = new();
+        public List<ServiceRequestDto> AllServiceRequests { get; set; } = new();
+    }
+
+    public class WorkerDashboardViewModel
+    {
+        public string WorkerName { get; set; } = string.Empty;
+        public AvailabilityStatus AvailabilityStatus { get; set; }
+        public decimal ServicePrice { get; set; }
+        public float AverageRating { get; set; }
+        public string? CategoryName { get; set; }
+        public string? ProfilePicture { get; set; }
+        
+        public int PendingRequestsCount { get; set; }
+        public int ActiveRequestsCount { get; set; }
+        public int CompletedRequestsCount { get; set; }
+        public int CancelledRequestsCount { get; set; }
+        public int UnreadNotificationsCount { get; set; }
+
+        public List<ServiceRequestDto> RecentRequests { get; set; } = new();
+        public List<ReviewDto> RecentReviews { get; set; } = new();
     }
 }

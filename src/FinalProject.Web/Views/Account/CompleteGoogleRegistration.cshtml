@@ -26,7 +26,25 @@
                 </div>
             }
 
-            <form asp-action="CompleteGoogleRegistration" method="post" class="space-y-6">
+            <form asp-action="CompleteGoogleRegistration" method="post" enctype="multipart/form-data" class="space-y-6">
+                
+                <!-- Role Selector -->
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Register As</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer border-2 border-primary rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all bg-slate-50/50 dark:bg-slate-900/50" id="roleCustomerCard">
+                            <input type="radio" asp-for="Role" value="Customer" checked class="sr-only" onchange="toggleRoleFields('Customer')" />
+                            <span class="material-symbols-outlined text-primary text-3xl mb-1">person</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">Customer</span>
+                        </label>
+                        <label class="cursor-pointer border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all bg-slate-50/50 dark:bg-slate-900/50" id="roleWorkerCard">
+                            <input type="radio" asp-for="Role" value="Worker" class="sr-only" onchange="toggleRoleFields('Worker')" />
+                            <span class="material-symbols-outlined text-slate-400 text-3xl mb-1">engineering</span>
+                            <span class="font-bold text-slate-500 dark:text-slate-400">Worker</span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2 md:col-span-2">
                         <label asp-for="Email" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></label>
@@ -91,6 +109,45 @@
                         <textarea asp-for="Address" class="form-textarea w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent min-h-[80px]" placeholder="Maadi, Cairo"></textarea>
                         <span asp-validation-for="Address" class="text-red-500 text-xs"></span>
                     </div>
+
+                    <div class="space-y-2 md:col-span-2">
+                        <label asp-for="ProfilePictureFile" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Profile Picture (Optional)</label>
+                        <input asp-for="ProfilePictureFile" type="file" accept="image/*" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent" />
+                        <span asp-validation-for="ProfilePictureFile" class="text-red-500 text-xs"></span>
+                    </div>
+                </div>
+
+                <!-- Worker Fields (Dynamic toggle) -->
+                <div id="workerFields" class="hidden space-y-6 border-t border-slate-200 dark:border-slate-800 pt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label asp-for="CategoryId" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Category</label>
+                            <select asp-for="CategoryId" class="form-select w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))">
+                                <option value="">-- Choose Category --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="space-y-2">
+                            <label asp-for="ServicePrice" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Price per Hour (EGP)</label>
+                            <input asp-for="ServicePrice" type="number" step="0.01" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g. 150" />
+                            <span asp-validation-for="ServicePrice" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="space-y-2">
+                            <label asp-for="IdFrontFile" class="text-sm font-semibold text-slate-700 dark:text-slate-300">National ID Front View (Image - PNG/JPG)</label>
+                            <input asp-for="IdFrontFile" type="file" accept="image/png, image/jpeg, image/jpg" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            <span asp-validation-for="IdFrontFile" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="space-y-2">
+                            <label asp-for="IdBackFile" class="text-sm font-semibold text-slate-700 dark:text-slate-300">National ID Back View (Image - PNG/JPG)</label>
+                            <input asp-for="IdBackFile" type="file" accept="image/png, image/jpeg, image/jpg" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            <span asp-validation-for="IdBackFile" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="space-y-2 md:col-span-2">
+                            <label asp-for="PortfolioFile" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Portfolio Document (Optional)</label>
+                            <input asp-for="PortfolioFile" type="file" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            <span asp-validation-for="PortfolioFile" class="text-red-500 text-xs"></span>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
@@ -117,5 +174,54 @@ function togglePassword(btn) {
         icon.textContent = 'visibility';
     }
 }
+
+function toggleRoleFields(role) {
+    const custCard = document.getElementById('roleCustomerCard');
+    const wrkCard = document.getElementById('roleWorkerCard');
+    const custIcon = custCard.querySelector('.material-symbols-outlined');
+    const custText = custCard.querySelector('.font-bold');
+    const wrkIcon = wrkCard.querySelector('.material-symbols-outlined');
+    const wrkText = wrkCard.querySelector('.font-bold');
+    const workerFields = document.getElementById('workerFields');
+
+    if (role === 'Worker') {
+        workerFields.classList.remove('hidden');
+        wrkCard.classList.add('border-2', 'border-primary');
+        wrkCard.classList.remove('border-slate-200');
+        wrkIcon.classList.add('text-primary');
+        wrkIcon.classList.remove('text-slate-400');
+        wrkText.classList.add('text-slate-800', 'dark:text-slate-200');
+        wrkText.classList.remove('text-slate-500', 'dark:text-slate-400');
+
+        custCard.classList.remove('border-2', 'border-primary');
+        custCard.classList.add('border-slate-200');
+        custIcon.classList.remove('text-primary');
+        custIcon.classList.add('text-slate-400');
+        custText.classList.remove('text-slate-800', 'dark:text-slate-200');
+        custText.classList.add('text-slate-500', 'dark:text-slate-400');
+    } else {
+        workerFields.classList.add('hidden');
+        custCard.classList.add('border-2', 'border-primary');
+        custCard.classList.remove('border-slate-200');
+        custIcon.classList.add('text-primary');
+        custIcon.classList.remove('text-slate-400');
+        custText.classList.add('text-slate-800', 'dark:text-slate-200');
+        custText.classList.remove('text-slate-500', 'dark:text-slate-400');
+
+        wrkCard.classList.remove('border-2', 'border-primary');
+        wrkCard.classList.add('border-slate-200');
+        wrkIcon.classList.remove('text-primary');
+        wrkIcon.classList.add('text-slate-400');
+        wrkText.classList.remove('text-slate-800', 'dark:text-slate-200');
+        wrkText.classList.add('text-slate-500', 'dark:text-slate-400');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const checkedRole = document.querySelector('input[name="Role"]:checked');
+    if (checkedRole) {
+        toggleRoleFields(checkedRole.value);
+    }
+});
 </script>
 }

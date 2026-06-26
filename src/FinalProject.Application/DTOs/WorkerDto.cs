@@ -6,7 +6,7 @@ namespace FinalProject.Application.DTOs
     {
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
-        public string ProfilePicture { get; set; } = string.Empty;
+        // ProfilePicture is inherited from UserDto
         public string IdFrontImage { get; set; } = string.Empty;
         public string IdBackImage { get; set; } = string.Empty;
         public string? Portfolio { get; set; }

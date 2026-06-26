@@ -1,27 +1,231 @@
 @model RegisterViewModel
-@{ ViewData["Title"] = "إنشاء حساب"; Layout = "_LayoutArabic"; }
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
+    ViewData["Title"] = "إنشاء حساب";
+    Layout = "_LayoutArabic";
+    var googleConfigured = !string.IsNullOrEmpty(Configuration["Authentication:Google:ClientId"])
+                        && Configuration["Authentication:Google:ClientId"] != "YOUR_GOOGLE_CLIENT_ID";
+}
 
 <div class="flex-1 flex items-center justify-center p-6 py-12">
     <div class="w-full max-w-[640px] space-y-8">
-        <div class="text-center md:text-right"><h1 class="text-4xl font-black mb-2">إنشاء حساب جديد</h1><p class="text-slate-500">انضم إلى صلاحلي للحصول على صيانة منزلية احترافية.</p></div>
+        <div class="text-center md:text-right">
+            <h1 class="text-4xl font-black mb-2">إنشاء حساب جديد</h1>
+            <p class="text-slate-500 dark:text-slate-400">انضم إلى صلاحلي للحصول على صيانة منزلية احترافية.</p>
+        </div>
+
         <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
             @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-            { <div class="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium">@Model.ErrorMessage</div> }
-            <form asp-action="RegisterAr" method="post" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2"><label class="text-sm font-semibold">الاسم بالكامل</label><input asp-for="FullName" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
-                    <div class="space-y-2"><label class="text-sm font-semibold">اسم المستخدم</label><input asp-for="Username" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
-                    <div class="space-y-2 md:col-span-2"><label class="text-sm font-semibold">البريد الإلكتروني</label><input asp-for="Email" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
-                    <div class="space-y-2"><label class="text-sm font-semibold">كلمة المرور</label><input asp-for="Password" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
-                    <div class="space-y-2"><label class="text-sm font-semibold">تأكيد كلمة المرور</label><input asp-for="ConfirmPassword" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
-                    <div class="space-y-2"><label class="text-sm font-semibold">رقم الهاتف</label><input asp-for="PhoneNumber" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
-                    <div class="space-y-2"><label class="text-sm font-semibold">الرقم القومي</label><input asp-for="NationalId" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
-                    <div class="space-y-2"><label class="text-sm font-semibold">العمر</label><input asp-for="Age" type="number" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 h-12 px-4 focus:ring-2 focus:ring-primary" /></div>
-                    <div class="space-y-2 md:col-span-2"><label class="text-sm font-semibold">العنوان</label><textarea asp-for="Address" class="form-textarea w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 focus:ring-2 focus:ring-primary min-h-[80px]"></textarea></div>
+            {
+                <div class="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-medium">
+                    <span class="material-symbols-outlined text-sm align-middle ml-1">error</span> @Model.ErrorMessage
                 </div>
-                <button type="submit" class="w-full h-12 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/20 flex items-center justify-center gap-2">إنشاء حساب <span class="material-symbols-outlined text-[20px]">person_add</span></button>
+            }
+
+            @* Google Sign-Up Button *@
+            @if (googleConfigured)
+            {
+                <form asp-controller="Account" asp-action="ExternalRegister" method="post" class="mb-6">
+                    <input type="hidden" name="provider" value="Google" />
+                    <button type="submit"
+                            class="w-full h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg transition-all flex items-center justify-center gap-3 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
+                            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                            <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                            <path fill="#1976D2" d="M43.611,20.083L43.595,20L24,20v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                        </svg>
+                        <span>التسجيل باستخدام Google</span>
+                    </button>
+                </form>
+                <div class="relative flex items-center pb-6">
+                    <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+                    <span class="flex-shrink mx-4 text-slate-400 text-xs">أو أكمل النموذج التالي</span>
+                    <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+                </div>
+            }
+
+            <form asp-action="RegisterAr" method="post" enctype="multipart/form-data" class="space-y-6">
+
+                <!-- Role Selector -->
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">التسجيل كـ</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer border-2 border-primary rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all bg-slate-50/50 dark:bg-slate-900/50" id="roleCustomerCard">
+                            <input type="radio" asp-for="Role" value="Customer" checked class="sr-only" onchange="toggleRoleFields('Customer')" />
+                            <span class="material-symbols-outlined text-primary text-3xl mb-1">person</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">عميل</span>
+                        </label>
+                        <label class="cursor-pointer border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all bg-slate-50/50 dark:bg-slate-900/50" id="roleWorkerCard">
+                            <input type="radio" asp-for="Role" value="Worker" class="sr-only" onchange="toggleRoleFields('Worker')" />
+                            <span class="material-symbols-outlined text-slate-400 text-3xl mb-1">engineering</span>
+                            <span class="font-bold text-slate-500 dark:text-slate-400">مقدم خدمة</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" dir="rtl">
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">الاسم بالكامل</label>
+                        <input asp-for="FullName" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 focus:ring-2 focus:ring-primary" placeholder="اسمك الثنائي أو الثلاثي" />
+                        <span asp-validation-for="FullName" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">اسم المستخدم</label>
+                        <input asp-for="Username" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 focus:ring-2 focus:ring-primary" placeholder="مثال: ahmed123" />
+                        <span asp-validation-for="Username" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">البريد الإلكتروني</label>
+                        <input asp-for="Email" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 focus:ring-2 focus:ring-primary" placeholder="name@example.com" />
+                        <span asp-validation-for="Email" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">كلمة المرور</label>
+                        <div class="relative flex items-center">
+                            <input asp-for="Password" type="password" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 pl-11 focus:ring-2 focus:ring-primary" placeholder="••••••••" />
+                            <button type="button" onclick="togglePassword(this)" class="absolute left-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" tabindex="-1">
+                                <span class="material-symbols-outlined text-[20px]">visibility</span>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">تأكيد كلمة المرور</label>
+                        <div class="relative flex items-center">
+                            <input asp-for="ConfirmPassword" type="password" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 pl-11 focus:ring-2 focus:ring-primary" placeholder="••••••••" />
+                            <button type="button" onclick="togglePassword(this)" class="absolute left-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" tabindex="-1">
+                                <span class="material-symbols-outlined text-[20px]">visibility</span>
+                            </button>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">رقم الهاتف</label>
+                        <input asp-for="PhoneNumber" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 focus:ring-2 focus:ring-primary" placeholder="01xxxxxxxxx" />
+                        <span asp-validation-for="PhoneNumber" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">الرقم القومي</label>
+                        <input asp-for="NationalId" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 focus:ring-2 focus:ring-primary" placeholder="14 رقمًا" />
+                        <span asp-validation-for="NationalId" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">العمر</label>
+                        <input asp-for="Age" type="number" min="18" max="100" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 focus:ring-2 focus:ring-primary" placeholder="25" />
+                        <span asp-validation-for="Age" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">العنوان</label>
+                        <textarea asp-for="Address" class="form-textarea w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 px-4 py-3 focus:ring-2 focus:ring-primary min-h-[80px]" placeholder="مثال: المعادي، القاهرة"></textarea>
+                        <span asp-validation-for="Address" class="text-red-500 text-xs"></span>
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">الصورة الشخصية (اختياري)</label>
+                        <input asp-for="ProfilePictureFile" type="file" accept="image/*" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 py-2 focus:ring-2 focus:ring-primary" />
+                        <span asp-validation-for="ProfilePictureFile" class="text-red-500 text-xs"></span>
+                    </div>
+                </div>
+
+                <!-- Worker Fields (Dynamic toggle) -->
+                <div id="workerFields" class="hidden space-y-6 border-t border-slate-200 dark:border-slate-700 pt-6" dir="rtl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">التخصص / القسم</label>
+                            <select asp-for="CategoryId" class="form-select w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 focus:ring-2 focus:ring-primary" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))">
+                                <option value="">-- اختر التخصص --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">سعر الخدمة بالساعة (جنيه)</label>
+                            <input asp-for="ServicePrice" type="number" step="0.01" min="1" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 focus:ring-2 focus:ring-primary" placeholder="مثال: 150" />
+                            <span asp-validation-for="ServicePrice" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">صورة وجه البطاقة الشخصية (PNG/JPG)</label>
+                            <input asp-for="IdFrontFile" type="file" accept="image/png, image/jpeg, image/jpg" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 py-2 focus:ring-2 focus:ring-primary" />
+                            <span asp-validation-for="IdFrontFile" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">صورة ظهر البطاقة الشخصية (PNG/JPG)</label>
+                            <input asp-for="IdBackFile" type="file" accept="image/png, image/jpeg, image/jpg" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 py-2 focus:ring-2 focus:ring-primary" />
+                            <span asp-validation-for="IdBackFile" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">ملف الأعمال / السيرة الذاتية (اختياري)</label>
+                            <input asp-for="PortfolioFile" type="file" class="form-input w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-100 h-12 px-4 py-2 focus:ring-2 focus:ring-primary" />
+                            <span asp-validation-for="PortfolioFile" class="text-red-500 text-xs"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-colors">
+                    إنشاء حساب <span class="material-symbols-outlined text-[20px]">person_add</span>
+                </button>
             </form>
         </div>
-        <p class="text-center text-slate-500 text-sm">لديك حساب بالفعل؟ <a asp-controller="Account" asp-action="LoginAr" class="font-bold text-primary hover:underline">تسجيل الدخول</a></p>
+        <p class="text-center text-slate-500 dark:text-slate-400 text-sm">
+            لديك حساب بالفعل؟ <a asp-controller="Account" asp-action="LoginAr" class="font-bold text-primary hover:underline underline-offset-4">تسجيل الدخول</a>
+        </p>
     </div>
 </div>
+
+@section Scripts {
+<script>
+function togglePassword(btn) {
+    const input = btn.parentElement.querySelector('input');
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+    } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+    }
+}
+
+function toggleRoleFields(role) {
+    const custCard = document.getElementById('roleCustomerCard');
+    const wrkCard  = document.getElementById('roleWorkerCard');
+    const custIcon = custCard.querySelector('.material-symbols-outlined');
+    const custText = custCard.querySelector('.font-bold');
+    const wrkIcon  = wrkCard.querySelector('.material-symbols-outlined');
+    const wrkText  = wrkCard.querySelector('.font-bold');
+    const workerFields = document.getElementById('workerFields');
+
+    if (role === 'Worker') {
+        workerFields.classList.remove('hidden');
+        wrkCard.classList.add('border-2', 'border-primary');
+        wrkCard.classList.remove('border-slate-200', 'dark:border-slate-700');
+        wrkIcon.classList.add('text-primary'); wrkIcon.classList.remove('text-slate-400');
+        wrkText.classList.add('text-slate-800', 'dark:text-slate-200');
+        wrkText.classList.remove('text-slate-500', 'dark:text-slate-400');
+
+        custCard.classList.remove('border-2', 'border-primary');
+        custCard.classList.add('border-slate-200', 'dark:border-slate-700');
+        custIcon.classList.remove('text-primary'); custIcon.classList.add('text-slate-400');
+        custText.classList.remove('text-slate-800', 'dark:text-slate-200');
+        custText.classList.add('text-slate-500', 'dark:text-slate-400');
+    } else {
+        workerFields.classList.add('hidden');
+        custCard.classList.add('border-2', 'border-primary');
+        custCard.classList.remove('border-slate-200', 'dark:border-slate-700');
+        custIcon.classList.add('text-primary'); custIcon.classList.remove('text-slate-400');
+        custText.classList.add('text-slate-800', 'dark:text-slate-200');
+        custText.classList.remove('text-slate-500', 'dark:text-slate-400');
+
+        wrkCard.classList.remove('border-2', 'border-primary');
+        wrkCard.classList.add('border-slate-200', 'dark:border-slate-700');
+        wrkIcon.classList.remove('text-primary'); wrkIcon.classList.add('text-slate-400');
+        wrkText.classList.remove('text-slate-800', 'dark:text-slate-200');
+        wrkText.classList.add('text-slate-500', 'dark:text-slate-400');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const checked = document.querySelector('input[name="Role"]:checked');
+    if (checked) toggleRoleFields(checked.value);
+});
+</script>
+}

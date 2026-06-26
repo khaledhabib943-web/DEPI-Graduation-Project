@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace FinalProject.Web.Controllers
 {
-    [Authorize(Roles = "Customer")]
+    [Authorize(Roles = "Customer,Worker")]
     public class NotificationController : Controller
     {
         private readonly INotificationService _notificationService;

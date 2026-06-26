@@ -4,6 +4,7 @@ namespace FinalProject.Domain.Enums
     {
         NewRequest,
         RequestAccepted,
-        ServiceCompleted
+        ServiceCompleted,
+        General
     }
 }
