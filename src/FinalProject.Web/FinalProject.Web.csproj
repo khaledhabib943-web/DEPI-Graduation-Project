@@ -26,4 +26,11 @@
     <ProjectReference Include="..\FinalProject.Application\FinalProject.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\id_back\" />
+    <Folder Include="wwwroot\uploads\id_front\" />
+    <Folder Include="wwwroot\uploads\portfolios\" />
+    <Folder Include="wwwroot\uploads\profile_pics\" />
+  </ItemGroup>
+
 </Project>
