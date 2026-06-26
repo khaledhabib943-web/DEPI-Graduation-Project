@@ -1,0 +1,91 @@
+@model ReviewViewModel
+@{ ViewData["Title"] = "تقييم الخدمة"; Layout = "_LayoutArabic"; }
+
+<div class="flex flex-1 justify-center py-8 px-4">
+    <div class="flex flex-col max-w-[560px] flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 md:p-10 border border-slate-100 dark:border-slate-800">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold mb-2">تقييم الخدمة</h1>
+            <p class="text-slate-500 text-sm">شكراً لاستخدامك صلاحلي. نأمل أن تكون راضياً عن الخدمة.</p>
+        </div>
+        <div class="flex flex-col items-center gap-4 mb-10 p-6 bg-primary/5 rounded-xl border border-primary/10">
+            <div class="size-20 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined !text-4xl">person</span>
+            </div>
+            <p class="text-xl font-bold">@Model.WorkerName</p>
+        </div>
+        <form asp-action="CreateAr" method="post" class="flex flex-col gap-6">
+            <input type="hidden" asp-for="RequestId" />
+            <input type="hidden" asp-for="WorkerId" />
+            <input type="hidden" asp-for="WorkerName" />
+            <div class="flex flex-col items-center gap-4">
+                <h3 class="text-lg font-bold">كيف كانت جودة الخدمة؟</h3>
+                <!-- Star Rating Widget -->
+                <div class="star-rating flex gap-1 flex-row-reverse" id="starRatingContainer">
+                    @for (int i = 5; i >= 1; i--)
+                    {
+                        <button type="button"
+                                class="star-btn p-1 transition-transform hover:scale-110 focus:outline-none"
+                                data-value="@i"
+                                onclick="setRating(@i)"
+                                onmouseenter="hoverRating(@i)"
+                                onmouseleave="resetHover()">
+                            <span class="material-symbols-outlined !text-4xl text-slate-300 transition-colors"
+                                  id="star-@i"
+                                  style="font-variation-settings:'FILL' 0">star</span>
+                        </button>
+                    }
+                </div>
+                <input type="hidden" asp-for="Rating" id="ratingInput" value="0" />
+                <p id="ratingLabel" class="text-sm font-semibold text-slate-500 h-5"></p>
+                <span asp-validation-for="Rating" class="text-red-500 text-xs"></span>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-base font-bold">أضف تعليقاً</label>
+                <textarea asp-for="Comment" class="w-full min-h-[120px] rounded-xl border border-slate-200 dark:border-slate-700 bg-background-light dark:bg-slate-800 p-4 focus:ring-2 focus:ring-primary resize-none placeholder:text-slate-400" placeholder="أخبرنا عن تجربتك..."></textarea>
+            </div>
+            <button type="submit" id="submitBtn" class="w-full bg-slate-300 text-slate-500 h-14 rounded-xl font-bold text-lg cursor-not-allowed" disabled>إرسال التقييم</button>
+            <a asp-controller="Dashboard" asp-action="IndexAr" class="w-full bg-transparent text-slate-500 h-12 rounded-xl font-medium text-base hover:bg-slate-50 flex items-center justify-center">تخطي الآن</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const labels = ['', 'ضعيف', 'مقبول', 'جيد', 'جيد جداً', 'ممتاز'];
+    let currentRating = 0;
+
+    function paintStars(upTo) {
+        for (let i = 1; i <= 5; i++) {
+            const star = document.getElementById('star-' + i);
+            if (i <= upTo) {
+                star.style.color = '#f59e0b';
+                star.style.setProperty('font-variation-settings', "'FILL' 1");
+            } else {
+                star.style.color = '';
+                star.style.setProperty('font-variation-settings', "'FILL' 0");
+            }
+        }
+    }
+
+    function setRating(val) {
+        currentRating = val;
+        document.getElementById('ratingInput').value = val;
+        paintStars(val);
+        document.getElementById('ratingLabel').textContent = labels[val];
+        document.getElementById('ratingLabel').className = 'text-sm font-semibold text-amber-500 h-5';
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = false;
+        btn.className = 'w-full bg-primary text-white h-14 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 hover:bg-primary/90 cursor-pointer';
+    }
+
+    function hoverRating(val) {
+        paintStars(val);
+        document.getElementById('ratingLabel').textContent = labels[val];
+    }
+
+    function resetHover() {
+        paintStars(currentRating);
+        document.getElementById('ratingLabel').textContent = currentRating ? labels[currentRating] : '';
+    }
+</script>
+}

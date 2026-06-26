@@ -1,0 +1,570 @@
+@model FinalProject.Web.ViewModels.AdminDashboardViewModel
+@{ ViewData["Title"] = "إدارة المستخدمين"; Layout = "_LayoutArabic"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[1200px] mx-auto flex flex-col gap-8">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <a asp-controller="AdminDashboard" asp-action="IndexAr" class="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-primary/10 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+                <div>
+                    <h1 class="text-slate-900 dark:text-slate-100 text-3xl font-black tracking-tight font-display">إدارة المستخدمين</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">عرض وتعديل وتجميد وحذف حسابات العملاء وعمال الصيانة.</p>
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessageAr"] != null)
+        {
+            <div class="p-4 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center gap-3">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>@TempData["SuccessMessageAr"]</span>
+            </div>
+        }
+        @if (TempData["ErrorMessageAr"] != null)
+        {
+            <div class="p-4 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 flex items-center gap-3">
+                <span class="material-symbols-outlined">error</span>
+                <span>@TempData["ErrorMessageAr"]</span>
+            </div>
+        }
+
+        <!-- Filtering and Search Bar -->
+        <div class="flex flex-col md:flex-row gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="flex-1 relative">
+                <span class="material-symbols-outlined absolute right-3 left-auto top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                <input id="searchQuery" oninput="filterUsers()" type="text" placeholder="البحث بالاسم، البريد الإلكتروني أو الهاتف..." class="w-full pr-10 pl-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/50 text-right" />
+            </div>
+            <div class="flex gap-4">
+                <select id="roleFilter" onchange="filterUsers()" class="bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm py-2 px-4 focus:ring-2 focus:ring-primary/50 text-slate-600 dark:text-slate-300">
+                    <option value="all">كل الأدوار</option>
+                    <option value="Customer">العملاء</option>
+                    <option value="Worker">العمال</option>
+                </select>
+                <select id="statusFilter" onchange="filterUsers()" class="bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm py-2 px-4 focus:ring-2 focus:ring-primary/50 text-slate-600 dark:text-slate-300">
+                    <option value="all">كل الحالات</option>
+                    <option value="true">نشط</option>
+                    <option value="false">مجمد</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-slate-500 text-xs font-bold uppercase">
+                            <th class="p-4 pr-6">المستخدم</th>
+                            <th class="p-4">الدور</th>
+                            <th class="p-4">بيانات الاتصال</th>
+                            <th class="p-4">الحالة</th>
+                            <th class="p-4">تاريخ الانضمام</th>
+                            <th class="p-4 pl-6 text-left font-medium">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                        <!-- Customers -->
+                        @foreach (var user in Model.Customers)
+                        {
+                            <tr class="user-row hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors"
+                                data-name="@user.FullName"
+                                data-email="@user.Email"
+                                data-phone="@user.PhoneNumber"
+                                data-role="Customer"
+                                data-active="@user.IsActive.ToString().ToLower()">
+                                <td class="p-4 pr-6">
+                                    <div class="flex items-center gap-3">
+                                        @if (!string.IsNullOrEmpty(user.ProfilePicture))
+                                        {
+                                            <img src="@user.ProfilePicture" class="size-10 rounded-full object-cover" alt="@user.FullName" />
+                                        }
+                                        else
+                                        {
+                                            <div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                                                @((user.FullName.Length >= 2) ? user.FullName.Substring(0, 2).ToUpper() : "C")
+                                            </div>
+                                        }
+                                        <div>
+                                            <p class="font-bold text-slate-900 dark:text-slate-100 text-sm">@user.FullName</p>
+                                            <p class="text-xs text-slate-500">معرف: #@user.UserId</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">عميل</span>
+                                </td>
+                                <td class="p-4">
+                                    <p class="text-sm text-slate-700 dark:text-slate-300">@user.Email</p>
+                                    <p class="text-xs text-slate-500">@user.PhoneNumber</p>
+                                </td>
+                                <td class="p-4">
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">نشط</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">مجمد</span>
+                                    }
+                                </td>
+                                <td class="p-4 text-slate-500 text-sm">
+                                    @user.CreatedAt.ToString("yyyy/MM/dd")
+                                </td>
+                                <td class="p-4 pl-6 text-left">
+                                    <div class="flex items-center justify-start gap-3">
+                                        <button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="تفاصيل المستخدم"
+                                                data-id="@user.UserId" data-name="@user.FullName" data-email="@user.Email"
+                                                data-phone="@user.PhoneNumber" data-role="Customer" data-age="@user.Age"
+                                                data-address="@user.Address" data-nationalid="@user.NationalId"
+                                                data-joined="@user.CreatedAt.ToString("yyyy/MM/dd")" data-active="@user.IsActive"
+                                                data-profilepic="@user.ProfilePicture"
+                                                onclick="openPreviewModal(this)">
+                                            <span class="material-symbols-outlined !text-xl">visibility</span>
+                                        </button>
+                                        <button class="text-primary hover:text-primary/80" title="تعديل البيانات"
+                                                data-id="@user.UserId" data-name="@user.FullName" data-email="@user.Email"
+                                                data-phone="@user.PhoneNumber" data-age="@user.Age" data-address="@user.Address"
+                                                onclick="openEditModal(this)">
+                                            <span class="material-symbols-outlined !text-xl">edit</span>
+                                        </button>
+                                        <form method="post" asp-action="ToggleUserStatus" class="inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="userId" value="@user.UserId" />
+                                            <input type="hidden" name="redirectUrl" value="/AdminDashboard/UsersAr" />
+                                            <button type="submit" class="@(user.IsActive ? "text-amber-500 hover:text-amber-600" : "text-emerald-500 hover:text-emerald-600")" title="@(user.IsActive ? "تجميد الحساب" : "تنشيط الحساب")">
+                                                <span class="material-symbols-outlined !text-xl">@(user.IsActive ? "block" : "check_circle")</span>
+                                            </button>
+                                        </form>
+                                        <button class="text-red-500 hover:text-red-600" title="حذف الحساب" onclick="confirmDelete('@user.UserId', '@user.FullName')">
+                                            <span class="material-symbols-outlined !text-xl">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                        <!-- Workers -->
+                        @foreach (var user in Model.Workers)
+                        {
+                            <tr class="user-row hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors"
+                                data-name="@user.FullName"
+                                data-email="@user.Email"
+                                data-phone="@user.PhoneNumber"
+                                data-role="Worker"
+                                data-active="@user.IsActive.ToString().ToLower()">
+                                <td class="p-4 pr-6">
+                                    <div class="flex items-center gap-3">
+                                        @if (!string.IsNullOrEmpty(user.ProfilePicture))
+                                        {
+                                            <img src="@user.ProfilePicture" class="size-10 rounded-full object-cover" />
+                                        }
+                                        else
+                                        {
+                                            <div class="size-10 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500 flex items-center justify-center font-bold text-sm">
+                                                @((user.FullName.Length >= 2) ? user.FullName.Substring(0, 2).ToUpper() : "W")
+                                            </div>
+                                        }
+                                        <div>
+                                            <p class="font-bold text-slate-900 dark:text-slate-100 text-sm">@user.FullName</p>
+                                            <p class="text-xs text-slate-500">معرف: #@user.UserId</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400">عامل صيانة</span>
+                                </td>
+                                <td class="p-4">
+                                    <p class="text-sm text-slate-700 dark:text-slate-300">@user.Email</p>
+                                    <p class="text-xs text-slate-500">@user.PhoneNumber</p>
+                                </td>
+                                <td class="p-4">
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">نشط</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">مجمد</span>
+                                    }
+                                </td>
+                                <td class="p-4 text-slate-500 text-sm">
+                                    @user.CreatedAt.ToString("yyyy/MM/dd")
+                                </td>
+                                <td class="p-4 pl-6 text-left">
+                                    <div class="flex items-center justify-start gap-3">
+                                        <button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="تفاصيل المستخدم"
+                                                data-id="@user.UserId" data-name="@user.FullName" data-email="@user.Email"
+                                                data-phone="@user.PhoneNumber" data-role="Worker" data-age="@user.Age"
+                                                data-address="" data-nationalid="@user.NationalId"
+                                                data-joined="@user.CreatedAt.ToString("yyyy/MM/dd")" data-active="@user.IsActive"
+                                                data-category="@user.CategoryName" data-validated="@user.IsValidated"
+                                                data-profilepic="@user.ProfilePicture"
+                                                data-idfront="@user.IdFrontImage" data-idback="@user.IdBackImage"
+                                                data-portfolio="@user.Portfolio"
+                                                onclick="openPreviewModal(this)">
+                                            <span class="material-symbols-outlined !text-xl">visibility</span>
+                                        </button>
+                                        <button class="text-primary hover:text-primary/80" title="تعديل البيانات"
+                                                data-id="@user.UserId" data-name="@user.FullName" data-email="@user.Email"
+                                                data-phone="@user.PhoneNumber" data-age="@user.Age" data-address=""
+                                                onclick="openEditModal(this)">
+                                            <span class="material-symbols-outlined !text-xl">edit</span>
+                                        </button>
+                                        <form method="post" asp-action="ToggleUserStatus" class="inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="userId" value="@user.UserId" />
+                                            <input type="hidden" name="redirectUrl" value="/AdminDashboard/UsersAr" />
+                                            <button type="submit" class="@(user.IsActive ? "text-amber-500 hover:text-amber-600" : "text-emerald-500 hover:text-emerald-600")" title="@(user.IsActive ? "تجميد الحساب" : "تنشيط الحساب")">
+                                                <span class="material-symbols-outlined !text-xl">@(user.IsActive ? "block" : "check_circle")</span>
+                                            </button>
+                                        </form>
+                                        <button class="text-red-500 hover:text-red-600" title="حذف الحساب" onclick="confirmDelete('@user.UserId', '@user.FullName')">
+                                            <span class="material-symbols-outlined !text-xl">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden text-right">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg p-8 border border-slate-200 dark:border-slate-800 shadow-2xl m-4 animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">تعديل بيانات المستخدم</h3>
+            <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="editForm" method="post" asp-action="EditUser">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="editUserId" name="userId" />
+            <input type="hidden" name="redirectUrl" value="/AdminDashboard/UsersAr" />
+            
+            <div class="flex flex-col gap-5">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5">الاسم بالكامل</label>
+                    <input type="text" id="editFullName" name="fullName" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-slate-100 text-right" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5">البريد الإلكتروني</label>
+                    <input type="email" id="editEmail" name="email" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-slate-100 text-right" />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5">رقم الهاتف</label>
+                        <input type="text" id="editPhoneNumber" name="phoneNumber" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-slate-100 text-right" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5">العمر</label>
+                        <input type="number" id="editAge" name="age" required min="18" max="100" class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-slate-100 text-right" />
+                    </div>
+                </div>
+                <div id="addressFieldContainer">
+                    <label class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5">العنوان</label>
+                    <textarea id="editAddress" name="address" class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-slate-100 h-24 resize-none text-right"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8">
+                <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">إلغاء</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-primary/95 shadow-lg shadow-primary/20 transition-all">حفظ التغييرات</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden text-right">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xl m-4 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">تفاصيل المستخدم</h3>
+            <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <div class="flex flex-col gap-6">
+            <div class="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div id="previewAvatarContainer" class="size-16 rounded-2xl overflow-hidden bg-primary/10 text-primary flex items-center justify-center font-black text-2xl flex-shrink-0">
+                    <span id="previewInitials">US</span>
+                </div>
+                <div>
+                    <h4 id="previewFullName" class="text-xl font-bold text-slate-900 dark:text-slate-100">اسم المستخدم</h4>
+                    <p id="previewRoleBadge" class="text-xs text-slate-500 mt-0.5">الدور</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-5 text-sm">
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">معرف المستخدم</p>
+                    <p id="previewId" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5">#00</p>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">حالة الحساب</p>
+                    <p id="previewStatus" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5">نشط</p>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">البريد الإلكتروني</p>
+                    <p id="previewEmail" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5">email@example.com</p>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">رقم الهاتف</p>
+                    <p id="previewPhone" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5">01xxxxxxxxx</p>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">العمر</p>
+                    <p id="previewAge" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5">25</p>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">تاريخ الانضمام</p>
+                    <p id="previewJoined" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5">اليوم</p>
+                </div>
+                <div id="previewCategoryContainer" class="hidden">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">التخصص</p>
+                    <p id="previewCategory" class="font-bold text-indigo-500 mt-0.5">سباك</p>
+                </div>
+                <div id="previewValidatedContainer" class="hidden">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">حالة وثائق الهوية</p>
+                    <p id="previewValidated" class="font-bold mt-0.5">مقبول</p>
+                </div>
+                <div class="col-span-2">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">الرقم القومي (مخفي للسلامة)</p>
+                    <p id="previewNationalId" class="font-bold text-slate-800 dark:text-slate-200 tracking-widest mt-0.5">290**********8</p>
+                </div>
+                <div id="previewAddressContainer" class="col-span-2">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">العنوان</p>
+                    <p id="previewAddress" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5">لا يوجد عنوان</p>
+                </div>
+            </div>
+
+            <!-- Worker Media Section -->
+            <div id="previewWorkerMedia" class="hidden flex-col gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <h4 class="font-bold text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">وثائق وصور العامل</h4>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">بطاقة الهوية — الوجه</p>
+                        <div id="previewIdFrontContainer" class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-center h-32">
+                            <span class="text-slate-400 text-xs">لم يتم الرفع</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">بطاقة الهوية — الظهر</p>
+                        <div id="previewIdBackContainer" class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-center h-32">
+                            <span class="text-slate-400 text-xs">لم يتم الرفع</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="previewPortfolioContainer" class="hidden">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">ملف الأعمال</p>
+                    <a id="previewPortfolioLink" href="#" target="_blank"
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-xl text-sm font-bold hover:bg-primary/20 transition-colors">
+                        <span class="material-symbols-outlined text-sm">download</span> تحميل ملف الأعمال
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end mt-8">
+            <button onclick="closePreviewModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold transition-colors">إغلاق</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden text-right">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-8 border border-slate-200 dark:border-slate-800 shadow-2xl m-4 animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center gap-4 text-red-500 mb-4">
+            <span class="material-symbols-outlined !text-4xl">warning</span>
+            <h3 class="text-2xl font-black tracking-tight">حذف المستخدم</h3>
+        </div>
+        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">هل أنت متأكد من رغبتك في حذف حساب <strong id="deleteUserName" class="text-slate-900 dark:text-slate-100">المستخدم</strong> نهائياً؟ هذا الإجراء لا يمكن التراجع عنه.</p>
+        <form id="deleteForm" method="post" asp-action="DeleteUser">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="deleteUserId" name="userId" />
+            <input type="hidden" name="redirectUrl" value="/AdminDashboard/UsersAr" />
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeDeleteModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">إلغاء</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors">حذف الحساب</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterUsers() {
+            const query = document.getElementById('searchQuery').value.toLowerCase();
+            const role = document.getElementById('roleFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            const rows = document.querySelectorAll('.user-row');
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name').toLowerCase();
+                const email = row.getAttribute('data-email').toLowerCase();
+                const phone = row.getAttribute('data-phone').toLowerCase();
+                const r = row.getAttribute('data-role');
+                const active = row.getAttribute('data-active');
+
+                const matchesQuery = name.includes(query) || email.includes(query) || phone.includes(query);
+                const matchesRole = (role === 'all') || (role === r);
+                const matchesStatus = (status === 'all') || (status === active);
+
+                if (matchesQuery && matchesRole && matchesStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Edit Modal Operations
+        function openEditModal(button) {
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            const email = button.getAttribute('data-email');
+            const phone = button.getAttribute('data-phone');
+            const age = button.getAttribute('data-age');
+            const address = button.getAttribute('data-address');
+
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editFullName').value = name;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editPhoneNumber').value = phone;
+            document.getElementById('editAge').value = age;
+            
+            const addressContainer = document.getElementById('addressFieldContainer');
+            if (address === null || address === undefined || button.closest('tr').getAttribute('data-role') === 'Worker') {
+                addressContainer.style.display = 'none';
+            } else {
+                addressContainer.style.display = 'block';
+                document.getElementById('editAddress').value = address;
+            }
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        // Preview Modal Operations
+        function openPreviewModal(button) {
+            const id         = button.getAttribute('data-id');
+            const name       = button.getAttribute('data-name');
+            const email      = button.getAttribute('data-email');
+            const phone      = button.getAttribute('data-phone');
+            const role       = button.getAttribute('data-role');
+            const age        = button.getAttribute('data-age');
+            const address    = button.getAttribute('data-address');
+            const nationalId = button.getAttribute('data-nationalid');
+            const joined     = button.getAttribute('data-joined');
+            const active     = button.getAttribute('data-active') === 'True';
+            const profilePic = button.getAttribute('data-profilepic') || '';
+            const idFront    = button.getAttribute('data-idfront') || '';
+            const idBack     = button.getAttribute('data-idback') || '';
+            const portfolio  = button.getAttribute('data-portfolio') || '';
+
+            document.getElementById('previewId').innerText     = '#' + id;
+            document.getElementById('previewFullName').innerText = name;
+            document.getElementById('previewEmail').innerText  = email;
+            document.getElementById('previewPhone').innerText  = phone;
+            document.getElementById('previewAge').innerText    = age;
+            document.getElementById('previewJoined').innerText = joined;
+
+            // Avatar — show profile picture if available, else initials
+            const avatarContainer = document.getElementById('previewAvatarContainer');
+            if (profilePic) {
+                avatarContainer.innerHTML = `<img src="${profilePic}" class="size-16 rounded-2xl object-cover" />`;
+            } else {
+                avatarContainer.innerHTML = `<span id="previewInitials" class="text-2xl font-black">${name.substring(0, 2).toUpperCase()}</span>`;
+            }
+
+            // Mask National ID for safety
+            if (nationalId) {
+                const len = nationalId.length;
+                document.getElementById('previewNationalId').innerText =
+                    len > 4 ? nationalId.substring(0, 3) + '*'.repeat(len - 6) + nationalId.substring(len - 3) : '*'.repeat(len);
+            } else {
+                document.getElementById('previewNationalId').innerText = 'غير متوفر';
+            }
+
+            // Role badge
+            const roleBadge = document.getElementById('previewRoleBadge');
+            const workerMedia = document.getElementById('previewWorkerMedia');
+
+            if (role === 'Customer') {
+                roleBadge.innerText = 'عميل';
+                roleBadge.className = 'px-2 py-0.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 mt-1 inline-block';
+                document.getElementById('previewCategoryContainer').classList.add('hidden');
+                document.getElementById('previewValidatedContainer').classList.add('hidden');
+                document.getElementById('previewAddressContainer').classList.remove('hidden');
+                document.getElementById('previewAddress').innerText = address || 'غير محدد';
+                workerMedia.classList.add('hidden'); workerMedia.classList.remove('flex');
+            } else {
+                roleBadge.innerText = 'عامل صيانة';
+                roleBadge.className = 'px-2 py-0.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400 mt-1 inline-block';
+                document.getElementById('previewCategoryContainer').classList.remove('hidden');
+                document.getElementById('previewCategory').innerText = button.getAttribute('data-category') || 'غير محدد';
+                document.getElementById('previewValidatedContainer').classList.remove('hidden');
+                const isValidated = button.getAttribute('data-validated') === 'True';
+                const vNode = document.getElementById('previewValidated');
+                vNode.innerText   = isValidated ? 'تم التحقق والقبول' : 'قيد المراجعة';
+                vNode.className   = isValidated ? 'font-bold text-emerald-500 mt-0.5' : 'font-bold text-rose-500 mt-0.5';
+                document.getElementById('previewAddressContainer').classList.add('hidden');
+
+                // Worker media
+                workerMedia.classList.remove('hidden'); workerMedia.classList.add('flex');
+
+                const frontCont = document.getElementById('previewIdFrontContainer');
+                frontCont.innerHTML = idFront
+                    ? `<a href="${idFront}" target="_blank"><img src="${idFront}" class="w-full h-32 object-cover hover:opacity-90 transition-opacity" /></a>`
+                    : '<span class="text-slate-400 text-xs">لم يتم الرفع</span>';
+
+                const backCont = document.getElementById('previewIdBackContainer');
+                backCont.innerHTML = idBack
+                    ? `<a href="${idBack}" target="_blank"><img src="${idBack}" class="w-full h-32 object-cover hover:opacity-90 transition-opacity" /></a>`
+                    : '<span class="text-slate-400 text-xs">لم يتم الرفع</span>';
+
+                const portCont = document.getElementById('previewPortfolioContainer');
+                if (portfolio) {
+                    portCont.classList.remove('hidden');
+                    document.getElementById('previewPortfolioLink').href = portfolio;
+                } else {
+                    portCont.classList.add('hidden');
+                }
+            }
+
+            const statusNode = document.getElementById('previewStatus');
+            statusNode.innerText = active ? 'نشط' : 'مجمد';
+            statusNode.className = active ? 'font-bold text-emerald-500 mt-0.5' : 'font-bold text-amber-500 mt-0.5';
+
+            document.getElementById('previewModal').classList.remove('hidden');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        // Delete Confirmation Operations
+        function confirmDelete(id, name) {
+            document.getElementById('deleteUserId').value = id;
+            document.getElementById('deleteUserName').innerText = name;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+    </script>
+}

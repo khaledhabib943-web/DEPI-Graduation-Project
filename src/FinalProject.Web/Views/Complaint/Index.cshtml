@@ -1,0 +1,46 @@
+@model ComplaintListViewModel
+@{ ViewData["Title"] = "Complaints"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[960px] mx-auto flex flex-col gap-8">
+        <div class="flex justify-between items-center">
+            <div><h1 class="text-3xl font-black">Complaint Center</h1><p class="text-slate-500">Manage your service complaints</p></div>
+            <a asp-action="Create" class="px-6 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 shadow-md flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">add_circle</span> New Complaint
+            </a>
+        </div>
+        @if (Model.Complaints.Any())
+        {
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead><tr class="bg-slate-50 dark:bg-slate-800/50">
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">ID</th>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Description</th>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Status</th>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Date</th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                            @foreach (var c in Model.Complaints)
+                            {
+                                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                                    <td class="p-4 font-medium">#@c.ComplaintId</td>
+                                    <td class="p-4 text-sm text-slate-600 max-w-[300px] truncate">@c.Description</td>
+                                    <td class="p-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold @(c.Status == FinalProject.Domain.Enums.ComplaintStatus.Resolved ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")">@c.Status</span></td>
+                                    <td class="p-4 text-sm text-slate-500">@c.CreatedAt.ToString("MMM dd")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="bg-white dark:bg-slate-900 rounded-xl p-12 text-center border border-slate-200 dark:border-slate-800">
+                <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">sentiment_satisfied</span>
+                <p class="text-slate-500">No complaints yet. We hope everything is going well!</p>
+            </div>
+        }
+    </div>
+</div>

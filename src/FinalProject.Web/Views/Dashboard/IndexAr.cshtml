@@ -1,0 +1,42 @@
+@model DashboardViewModel
+@{ ViewData["Title"] = "لوحة التحكم"; Layout = "_LayoutArabic"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[1200px] mx-auto flex flex-col gap-8">
+        <div><h1 class="text-3xl font-black">مرحباً، @Model.CustomerName 👋</h1><p class="text-slate-500 text-lg">إليك ما يحدث مع خدمات منزلك.</p></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm"><div class="flex items-center gap-4"><div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined">pending_actions</span></div><div><p class="text-2xl font-black">@Model.ActiveRequestsCount</p><p class="text-sm text-slate-500">طلبات نشطة</p></div></div></div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm"><div class="flex items-center gap-4"><div class="size-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center"><span class="material-symbols-outlined">task_alt</span></div><div><p class="text-2xl font-black">@Model.CompletedRequestsCount</p><p class="text-sm text-slate-500">مكتملة</p></div></div></div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm"><div class="flex items-center gap-4"><div class="size-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center"><span class="material-symbols-outlined">favorite</span></div><div><p class="text-2xl font-black">@Model.FavoritesCount</p><p class="text-sm text-slate-500">المفضلة</p></div></div></div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm"><div class="flex items-center gap-4"><div class="size-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center"><span class="material-symbols-outlined">notifications</span></div><div><p class="text-2xl font-black">@Model.UnreadNotifications</p><p class="text-sm text-slate-500">تنبيهات</p></div></div></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a asp-controller="ServiceRequest" asp-action="SelectServiceAr" class="group flex items-center gap-4 bg-primary text-white rounded-2xl p-6 shadow-lg shadow-primary/20">
+                <div class="size-12 rounded-xl bg-white/20 flex items-center justify-center"><span class="material-symbols-outlined !text-2xl">add_circle</span></div>
+                <div><p class="font-bold text-lg">حجز خدمة</p><p class="text-white/70 text-sm">احصل على مساعدة من محترفين</p></div>
+            </a>
+            <a asp-controller="Notification" asp-action="IndexAr" class="group flex items-center gap-4 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 hover:border-primary/50">
+                <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined !text-2xl">notifications</span></div>
+                <div><p class="font-bold text-lg">التنبيهات</p><p class="text-slate-500 text-sm">@Model.UnreadNotifications غير مقروءة</p></div>
+            </a>
+            <a asp-controller="Complaint" asp-action="IndexAr" class="group flex items-center gap-4 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 hover:border-primary/50">
+                <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined !text-2xl">support_agent</span></div>
+                <div><p class="font-bold text-lg">الشكاوى</p><p class="text-slate-500 text-sm">عرض وتقديم</p></div>
+            </a>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-800"><h2 class="text-xl font-bold">الطلبات الأخيرة</h2></div>
+            @if (Model.RecentRequests.Any())
+            {
+                @foreach (var req in Model.RecentRequests)
+                {
+                    <div class="p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center gap-4"><div class="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined">handyman</span></div><div><p class="font-bold">طلب #@req.RequestId</p><p class="text-sm text-slate-500">@req.ScheduledDate.ToString("dd MMM yyyy")</p></div></div>
+                        <a asp-controller="ServiceRequest" asp-action="TrackRequestAr" asp-route-requestId="@req.RequestId" class="text-primary font-bold text-sm hover:underline">تتبع</a>
+                    </div>
+                }
+            }
+            else { <div class="p-12 text-center"><span class="material-symbols-outlined text-5xl text-slate-300 mb-4">inbox</span><p class="text-slate-500">لا توجد طلبات بعد. <a asp-controller="ServiceRequest" asp-action="SelectServiceAr" class="text-primary font-bold">احجز خدمتك الأولى!</a></p></div> }
+        </div>
+    </div>
+</div>

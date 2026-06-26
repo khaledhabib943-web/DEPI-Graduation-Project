@@ -1,0 +1,33 @@
+@model SelectServiceViewModel
+@{ ViewData["Title"] = "Select a Service"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[960px] mx-auto flex flex-col gap-8">
+        <!-- Progress -->
+        <div class="flex flex-col gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center"><p class="text-slate-900 dark:text-slate-100 text-base font-bold">Step 1 of 5</p><p class="text-primary text-sm font-bold">20%</p></div>
+            <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-primary rounded-full" style="width: 20%;"></div></div>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Choose a service category</p>
+        </div>
+        <div class="flex flex-col gap-2"><h1 class="text-slate-900 dark:text-slate-100 text-3xl font-black tracking-tight">Select a Service</h1><p class="text-slate-500 dark:text-slate-400 text-lg">What kind of help do you need today?</p></div>
+        <!-- Categories Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var cat in Model.Categories)
+            {
+                <a asp-controller="ServiceRequest" asp-action="SelectProfessional" asp-route-categoryId="@cat.CategoryId"
+                   class="group flex flex-col items-center gap-4 p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 cursor-pointer">
+                    <div class="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                        <span class="material-symbols-outlined !text-3xl">@cat.IconUrl</span>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold">@cat.Name</h3>
+                        <p class="text-slate-500 text-sm mt-1">@cat.Description</p>
+                    </div>
+                    <span class="text-primary text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Browse Pros <span class="material-symbols-outlined !text-sm">arrow_forward</span>
+                    </span>
+                </a>
+            }
+        </div>
+    </div>
+</div>

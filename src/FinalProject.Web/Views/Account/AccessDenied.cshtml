@@ -1,0 +1,15 @@
+@{ ViewData["Title"] = "Access Denied"; }
+
+<div class="flex-1 flex items-center justify-center py-20">
+    <div class="text-center flex flex-col items-center gap-6 max-w-md px-6">
+        <div class="size-24 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
+            <span class="material-symbols-outlined !text-5xl">lock</span>
+        </div>
+        <h1 class="text-3xl font-black text-slate-800 dark:text-white">Access Denied</h1>
+        <p class="text-slate-500">You don't have permission to access this page. Please log in with the correct account.</p>
+        <div class="flex gap-4">
+            <a asp-controller="Account" asp-action="Logout" class="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/20">Log In Again</a>
+            <a asp-controller="Home" asp-action="Index" class="px-6 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl font-bold hover:bg-slate-200">Home</a>
+        </div>
+    </div>
+</div>

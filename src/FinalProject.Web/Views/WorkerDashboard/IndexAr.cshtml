@@ -1,0 +1,269 @@
+@model WorkerDashboardViewModel
+@using FinalProject.Domain.Enums
+@{
+    ViewData["Title"] = "لوحة تحكم الفني";
+    Layout = "_LayoutArabic";
+}
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-[1200px] mx-auto flex flex-col gap-8">
+        
+        <!-- Welcome & Professional Profile Summary -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="flex items-center gap-4">
+                @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+                {
+                    <img src="@Model.ProfilePicture" class="size-16 rounded-full object-cover border-2 border-primary" alt="@Model.WorkerName" />
+                }
+                else
+                {
+                    <div class="size-16 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold">
+                        @(Model.WorkerName.Length >= 2 ? Model.WorkerName.Substring(0, 2).ToUpper() : "ف")
+                    </div>
+                }
+                <div>
+                    <h1 class="text-slate-900 dark:text-slate-100 text-2xl font-black tracking-tight">مرحباً بك، @Model.WorkerName 👋</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">التخصص: <span class="font-semibold text-slate-700 dark:text-slate-300">@Model.CategoryName</span></p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
+                <!-- Availability status toggle form -->
+                <form asp-action="UpdateAvailability" method="post" class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="isArabic" value="true" />
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider pr-2">الحالة:</label>
+                    <select name="status" onchange="this.form.submit()" class="bg-transparent border-0 text-sm font-semibold text-slate-800 dark:text-slate-200 focus:ring-0 cursor-pointer">
+                        <!option value="Available" @(Model.AvailabilityStatus == AvailabilityStatus.Available ? "selected" : "")>متاح</!option>
+                        <!option value="Busy" @(Model.AvailabilityStatus == AvailabilityStatus.Busy ? "selected" : "")>مشغول</!option>
+                        <!option value="Offline" @(Model.AvailabilityStatus == AvailabilityStatus.Offline ? "selected" : "")>غير متصل</!option>
+                    </select>
+                </form>
+
+                <!-- Service Price update form -->
+                <form asp-action="UpdatePrice" method="post" class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="isArabic" value="true" />
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider pr-2">السعر/الساعة:</label>
+                    <input type="number" name="price" value="@Model.ServicePrice" min="1" step="0.01" class="w-20 bg-transparent border-b border-slate-300 focus:border-primary text-sm font-semibold text-slate-800 dark:text-slate-200 p-0 text-center" />
+                    <button type="submit" class="text-primary hover:text-primary/80"><span class="material-symbols-outlined !text-lg">save</span></button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notification Alerts (Success/Error) -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="p-4 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-medium flex items-center gap-2 border border-emerald-200">
+                <span class="material-symbols-outlined">check_circle</span>
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="p-4 rounded-xl bg-rose-50 text-rose-700 text-sm font-medium flex items-center gap-2 border border-rose-200">
+                <span class="material-symbols-outlined">error</span>
+                @TempData["Error"]
+            </div>
+        }
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="size-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center"><span class="material-symbols-outlined">pending_actions</span></div>
+                    <div><p class="text-xl font-black text-slate-900 dark:text-slate-100">@Model.PendingRequestsCount</p><p class="text-xs text-slate-500 font-semibold">الطلبات المعلقة</p></div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="size-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined">engineering</span></div>
+                    <div><p class="text-xl font-black text-slate-900 dark:text-slate-100">@Model.ActiveRequestsCount</p><p class="text-xs text-slate-500 font-semibold">الأعمال النشطة</p></div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="size-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center"><span class="material-symbols-outlined">task_alt</span></div>
+                    <div><p class="text-xl font-black text-slate-900 dark:text-slate-100">@Model.CompletedRequestsCount</p><p class="text-xs text-slate-500 font-semibold">الأعمال المكتملة</p></div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="size-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center"><span class="material-symbols-outlined">star</span></div>
+                    <div><p class="text-xl font-black text-slate-900 dark:text-slate-100">@Model.AverageRating.ToString("0.0")</p><p class="text-xs text-slate-500 font-semibold">التقييم العام</p></div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="size-10 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center"><span class="material-symbols-outlined">notifications</span></div>
+                    <div><p class="text-xl font-black text-slate-900 dark:text-slate-100">@Model.UnreadNotificationsCount</p><p class="text-xs text-slate-500 font-semibold font-bold">التنبيهات غير المقروءة</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area: Requests and Reviews -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Requests List (Right 2 Columns) -->
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                    <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">طلبات العمل</h2>
+                        <span class="text-xs font-medium px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-lg">آخر 10 طلبات</span>
+                    </div>
+
+                    @if (Model.RecentRequests.Any())
+                    {
+                        <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                            @foreach (var req in Model.RecentRequests)
+                            {
+                                <div class="p-6 flex flex-col gap-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <span class="text-xs font-bold text-slate-400">#@req.RequestId</span>
+                                            <h3 class="font-bold text-slate-900 dark:text-slate-100 text-lg">@req.CustomerName</h3>
+                                            <p class="text-xs text-slate-500">الموعد: @req.ScheduledDate.ToString("yyyy/MM/dd") الساعة @req.ScheduledTime.ToString(@"hh\:mm")</p>
+                                        </div>
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold @(req.Status == RequestStatus.Pending ? "bg-amber-100 text-amber-700" : req.Status == RequestStatus.InProgress ? "bg-blue-100 text-blue-700" : req.Status == RequestStatus.Completed ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600")">
+                                            @(req.Status == RequestStatus.Pending ? "معلق" : req.Status == RequestStatus.InProgress ? "قيد التنفيذ" : req.Status == RequestStatus.Completed ? "مكتمل" : "ملغى")
+                                        </span>
+                                    </div>
+
+                                    <div class="text-sm text-slate-600 dark:text-slate-300">
+                                        <p class="font-semibold text-slate-500 text-xs uppercase mb-1">التفاصيل والوصف:</p>
+                                        <p class="italic">"@req.Description"</p>
+                                    </div>
+
+                                    <div class="text-sm text-slate-600 dark:text-slate-300">
+                                        <p class="font-semibold text-slate-500 text-xs uppercase mb-1">الموقع / العنوان:</p>
+                                        <p class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-rose-500">location_on</span> @req.LocationDetails</p>
+                                    </div>
+
+                                    <!-- Actions for the worker -->
+                                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                                        @if (req.Status == RequestStatus.Pending)
+                                        {
+                                            <form asp-action="AcceptRequest" method="post" class="inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="requestId" value="@req.RequestId" />
+                                                <input type="hidden" name="isArabic" value="true" />
+                                                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1 shadow-sm">
+                                                    <span class="material-symbols-outlined !text-sm">check</span> قبول الطلب
+                                                </button>
+                                            </form>
+                                            <form asp-action="RejectRequest" method="post" class="inline" onsubmit="return confirm('هل أنت متأكد من رفض هذا الطلب؟');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="requestId" value="@req.RequestId" />
+                                                <input type="hidden" name="isArabic" value="true" />
+                                                <button type="submit" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1">
+                                                    <span class="material-symbols-outlined !text-sm">close</span> رفض الطلب
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (req.Status == RequestStatus.InProgress)
+                                        {
+                                            @if (!req.IsWorkerArrived)
+                                            {
+                                                @* الخطوة 1: الفني لم يسجّل وصوله بعد *@
+                                                <form asp-action="MarkArrived" method="post" class="inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="requestId" value="@req.RequestId" />
+                                                    <input type="hidden" name="isArabic" value="true" />
+                                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1 shadow-sm">
+                                                        <span class="material-symbols-outlined !text-sm">where_to_vote</span> وصلت إلى الموقع
+                                                    </button>
+                                                </form>
+                                            }
+                                            else if (!req.IsArrivalConfirmedByCustomer)
+                                            {
+                                                @* الخطوة 2: في انتظار تأكيد العميل للوصول *@
+                                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg">
+                                                    <span class="material-symbols-outlined !text-sm">hourglass_empty</span>
+                                                    في انتظار تأكيد العميل للوصول
+                                                </span>
+                                            }
+                                            else if (!req.IsWorkCompletedConfirmedByCustomer)
+                                            {
+                                                @* الخطوة 3: في انتظار تأكيد العميل لإتمام العمل *@
+                                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 px-3 py-2 rounded-lg">
+                                                    <span class="material-symbols-outlined !text-sm">engineering</span>
+                                                    جارٍ العمل — في انتظار تأكيد العميل لإتمامه
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                @* الخطوة 4: العميل أكّد — يمكن للفني تسجيل الإكمال *@
+                                                <form asp-action="CompleteRequest" method="post" class="inline" onsubmit="return confirm('تأكيد إكمال العمل؟');">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="requestId" value="@req.RequestId" />
+                                                    <input type="hidden" name="isArabic" value="true" />
+                                                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all flex items-center gap-1 shadow-sm shadow-emerald-600/25">
+                                                        <span class="material-symbols-outlined !text-sm">task_alt</span> إكمال العمل
+                                                    </button>
+                                                </form>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-xs text-slate-400 italic">لا توجد إجراءات متاحة</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-12 text-center">
+                            <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">inbox</span>
+                            <p class="text-slate-500">لا توجد طلبات عمل مخصصة لك حالياً.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Reviews & Comments (Right Column) -->
+            <div class="flex flex-col gap-6">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-6">آراء وتقييمات العملاء الأخيرة</h2>
+                    
+                    @if (Model.RecentReviews.Any())
+                    {
+                        <div class="flex flex-col gap-6">
+                            @foreach (var review in Model.RecentReviews)
+                            {
+                                <div class="flex flex-col gap-2 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
+                                    <div class="flex justify-between items-center">
+                                        <p class="font-bold text-sm text-slate-800 dark:text-slate-200">@review.CustomerName</p>
+                                        <div class="flex items-center text-amber-500 text-left">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= review.Rating)
+                                                {
+                                                    <span class="material-symbols-outlined !text-sm fill-current">star</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="material-symbols-outlined !text-sm">star</span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-500">@review.CreatedAt.ToString("yyyy/MM/dd")</p>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 italic mt-1">"@review.Comment"</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-8">
+                            <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">reviews</span>
+                            <p class="text-sm text-slate-500">لا توجد تقييمات مضافة بعد.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

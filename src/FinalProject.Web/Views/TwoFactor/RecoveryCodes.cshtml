@@ -1,0 +1,71 @@
+@model RecoveryCodesViewModel
+@{ ViewData["Title"] = "Recovery Codes"; }
+
+<div class="px-6 md:px-20 lg:px-40 py-8">
+    <div class="max-w-2xl mx-auto space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="size-20 mx-auto flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl mb-4">
+                <span class="material-symbols-outlined !text-5xl text-emerald-600 dark:text-emerald-400">check_circle</span>
+            </div>
+            <h1 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Two-Factor Authentication Enabled!</h1>
+            <p class="text-slate-500 dark:text-slate-400">Your account is now protected with an additional layer of security.</p>
+        </div>
+
+        <!-- Warning -->
+        <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 mt-0.5">warning</span>
+                <div>
+                    <h4 class="font-bold text-amber-800 dark:text-amber-300 text-sm mb-1">Save Your Recovery Codes</h4>
+                    <p class="text-amber-700 dark:text-amber-400 text-sm">
+                        These one-time recovery codes can be used to access your account if you lose your authenticator device.
+                        <strong>Store them in a safe place.</strong> Each code can only be used once.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recovery Codes -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">key</span>
+                Recovery Codes
+            </h3>
+            <div class="grid grid-cols-2 gap-3 mb-6" id="recovery-codes">
+                @foreach (var code in Model.RecoveryCodes)
+                {
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-lg px-4 py-3 text-center font-mono text-sm font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 select-all">
+                        @code
+                    </div>
+                }
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="copyRecoveryCodes()" class="flex-1 h-11 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                    Copy All Codes
+                </button>
+                <a asp-controller="Profile" asp-action="Index" class="flex-1 h-11 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    Continue to Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function copyRecoveryCodes() {
+            const codes = [];
+            document.querySelectorAll('#recovery-codes div').forEach(el => codes.push(el.textContent.trim()));
+            navigator.clipboard.writeText(codes.join('\n')).then(() => {
+                const btn = event.currentTarget;
+                const original = btn.innerHTML;
+                btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span> Copied!';
+                btn.classList.add('bg-emerald-100', 'text-emerald-700');
+                setTimeout(() => { btn.innerHTML = original; btn.classList.remove('bg-emerald-100', 'text-emerald-700'); }, 2000);
+            });
+        }
+    </script>
+}

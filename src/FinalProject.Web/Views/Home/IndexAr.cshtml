@@ -1,0 +1,72 @@
+@{ ViewData["Title"] = "بيتك، اهتمامنا"; Layout = "_LayoutArabic"; }
+
+<section class="px-6 md:px-20 lg:px-40 py-16 md:py-24">
+    <div class="flex flex-col lg:flex-row gap-12 items-center">
+        <div class="flex flex-col gap-8 lg:w-1/2">
+            <div class="flex flex-col gap-4">
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary w-fit">جديد: التأمين المنزلي متاح الآن!</span>
+                <h1 class="text-5xl md:text-6xl font-black leading-[1.1] tracking-tight">صيانة المنزل أصبحت <span class="text-primary">بسيطة للجميع</span></h1>
+                <p class="text-slate-600 dark:text-slate-400 text-lg md:text-xl leading-relaxed max-w-[540px]">احصل على صيانة منزلك من محترفين معتمدين في القاهرة والجيزة. سريع، موثوق، وبضغطة زر واحدة. "سيبها علينا."</p>
+            </div>
+            <div class="flex flex-wrap gap-4">
+                <a asp-controller="Account" asp-action="RegisterAr" class="flex min-w-[140px] items-center justify-center rounded-lg h-12 px-6 bg-primary text-white text-base font-bold hover:bg-primary/90 shadow-xl shadow-primary/25">ابدأ الآن</a>
+                <a href="#features" class="flex min-w-[140px] items-center justify-center rounded-lg h-12 px-6 bg-slate-200 dark:bg-slate-800 text-base font-bold border border-slate-300 dark:border-slate-700">اعرف أكثر</a>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-slate-500">
+                <div class="flex -space-x-2"><div class="h-8 w-8 rounded-full border-2 border-background-light bg-slate-300"></div><div class="h-8 w-8 rounded-full border-2 border-background-light bg-slate-400"></div><div class="h-8 w-8 rounded-full border-2 border-background-light bg-slate-500"></div></div>
+                <p>انضم لآلاف العائلات الذين يثقون في صلاحلي لصيانة منازلهم.</p>
+            </div>
+        </div>
+        <div class="lg:w-1/2 w-full">
+            <div class="relative w-full aspect-square md:aspect-video lg:aspect-square bg-slate-200 dark:bg-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+                <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent pointer-events-none"></div>
+                <img alt="فني محترف يقدم خدمات الصيانة المنزلية" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOgRMc84njvKXSVCuolgKPB_5R4iLgZWDYAF_OZ7dErs68LQydzKeITvCndOcHePyi70onbXzedpC5Bu9LOTE-OD4fQRQOxgp0ZPhBDe9dnBRGIUk3j-1VKuRSKDIZNmAMlZpLJ25ydwntcoX5X9erKcQWJTdLwY9P-QY5I8ynzL0E1Hcl8Fzci1EuSbDQcVd1MNi6e9vC1DOBrc3QCM5rPn4Dps2YHfM6aAmEpGu24G1iq6-9f2Vx8vK8bUwu5zxBUssB2ovy9U" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="border-y border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark/50 py-12">
+    <div class="px-6 md:px-20 lg:px-40">
+        <p class="text-slate-400 text-xs font-bold tracking-[0.2em] text-center mb-10 uppercase">أكثر من 5,000 عائلة تثق بنا في مصر</p>
+        <div class="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+            <span class="text-2xl font-black tracking-tighter text-slate-600 dark:text-slate-300">SODIC</span>
+            <span class="text-2xl font-black tracking-tighter text-slate-600 dark:text-slate-300">EMAAR</span>
+            <span class="text-2xl font-black tracking-tighter text-slate-600 dark:text-slate-300">MOUNTAIN VIEW</span>
+        </div>
+    </div>
+</section>
+
+<section class="px-6 md:px-20 lg:px-40 py-24 bg-slate-50 dark:bg-background-dark" id="features">
+    <div class="flex flex-col gap-12">
+        <div class="flex flex-col gap-4 max-w-[720px]"><h2 class="text-3xl md:text-4xl font-black leading-tight">لماذا تختار صلاحلي؟</h2><p class="text-slate-600 dark:text-slate-400 text-lg">نجمع بين التكنولوجيا الحديثة وخدمات الصيانة التقليدية.</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="group flex flex-col gap-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-8 hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"><span class="material-symbols-outlined !text-2xl">verified_user</span></div>
+                <div><h3 class="text-xl font-bold">محترفون معتمدون</h3><p class="text-slate-600 dark:text-slate-400 text-sm mt-2">كل فني يخضع لفحوصات خلفية ويُدرب على أعلى المعايير.</p></div>
+            </div>
+            <div class="group flex flex-col gap-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-8 hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"><span class="material-symbols-outlined !text-2xl">payments</span></div>
+                <div><h3 class="text-xl font-bold">أسعار ثابتة</h3><p class="text-slate-600 dark:text-slate-400 text-sm mt-2">أسعار شفافة ومعلنة. بدون تكاليف مخفية.</p></div>
+            </div>
+            <div class="group flex flex-col gap-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-8 hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"><span class="material-symbols-outlined !text-2xl">handyman</span></div>
+                <div><h3 class="text-xl font-bold">ضمان الخدمة</h3><p class="text-slate-600 dark:text-slate-400 text-sm mt-2">جميع الخدمات تأتي مع ضمان 30 يوماً لراحة بالك.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="px-6 md:px-20 lg:px-40 py-24" id="pricing">
+    <div class="relative overflow-hidden rounded-3xl bg-primary p-8 md:p-16">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 size-80 rounded-full bg-white/10 blur-3xl"></div>
+        <div class="relative z-10 flex flex-col items-center text-center gap-8">
+            <h2 class="text-white text-3xl md:text-5xl font-black max-w-[600px]">مستعد لإصلاح منزلك بالطريقة السهلة؟</h2>
+            <p class="text-white/80 text-lg max-w-[500px]">انضم لآلاف الأسر في القاهرة الذين يثقون في صلاحلي.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a asp-controller="Account" asp-action="RegisterAr" class="bg-white text-primary hover:bg-slate-100 px-8 py-4 rounded-xl font-bold text-lg shadow-xl">ابدأ الآن</a>
+                <a href="#features" class="bg-primary/20 border border-white/30 text-white px-8 py-4 rounded-xl font-bold text-lg">خدماتنا</a>
+            </div>
+        </div>
+    </div>
+</section>
