@@ -50,13 +50,22 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<FinalProject.Infrastructure.DbContext.ApplicationDbContext>();
-    var userManager = services.GetRequiredService<UserManager<User>>();
+    try
+    {
+        var context = services.GetRequiredService<FinalProject.Infrastructure.DbContext.ApplicationDbContext>();
+        var userManager = services.GetRequiredService<UserManager<User>>();
 
-    await context.Database.MigrateAsync();
+        await context.Database.MigrateAsync();
 
-    var seeder = new FinalProject.Infrastructure.Seeding.DataSeeder(context, userManager);
-    await seeder.SeedAsync();
+        var seeder = new FinalProject.Infrastructure.Seeding.DataSeeder(context, userManager);
+        await seeder.SeedAsync();
+    }
+    catch (Exception ex)
+    {
+        // This stops the web server from completely crashing if the hosting provider blocks migration commands
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Database migration or seeding skipped/failed on production server.");
+    }
 }
 
 // ================= PIPELINE =================
